@@ -1,0 +1,66 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm"
+    }
+   ],
+   "note": "The ordered item matches the mandate's medium bamboo cutting board, about 30 x 20 cm."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "Mandate asks for one unit and the order has one unit."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $21.90"
+    }
+   ],
+   "note": "PayPal total of $21.90 is within the mandate's $25.00 spending limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "storeChargedAsOrdered": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "The store has not provided a record, so the store's charge cannot be checked against the submitted cart."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "No store record exists saying what was shipped; the buyer's report is not evidence."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:49:50.301Z"
+}

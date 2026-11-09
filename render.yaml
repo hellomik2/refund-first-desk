@@ -1,0 +1,36 @@
+# Render blueprint for the hosted demo. Secrets are entered in the Render dashboard (sync: false).
+services:
+  - type: web
+    name: refund-first-desk
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: PUBLIC_BASE_URL # the service's own https URL, used as PayPal's return address
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: DEMO_VAULT_ID
+        sync: false
+      - key: DEMO_CUSTOMER_ID
+        sync: false
+      - key: DEMO_BUYER_EMAIL
+        sync: false
+      - key: STORE_PAYPAL_EMAIL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AI_PROVIDER
+        value: anthropic
+      - key: AI_MODEL
+        value: claude-haiku-5-5
+      - key: AI_REUSE_RECORDED # prepared cases replay the recorded live answers; an edited sentence calls the AI live
+        value: "1"
+      - key: AI_DAILY_CALL_CAP
+        value: "40"

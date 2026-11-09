@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Medium Roast Whole Bean Coffee, 12 oz"
+    }
+   ],
+   "note": "The coffee is medium roast whole bean, 12 oz, as the mandate asks. The subscription plan is a separate issue, handled under exclusionsRespected."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the order has one unit."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $18.38"
+    }
+   ],
+   "note": "$18.38 is within the $20.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Subscribe & Save, monthly"
+    }
+   ],
+   "note": "The mandate excludes subscriptions and the order is a monthly Subscribe & Save plan."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $18.38, same as the submitted cart."
+    }
+   ],
+   "note": "The submitted cart totals $14.39 + $3.99 = $18.38, which matches the store charge."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly)."
+    }
+   ],
+   "note": "The store shipped the same item that was ordered."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:49:37.655Z"
+}

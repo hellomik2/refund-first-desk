@@ -1,0 +1,19 @@
+{
+  "name": "refund-first-desk",
+  "version": "0.1.0",
+  "description": "Refund first, verify after: a resolution desk for purchases made by AI shopping agents, built on PayPal Orders, Payments, Vault and Payouts (sandbox).",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/",
+    "loop": "node scripts/loop.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.6.0"
+  }
+}

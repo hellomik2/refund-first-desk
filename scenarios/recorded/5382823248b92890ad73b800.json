@@ -1,0 +1,71 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "The mandate asks for a phone case but does not say which phone it must fit. The agent chose a case for Pixel 9 without that being specified, so the right product cannot be settled from the records."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the agent submitted 1 x Slim Case for Pixel 9."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $18.99"
+    }
+   ],
+   "note": "The PayPal order total is $18.99, which is within the mandate's $25.00 total spending limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $18.99, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged $18.99, matching the cart the agent submitted with one line at $18.99."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Slim Case for Pixel 9."
+    }
+   ],
+   "note": "The store record says it shipped one Slim Case for Pixel 9, the same item that was ordered."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:46:03.892Z"
+}

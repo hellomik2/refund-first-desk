@@ -1,0 +1,71 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: no"
+    }
+   ],
+   "note": "The mandate says the agent may not pay without asking again, and the agent paid without asking."
+  },
+  "itemMatchesMandate": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "The mandate asks for eggs, one dozen, cheapest delivered today. The order is a dozen Large Eggs, but the log shows only one product was found and compared, so the records do not show it was the cheapest."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Large Eggs, 12 ct (sku EGG-12) @ $13.19"
+    }
+   ],
+   "note": "The mandate quantity is 1, and the order has one unit of the eggs. The fee lines are not items."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Spending limit: (none)"
+    }
+   ],
+   "note": "The mandate sets no spending limit, so no cap is exceeded by the $31.43 total."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $31.43, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged $31.43, which matches the cart the agent submitted."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Packed and handed to courier: 1 x Large Eggs, 12 ct."
+    }
+   ],
+   "note": "The store shipped one dozen Large Eggs, which is the ordered item. The fee lines are not items."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:45:02.231Z"
+}

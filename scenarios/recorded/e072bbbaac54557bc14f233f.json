@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly permits payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: extra virgin olive oil, 500 ml bottle"
+    }
+   ],
+   "note": "The mandate asks for a 500 ml bottle; the order contains a 750 ml bottle, and the buyer named the size."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the order has one unit of the olive oil."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $19.49"
+    }
+   ],
+   "note": "The PayPal total of $19.49 is below the $20.00 spending limit in the mandate."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $19.49 as per submitted cart."
+    }
+   ],
+   "note": "The store says it charged the submitted cart, and the agent's submitted cart totals $19.49."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Extra Virgin Olive Oil, 750 ml."
+    }
+   ],
+   "note": "The store shipped one 750 ml olive oil, which matches the ordered item and quantity."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:47:04.861Z"
+}

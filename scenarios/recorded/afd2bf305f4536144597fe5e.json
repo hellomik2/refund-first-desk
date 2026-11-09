@@ -1,0 +1,71 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
+    }
+   ],
+   "note": "The ordered product is salmon cat treats in a 150 g bag, matching the mandate Item slot. The buyer's report about chicken flavour is not used as evidence."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the PayPal order has one unit of the treats."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Spending limit: (none)"
+    }
+   ],
+   "note": "The mandate sets no spending limit, so the $9.48 total is not over a limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Payment of $9.48 received, equal to the cart total."
+    }
+   ],
+   "note": "The store charged $9.48, which equals the agent's submitted cart of $5.99 plus $3.49 shipping, with no added lines."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "The store record says a parcel was handed to the carrier with tracking PP48213907, but it does not list what was shipped, so the contents cannot be confirmed."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:48:36.689Z"
+}

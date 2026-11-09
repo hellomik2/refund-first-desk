@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "Mandate explicitly allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: power bank, 10,000 mAh, grey"
+    }
+   ],
+   "note": "Ordered item is the 10,000 mAh grey power bank per the PayPal order and store record; the mandate's Item slot matches. The 2-year protection plan is an add-on, which is addressed under exclusionsRespected/storeChargedAsOrdered rather than the item itself, but it is an extra product in the order, so this could be read as no. Fee-like add-ons are not items per the rules only for shipping/fee/tax/tip lines; the protection plan is a product, so answer is no."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "Ordered one power bank."
+  },
+  "withinSpendingLimit": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $33.98"
+    }
+   ],
+   "note": "PayPal total $33.98 is within $35.00 limit, so this should be yes."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists nothing to exclude."
+  },
+  "storeChargedAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $33.98."
+    }
+   ],
+   "note": "Store charged $33.98 including a $4.99 protection plan the agent did not submit; cart submitted was $28.99."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Power Bank 10,000 mAh, Grey."
+    }
+   ],
+   "note": "Store record says the power bank was shipped, matching the ordered item."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:48:23.915Z"
+}

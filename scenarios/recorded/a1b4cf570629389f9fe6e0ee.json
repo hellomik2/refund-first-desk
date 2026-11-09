@@ -1,0 +1,71 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Silicone Spatula Set, 3-piece (sku SPAT-SIL-3) @ $6.99"
+    }
+   ],
+   "note": "The mandate asks only for a 10-inch non-stick frying pan. The order also includes a spatula set that the mandate does not ask for."
+  },
+  "quantityMatchesMandate": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "The mandate sets Quantity: 1. The order has one frying pan but two units in total, and the records do not settle whether the slot refers to the pan alone or to the whole order."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $31.98"
+    }
+   ],
+   "note": "The PayPal order total of $31.98 is below the $35.00 spending limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so the condition holds."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $31.98, identical to the cart received."
+    }
+   ],
+   "note": "The store charged $31.98, which the store record says is identical to the cart the agent submitted."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Non-Stick Frying Pan, 10-inch; 1 x Silicone Spatula Set, 3-piece."
+    }
+   ],
+   "note": "The store says it shipped the same two items that were ordered."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:50:04.651Z"
+}

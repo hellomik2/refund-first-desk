@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refund-First Desk</title>
+  <meta name="description" content="When an AI agent buys the wrong thing, the buyer gets the money back first. Who pays is worked out afterwards. Built on PayPal Orders, Payments, Vault and Payouts (sandbox).">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">↩</span>
+      <div>
+        <h1>Refund-First Desk</h1>
+        <p class="tagline">An AI agent bought the wrong thing. The buyer gets the money back first. Who pays is worked out afterwards.</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="pill" id="env-pill">PayPal sandbox</span>
+      <button class="ghost" id="reset">Start a fresh workspace</button>
+    </div>
+  </header>
+
+  <p class="disclosure" id="disclosure">
+    Sandbox money, real PayPal API calls. The cases are written for this demo. Shipping, the store's records and waiting periods are simulated; fast-forward moves the policy clock only.
+  </p>
+
+  <section class="picker" aria-labelledby="picker-h">
+    <div class="picker-head">
+      <h2 id="picker-h">1. Pick what the buyer asked the agent to do</h2>
+      <p class="hint">Each case runs a real sandbox payment from a saved PayPal wallet.</p>
+    </div>
+    <div class="cases" id="cases"></div>
+  </section>
+
+  <main class="stage" id="stage" hidden>
+    <section class="col buyer" aria-labelledby="buyer-h">
+      <h2 id="buyer-h"><span class="who">Buyer</span> what the person sees</h2>
+      <div id="buyer"></div>
+    </section>
+    <section class="col desk" aria-labelledby="desk-h">
+      <h2 id="desk-h"><span class="who">Desk</span> what happens, in order</h2>
+      <div id="desk"></div>
+    </section>
+    <section class="col money" aria-labelledby="money-h">
+      <h2 id="money-h"><span class="who">Money</span> who holds what</h2>
+      <div id="money"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p><strong>Who runs this.</strong> An operator of AI shopping agents can run this desk on PayPal today: it receives the payment, refunds from it, and makes an innocent store whole from its own funds. If PayPal ran it itself, it would hold the store's funds for the disputed order instead (delayed disbursement exists for approved partners).</p>
+    <p><strong>What is only true in the sandbox.</strong> Charging a saved wallet again without the buyer present needs PayPal's approval on live accounts. "Refunded" here means PayPal's refund status is COMPLETED; when the money shows up depends on the buyer's funding source.</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

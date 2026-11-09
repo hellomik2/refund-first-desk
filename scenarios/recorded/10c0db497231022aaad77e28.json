@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "Mandate explicitly allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Wild Bird Seed Blend, 20 lb (sku WBS-20) @ $19.99"
+    }
+   ],
+   "note": "Ordered product is wild bird seed in a 20 lb bag, matching the mandate Item slot. Shipping and tax lines are not items."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Wild Bird Seed Blend, 20 lb (sku WBS-20) @ $19.99"
+    }
+   ],
+   "note": "One unit ordered; mandate Quantity is 1."
+  },
+  "withinSpendingLimit": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $27.00"
+    }
+   ],
+   "note": "PayPal total of $27.00 exceeds the $22.00 mandate limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Matches the submitted cart line for line."
+    }
+   ],
+   "note": "Store charged $27.00 with item, shipping and tax matching the agent's submitted cart."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Wild Bird Seed Blend, 20 lb."
+    }
+   ],
+   "note": "Store shipped the one ordered bird seed blend."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:51:25.933Z"
+}

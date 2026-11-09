@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "6 x FreshMint Toothpaste, 100 ml (sku TP-MINT-100) @ $1.99"
+    }
+   ],
+   "note": "The ordered product is toothpaste with mint flavour, which matches the mandate's Item slot. Only the quantity differs."
+  },
+  "quantityMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 3"
+    }
+   ],
+   "note": "The mandate asks for 3 units, but the PayPal order contains 6 toothpaste units."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $14.93"
+    }
+   ],
+   "note": "The PayPal total of $14.93 is below the mandate's $15.00 spending limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $14.93, same as submitted."
+    }
+   ],
+   "note": "The store says it charged the same amount as the cart the agent submitted."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 6 x FreshMint Toothpaste, 100 ml."
+    }
+   ],
+   "note": "The store says it shipped 6 units of the ordered toothpaste, matching the order items."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:47:59.770Z"
+}

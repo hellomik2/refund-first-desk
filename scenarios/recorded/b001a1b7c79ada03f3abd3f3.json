@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: A5 dotted notebook, hardcover"
+    }
+   ],
+   "note": "The PayPal order contains 4 x A5 Dotted Notebook, Hardcover; the shipping line is not an item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 4"
+    }
+   ],
+   "note": "The order was for 4 units, matching the mandate. The store shipping shortfall is a fulfilment question, not an ordered-quantity question."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $36.30"
+    }
+   ],
+   "note": "The PayPal total of $36.30 is under the $40.00 spending limit stated in the mandate."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $36.30 in line with the submitted cart."
+    }
+   ],
+   "note": "The store record says the charge matched the submitted cart, which totals $36.30."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 3 x A5 Dotted Notebook, Hardcover."
+    }
+   ],
+   "note": "The order was for 4 notebooks, but the store record says 3 were shipped."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:49:21.693Z"
+}

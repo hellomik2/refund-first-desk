@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x Lemon Dish Soap, 750 ml (sku DS-LEM-750) @ $4.49"
+    }
+   ],
+   "note": "The mandate asks for lemon dish soap with no size specified, and the order is lemon dish soap."
+  },
+  "quantityMatchesMandate": {
+   "value": "unknown",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: (not specified)"
+    }
+   ],
+   "note": "The quantity slot is unspecified, so more than one unit is unknown. The order has 2 units."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $12.48"
+    }
+   ],
+   "note": "The PayPal total of $12.48 is below the $15.00 spending limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $12.48, same as the submitted cart."
+    }
+   ],
+   "note": "The store record says the charge matches the submitted cart, which totals 2 x $4.49 + $3.50 = $12.48."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 2 x Lemon Dish Soap, 750 ml."
+    }
+   ],
+   "note": "The store shipped 2 units of the ordered product, matching the order."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:50:57.053Z"
+}

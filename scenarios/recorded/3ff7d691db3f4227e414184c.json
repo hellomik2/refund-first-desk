@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "Mandate allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
+    }
+   ],
+   "note": "Ordered product matches the mandate item: unscented laundry pods, 12-pack."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "Mandate quantity is 1 and the order contains 1 pod pack line."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $22.99"
+    }
+   ],
+   "note": "PayPal total is $22.99, under the $25.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Lavender Scent Laundry Pods, 12 ct."
+    }
+   ],
+   "note": "Mandate excludes scented products; the store record says the fulfilled order shipped a lavender scented product."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $22.99, same as the submitted cart."
+    }
+   ],
+   "note": "Store charge matches the agent's submitted cart total."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Lavender Scent Laundry Pods, 12 ct."
+    }
+   ],
+   "note": "Store shipped a lavender scented substitute instead of the unscented pods ordered."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T09:45:18.632Z"
+}
