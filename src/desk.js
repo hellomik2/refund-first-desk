@@ -1,6 +1,13 @@
 // The desk: refund first, verify after.
 //
-//   report (one sentence) -> limit check -> PayPal refund -> only then: investigate -> decide -> settle
+//   report (one sentence) -> limit check -> PayPal refund -> only then: quick check -> deep check
+//   (the AI investigator) -> two keys (rules and AI) -> settle, or a person decides when the keys differ
+//
+// Over a limit the order is: report -> quick check -> refund on the spot if it closes, otherwise
+// deep check and two keys first ("check, then refund within 5 minutes").
+// The quick check can only close in the buyer's favour: once it finds a mismatch the buyer can never
+// be charged again for the order (kase.rechargeClosed). It does not decide who is responsible.
+// The buyer sees each step as a notice (kase.notices).
 //
 // Settlement by responsibility:
 //   STORE         store is not paid for this order
@@ -11,7 +18,8 @@
 import { conditionsAsText, fingerprintMandate, normalizeConditions } from './domain/mandate.js';
 import { cartTotalCents, fromCents } from './domain/money.js';
 import { addBusinessDays, checkAtReport, fixProtectionAtPurchase, rechargeGuard } from './domain/policy.js';
-import { applyCodeChecks, decideLiability, verifyFacts } from './domain/verdict.js';
+import { normalizeAgentLog, stepLine, violationCandidates } from './domain/agentlog.js';
+import { ALL_FACTS, LIABLE, QUICK_AI_FACTS, applyCodeChecks, codeFacts, decideLiability, quoteFound, verifyFacts } from './domain/verdict.js';
 import { PayPalError } from './paypal/client.js';
 import { readCapture, readOrder, readPayout, readRefund } from './paypal/api.js';
 
@@ -36,6 +44,18 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   };
   const event = (kase, type, detail = {}) => {
     kase.events.push({ at: new Date().toISOString(), policyClock: clock.now().toISOString(), type, ...detail });
+  };
+  /** What the buyer is told, in order, with the time. The screen shows this list as it is. */
+  const notify = (kase, type, text) => {
+    const atMs = Date.now();
+    (kase.notices ||= []).push({ type, at: new Date(atMs).toISOString(), atMs, text }); // cases saved before notices existed have none
+  };
+  const CHECK_FIRST_BECAUSE = {
+    OVER_PER_CASE_CAP: () => `it is over the $${fromCents(policy.perCaseCapCents)} instant-refund limit`,
+    NO_SAVED_WALLET_CONSENT: () => 'this purchase was made without a saved wallet',
+    OVER_30_DAY_COUNT: () => `you already had ${policy.refundsPer30Days} instant refunds in 30 days`,
+    RESERVE_TOO_LOW: () => "the desk's own funds are low right now",
+    REFUND_CALL_FAILED: () => 'the instant refund did not go through',
   };
 
   // ---- buyers and wallets ---------------------------------------------------------------------
@@ -110,7 +130,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
 
   // ---- purchase -----------------------------------------------------------------------------------
 
-  function newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment, scenarioId, fixtureFacts }) {
+  function newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment, scenarioId, fixtureFacts, fixtureDeep, fixtureQuick }) {
     const totalCents = cartTotalCents(cart);
     const now = clock.now();
     return {
@@ -130,6 +150,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       createdAt: new Date().toISOString(),
       scenarioId: scenarioId || null,
       fixtureFacts: fixtureFacts || null,
+      fixtureDeep: fixtureDeep || null, // fixture provider only: first deviation and verdict for the deep check
+      fixtureQuick: fixtureQuick || null, // fixture provider only: quick-check answers when a test sets them apart
     };
   }
 
@@ -155,12 +177,12 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   }
 
   /** The agent pays from the wallet the buyer saved earlier. No buyer in front of a screen. */
-  async function agentPurchase({ mandateId, store, cart, agentCart, agentLog, storeRecord, scenarioId, fixtureFacts }) {
+  async function agentPurchase({ mandateId, store, cart, agentCart, agentLog, storeRecord, scenarioId, fixtureFacts, fixtureDeep, fixtureQuick }) {
     const mandate = must(S.mandates, mandateId, 'mandate');
     if (mandate.status !== 'APPROVED') throw new DeskError('MANDATE_NOT_APPROVED');
     const buyer = must(S.buyers, mandate.buyerId, 'buyer');
     if (buyer.wallet?.consent !== 'ACTIVE') throw new DeskError('NO_ACTIVE_CONSENT', 'The buyer has no saved wallet with active consent');
-    const order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'SAVED_WALLET', scenarioId, fixtureFacts });
+    const order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'SAVED_WALLET', scenarioId, fixtureFacts, fixtureDeep, fixtureQuick });
     S.orders[order.id] = order;
     const res = await paypal.chargeSavedWallet({
       vaultId: buyer.wallet.vaultId,
@@ -183,11 +205,11 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   }
 
   /** First purchase with the buyer present: PayPal shows the payment and the save-for-later consent on one screen. */
-  async function startConsentPurchase({ mandateId, store, cart, agentCart, agentLog, storeRecord, scenarioId, fixtureFacts, returnQuery = '' }) {
+  async function startConsentPurchase({ mandateId, store, cart, agentCart, agentLog, storeRecord, scenarioId, fixtureFacts, fixtureDeep, fixtureQuick, returnQuery = '' }) {
     const mandate = must(S.mandates, mandateId, 'mandate');
     if (mandate.status !== 'APPROVED') throw new DeskError('MANDATE_NOT_APPROVED');
     const buyer = must(S.buyers, mandate.buyerId, 'buyer');
-    const order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'CONSENT_CHECKOUT', scenarioId, fixtureFacts });
+    const order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'CONSENT_CHECKOUT', scenarioId, fixtureFacts, fixtureDeep, fixtureQuick });
     S.orders[order.id] = order;
     const res = await paypal.createConsentOrder({
       orderRef: order.id,
@@ -265,15 +287,20 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       path: limitCheck.refundFirst ? 'REFUND_FIRST' : 'VERIFY_FIRST',
       limitCheck,
       refund: null,
-      investigation: null,
+      quick: null, // the quick check: { closed, reasons, at, ... }
+      rechargeClosed: false, // set once by a closing quick check; never cleared
+      investigation: null, // the deep check
+      review: null, // set when the two keys differ: a person decides
       verdict: null,
       notice: null,
       dispute: null,
       recharge: null,
       status: 'OPEN',
+      notices: [],
       events: [],
     };
     S.cases[kase.id] = kase; // registered before the first await, so a concurrent report sees it
+    notify(kase, 'REFUND_REQUESTED', 'Refund requested. We have your report and the refund is on its way.');
     event(kase, 'REPORT_RECEIVED', { path: kase.path, reasons: limitCheck.reasons });
     if (kase.path === 'REFUND_FIRST') {
       ledger.allocateReserve(order.id, kase.id, order.totalCents);
@@ -285,6 +312,10 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
         kase.limitCheck.reasons.push('REFUND_CALL_FAILED');
         event(kase, 'REFUND_FAILED', { error: err.message });
       }
+    }
+    if (kase.path === 'VERIFY_FIRST') {
+      const because = kase.limitCheck.reasons.map((r) => CHECK_FIRST_BECAUSE[r]?.() || r).join('; ');
+      notify(kase, 'CHECKING_FIRST', `We check this order before refunding it, because ${because}. If it was not your mistake, the refund follows within 5 minutes.`);
     }
     db.save();
     return { kase, duplicate: false };
@@ -318,21 +349,32 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     kase.refund.secondsFromReport = Math.round((completedAtMs - kase.receivedAtMs) / 10) / 100;
     ledger.post({ orderId: order.id, caseId: kase.id, kind: 'REFUND', from: 'desk:purchase', to: 'buyer', cents: kase.refund.amountCents, paypal: { type: 'refund', id: kase.refund.id } });
     event(kase, 'REFUND_COMPLETED', { refundId: kase.refund.id, seconds: kase.refund.secondsFromReport });
+    notify(kase, 'REFUND_COMPLETED', `PayPal refund completed: $${fromCents(kase.refund.amountCents)} is back in your PayPal account. A card or bank statement can take a few days to show it.`);
+  }
+
+  /** Own funds set aside so an innocent store can still be paid once the purchase money is refunded. */
+  function setAsideForStore(kase, order) {
+    if (S.reserve.allocations[order.id]?.status === 'HELD') return;
+    try {
+      ledger.allocateReserve(order.id, kase.id, order.totalCents);
+    } catch {
+      // The desk's own funds cannot cover the store right now. The buyer is still refunded;
+      // the store payment waits for an operator and is shown as waiting.
+      order.storePayable.status = 'AWAITING_DESK_FUNDS';
+      event(kase, 'RESERVE_SHORTFALL');
+    }
   }
 
   // ---- investigate: only after the refund -----------------------------------------------------
 
-  function buildEvidence({ mandate, order, kase, paypalOrder }) {
-    const cartLines = (order.agentCart || order.cart).map((l) => `${l.qty} x ${l.name} (sku ${l.sku}) @ $${fromCents(l.unitCents)}`);
-    const ppLines = paypalOrder.items.map((l) => `${l.qty} x ${l.name} (sku ${l.sku}) @ $${fromCents(l.unitCents)}`);
+  const orderLine = (l) => `${l.qty} x ${l.name} (sku ${l.sku}) @ $${fromCents(l.unitCents)}`;
+
+  /** The two documents the quick check reads: what the buyer approved and what PayPal charged. */
+  function quickEvidence({ mandate, paypalOrder }) {
     return {
       mandate: {
         title: 'Mandate approved by the buyer before the purchase',
         text: [`Instruction (buyer's words): ${mandate.instruction}`, `Approved at: ${mandate.approval.at}`, mandate.approval.approvedText].join('\n'),
-      },
-      agent_log: {
-        title: "Agent's own log",
-        text: [...order.agentLog, 'Cart submitted by the agent:', ...cartLines].join('\n'),
       },
       paypal_order: {
         title: `PayPal order ${paypalOrder.orderId} (read back from PayPal)`,
@@ -341,9 +383,21 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
           `Total: $${fromCents(paypalOrder.totalCents ?? 0)}`,
           `custom_id: ${paypalOrder.customId}`,
           'Items:',
-          ...ppLines,
+          ...paypalOrder.items.map(orderLine),
         ].join('\n'),
       },
+    };
+  }
+
+  function buildEvidence({ mandate, order, kase, paypalOrder, steps }) {
+    const { mandate: mandateDoc, paypal_order } = quickEvidence({ mandate, paypalOrder });
+    return {
+      mandate: mandateDoc,
+      agent_log: {
+        title: "Agent's own log",
+        text: [...steps.map(stepLine), 'Cart submitted by the agent:', ...(order.agentCart || order.cart).map(orderLine)].join('\n'),
+      },
+      paypal_order,
       store_record: {
         title: `Store order record from ${order.store.name} (provided by the demo store)`,
         text: order.storeRecord.join('\n') || '(the store has not provided a record)',
@@ -352,20 +406,61 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     };
   }
 
-  async function investigate(caseId) {
-    const kase = must(S.cases, caseId, 'case');
-    const order = must(S.orders, kase.orderId, 'order');
-    const mandate = must(S.mandates, order.mandateId, 'mandate');
-    if (kase.investigation?.finishedAt) return kase;
-    if (kase.path === 'REFUND_FIRST' && !kase.refund?.completedAt) {
-      // The order of operations is the product: no checking before the money is back.
-      throw new DeskError('REFUND_NOT_COMPLETED', 'Investigation cannot start before the refund is completed');
+  const readPayPalOrder = async (order) => readOrder((await paypal.getOrder(order.paypal.orderId)).body);
+
+  /**
+   * Quick check: code computes what it can from the originals; only if that finds nothing does the AI
+   * read the mandate and the PayPal order for item, exclusions (and quantity when code cannot tell).
+   * Any "no" closes the re-charge for good. Over a limit, a closure is refunded on the spot.
+   */
+  async function quickCheck(kase, order, mandate) {
+    const startedAtMs = Date.now();
+    kase.quick = { startedAt: new Date(startedAtMs).toISOString(), startedAtMs };
+    event(kase, 'QUICK_CHECK_STARTED');
+    const paypalOrder = await readPayPalOrder(order);
+    const code = codeFacts({ mandate, paypalOrder, agentCart: order.agentCart });
+    const reasons = Object.entries(code)
+      .filter(([, f]) => f.value === 'no')
+      .map(([key, f]) => ({ key, by: 'code', doc: f.doc, quote: f.quote }));
+    let ai = null;
+    const aiFacts = {};
+    let downgraded = [];
+    if (!reasons.length) {
+      const evidence = quickEvidence({ mandate, paypalOrder });
+      const answer = await factExtractor.quick({ evidence, fixture: { facts: order.fixtureFacts, quick: order.fixtureQuick } });
+      const checked = verifyFacts(answer.facts, evidence); // a quote must be in one of these two documents
+      for (const key of QUICK_AI_FACTS.filter((k) => !code[k])) {
+        aiFacts[key] = checked.facts[key];
+        if (checked.facts[key].value === 'no') reasons.push({ key, by: 'ai', doc: checked.facts[key].evidence[0].doc, quote: checked.facts[key].evidence[0].quote });
+      }
+      downgraded = checked.downgraded.filter((k) => k in aiFacts);
+      ai = { provider: answer.provider, model: answer.model || null, evidenceHash: answer.hash, ms: answer.ms ?? null, note: answer.note || null };
     }
+    const finishedAtMs = Date.now();
+    Object.assign(kase.quick, { closed: reasons.length > 0, reasons, at: new Date(finishedAtMs).toISOString(), codeFacts: code, aiFacts, downgraded, ai, finishedAtMs, ms: finishedAtMs - startedAtMs });
+    if (!kase.quick.closed) {
+      event(kase, 'QUICK_CHECK_OPEN');
+      return;
+    }
+    kase.rechargeClosed = true;
+    event(kase, 'QUICK_CHECK_CLOSED', { reasons: reasons.map((r) => r.key) });
+    try {
+      if (kase.path === 'VERIFY_FIRST' && !kase.refund?.completedAt) {
+        setAsideForStore(kase, order);
+        await refundNow(kase, order);
+      }
+    } finally {
+      notify(kase, 'NO_RECHARGE', 'Checked: this order is not what you approved, so you will not be charged again for it. Nothing more to do.');
+    }
+  }
+
+  /** The AI investigator reads every record; code then checks its quotes and computes its own key. */
+  async function deepCheck(kase, order, mandate) {
     const startedAtMs = Date.now();
     kase.investigation = { startedAt: new Date(startedAtMs).toISOString(), startedAtMs };
     event(kase, 'INVESTIGATION_STARTED');
 
-    const paypalOrder = readOrder((await paypal.getOrder(order.paypal.orderId)).body);
+    const paypalOrder = await readPayPalOrder(order);
     const problems = [];
     const recomputed = fingerprintMandate({ instruction: mandate.instruction, conditions: mandate.conditions, approvedAt: mandate.approval.at });
     if (recomputed !== mandate.fingerprint) problems.push('MANDATE_RECORD_CHANGED_AFTER_APPROVAL');
@@ -373,25 +468,122 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     if (!paypalOrder.capture) problems.push('NO_PAYPAL_CAPTURE');
     const integrity = { ok: problems.length === 0, problems };
 
-    const evidence = buildEvidence({ mandate, order, kase, paypalOrder });
-    const answer = await factExtractor.extract({ evidence, statement: kase.statement, fixtureFacts: order.fixtureFacts });
+    const steps = normalizeAgentLog(order.agentLog);
+    const candidates = violationCandidates(steps, mandate.conditions);
+    const evidence = buildEvidence({ mandate, order, kase, paypalOrder, steps });
+    const answer = await factExtractor.deep({ evidence, statement: kase.statement, candidates, fixture: { facts: order.fixtureFacts, deep: order.fixtureDeep } });
     const { facts, downgraded } = verifyFacts(answer.facts, evidence);
-    const overrides = applyCodeChecks(facts, { mandate, paypalOrder });
-    const decision = decideLiability(facts, integrity);
+    const overrides = applyCodeChecks(facts, { mandate, paypalOrder, agentCart: order.agentCart });
+    const codeKey = decideLiability(facts, integrity);
+    let aiKey;
+    if (LIABLE.includes(answer.verdict?.liable)) aiKey = { liable: answer.verdict.liable, reason: answer.verdict.reason || '', source: answer.provider };
+    else if (answer.provider === 'fixture') aiKey = { liable: codeKey.liable, reason: 'no hand-written verdict: the fixture reads the records the way the rules do', source: 'fixture-default' };
+    else aiKey = { liable: 'UNDETERMINED', reason: `no verdict from the AI${answer.note ? ` (${answer.note})` : ''}`, source: answer.provider };
 
+    const finishedAtMs = Date.now();
     Object.assign(kase.investigation, {
-      finishedAt: new Date().toISOString(),
+      finishedAt: new Date(finishedAtMs).toISOString(),
+      finishedAtMs,
+      durationMs: finishedAtMs - startedAtMs,
       evidence,
+      steps,
+      candidates,
+      firstDeviation: checkFirstDeviation(answer.firstDeviation, steps),
       facts,
       downgraded,
       overrides,
       integrity,
-      ai: { provider: answer.provider, model: answer.model || null, evidenceHash: answer.hash },
+      codeKey,
+      aiKey,
+      ai: { provider: answer.provider, model: answer.model || null, evidenceHash: answer.hash, ms: answer.ms ?? null, note: answer.note || null },
     });
-    kase.verdict = { ...decision, decidedAt: new Date().toISOString() };
-    event(kase, 'VERDICT', { liable: decision.liable, rule: decision.rule });
-    db.save();
+  }
+
+  /** The first deviation is a report (for whoever fixes the agent), never part of the decision. */
+  function checkFirstDeviation(raw, steps) {
+    const kind = ['STEP', 'NONE', 'INSUFFICIENT'].includes(raw?.kind) ? raw.kind : 'INSUFFICIENT';
+    if (kind !== 'STEP') return { kind, step: null, condition: null, quote: '', verified: null, note: raw ? '' : 'no answer' };
+    const step = steps.find((s) => s.step === raw.step);
+    const verified = Boolean(step && quoteFound(step.content, raw.quote));
+    return {
+      kind,
+      step: raw.step,
+      condition: ALL_FACTS.includes(raw.condition) ? raw.condition : null,
+      quote: raw.quote || '',
+      verified,
+      note: verified ? '' : 'quote not verified: it is not in that step',
+    };
+  }
+
+  /** Two keys: the rules over the checked fact table, and the AI's own verdict. Money moves only when they agree. */
+  function decide(kase) {
+    const inv = kase.investigation;
+    const { codeKey, aiKey } = inv;
+    const keys = { code: codeKey.liable, ai: aiKey.liable };
+    const decidedAt = new Date().toISOString();
+    if (codeKey.rule === 'R0') {
+      // The records cannot be tied together: buyer's side, without asking either key.
+      kase.verdict = { ...codeKey, keys, agreed: null, decidedAt };
+      event(kase, 'VERDICT', { liable: codeKey.liable, rule: codeKey.rule });
+      return;
+    }
+    let reason = null;
+    if (keys.code !== keys.ai) reason = 'KEYS_DISAGREE';
+    else if (keys.code === 'BUYER' && kase.rechargeClosed) reason = 'QUICK_CLOSED_BUT_BOTH_BUYER'; // contradiction: a person looks
+    if (!reason) {
+      kase.verdict = { ...codeKey, keys, agreed: true, decidedAt };
+      event(kase, 'VERDICT', { liable: codeKey.liable, rule: codeKey.rule });
+      return;
+    }
+    kase.status = 'HUMAN_REVIEW';
+    kase.review = { reason, code: codeKey, ai: aiKey, firstDeviation: inv.firstDeviation, openedAt: decidedAt };
+    event(kase, 'HUMAN_REVIEW_OPENED', { reason, code: keys.code, ai: keys.ai });
+    notify(
+      kase,
+      'HUMAN_REVIEW',
+      kase.refund?.completedAt
+        ? 'Two independent checks of this order disagree, so a person will look at it. Your refund stays where it is meanwhile.'
+        : 'The check could not finish within 5 minutes, so a person will look at it. Nothing is charged or paid out meanwhile.',
+    );
+  }
+
+  const inFlight = new Set(); // case ids being checked right now: a second call never runs a check twice
+
+  /** Quick check, deep check, two keys. Settling is a separate step (settle, or resolveReview for a person). */
+  async function investigate(caseId) {
+    const kase = must(S.cases, caseId, 'case');
+    const order = must(S.orders, kase.orderId, 'order');
+    const mandate = must(S.mandates, order.mandateId, 'mandate');
+    if (kase.verdict || kase.status === 'HUMAN_REVIEW') return kase;
+    if (kase.path === 'REFUND_FIRST' && !kase.refund?.completedAt) {
+      // The order of operations is the product: no checking before the money is back.
+      throw new DeskError('REFUND_NOT_COMPLETED', 'Investigation cannot start before the refund is completed');
+    }
+    if (inFlight.has(caseId)) throw new DeskError('CHECK_IN_PROGRESS', 'This case is being checked right now');
+    inFlight.add(caseId);
+    try {
+      if (!kase.quick?.finishedAtMs) await quickCheck(kase, order, mandate);
+      if (!kase.investigation?.finishedAt) await deepCheck(kase, order, mandate);
+      decide(kase);
+    } finally {
+      inFlight.delete(caseId);
+      db.save();
+    }
     return kase;
+  }
+
+  /** A person chooses when the two keys differ. Choosing the buyer keeps the notice and dispute period. */
+  async function resolveReview(caseId, liable, note = '') {
+    const kase = must(S.cases, caseId, 'case');
+    if (kase.status !== 'HUMAN_REVIEW') throw new DeskError('NOT_IN_REVIEW', 'This case is not waiting for a person');
+    if (!LIABLE.includes(liable)) throw new DeskError('BAD_CHOICE', `Choose one of ${LIABLE.join(', ')}`);
+    if (liable === 'BUYER' && kase.rechargeClosed) throw new DeskError('RECHARGE_CLOSED', 'The quick check closed the re-charge for this order; the buyer cannot be made responsible');
+    const decidedAt = new Date().toISOString();
+    kase.review = { ...kase.review, resolvedAt: decidedAt, resolvedLiable: liable, note: String(note) };
+    kase.verdict = { liable, rule: 'OPERATOR', reasons: [], keys: { code: kase.review.code.liable, ai: kase.review.ai.liable }, agreed: false, note: String(note), decidedAt };
+    kase.status = 'OPEN'; // set before the first await: a second decision on the same case is refused
+    event(kase, 'REVIEW_RESOLVED', { liable });
+    return settle(caseId);
   }
 
   // ---- settle -------------------------------------------------------------------------------------
@@ -441,23 +633,17 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   async function settle(caseId) {
     const kase = must(S.cases, caseId, 'case');
     const order = must(S.orders, kase.orderId, 'order');
+    // While a person has not decided, nothing moves: no re-charge, no store payout, no agent invoice.
+    if (kase.status === 'HUMAN_REVIEW') throw new DeskError('IN_HUMAN_REVIEW', 'The two checks disagree; a person decides first');
     if (!kase.verdict) throw new DeskError('NO_VERDICT');
     if (kase.settledAt || kase.settling) return kase;
-    kase.settling = true; // set before the first await so a repeated call cannot settle twice
     const liable = kase.verdict.liable;
+    if (liable === 'BUYER' && kase.rechargeClosed) throw new DeskError('RECHARGE_CLOSED', 'The quick check closed the re-charge for this order');
+    kase.settling = true; // set before the first await so a repeated call cannot settle twice
 
     if (kase.path === 'VERIFY_FIRST' && liable !== 'BUYER' && !kase.refund?.completedAt) {
       // Over a limit, so the check came first. The buyer is not responsible: refund now.
-      if (liable !== 'STORE') {
-        try {
-          ledger.allocateReserve(order.id, kase.id, order.totalCents);
-        } catch {
-          // The desk's own funds cannot cover the store right now. The buyer is still refunded;
-          // the store payment waits for an operator and is shown as waiting.
-          order.storePayable.status = 'AWAITING_DESK_FUNDS';
-          event(kase, 'RESERVE_SHORTFALL');
-        }
-      }
+      if (liable !== 'STORE') setAsideForStore(kase, order);
       await refundNow(kase, order);
     }
 
@@ -491,6 +677,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
         kase.recharge = { status: 'SCHEDULED', amountCents };
         kase.status = 'NOTICE_SENT';
         event(kase, 'NOTICE_SENT', { chargeNotBefore: kase.notice.chargeNotBefore, amountCents });
+        // Disputed while a person was deciding: the charge stops at once and the store is paid from desk funds.
+        if (kase.dispute) await haltRecharge(kase, 'BUYER_DISPUTED');
       }
     }
     kase.settledAt = new Date().toISOString();
@@ -645,6 +833,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     cancelConsentPurchase,
     reportProblem,
     investigate,
+    resolveReview,
     settle,
     fileDispute,
     recharge,

@@ -7,7 +7,7 @@ import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { loadConfig } from './config.js';
-import { createContext, expandFixtureFacts } from './context.js';
+import { createContext, fixtureFromCase } from './context.js';
 import { DeskError } from './desk.js';
 import { PayPalError } from './paypal/client.js';
 
@@ -57,7 +57,7 @@ function view(id, ctx) {
     name: b.name,
     wallet: b.wallet && { consent: b.wallet.consent, source: b.wallet.source, consentAt: b.wallet.consentAt }, // vault and customer ids never leave the server
   }));
-  const orders = Object.values(d.orders).map(({ fixtureFacts, pendingPayPalOrderId, ...o }) => o);
+  const orders = Object.values(d.orders).map(({ fixtureFacts, fixtureDeep, fixtureQuick, pendingPayPalOrderId, ...o }) => o);
   return {
     workspace: id,
     environment: 'PayPal sandbox',
@@ -85,7 +85,7 @@ function view(id, ctx) {
 
 function publicCase(sc) {
   // The answer key and the hand-written stand-in facts stay on the server.
-  const { fixtureFacts, expected, why, ...rest } = sc;
+  const { fixtureFacts, expected, why, firstDeviationQuote, firstDeviationCondition, ...rest } = sc;
   return rest;
 }
 
@@ -119,7 +119,7 @@ const actions = {
       agentLog: sc.agentLog,
       storeRecord: sc.storeRecord,
       scenarioId: sc.id,
-      fixtureFacts: expandFixtureFacts(sc.fixtureFacts),
+      ...fixtureFromCase(sc),
     });
     return { orderId: order.id };
   },
@@ -137,7 +137,7 @@ const actions = {
       agentLog: sc.agentLog,
       storeRecord: sc.storeRecord,
       scenarioId: sc.id,
-      fixtureFacts: expandFixtureFacts(sc.fixtureFacts),
+      ...fixtureFromCase(sc),
       returnQuery: `&ws=${ws}`,
     });
     if (!approveUrl) throw new DeskError('NO_APPROVE_URL', 'PayPal did not return an approval link.');
@@ -153,9 +153,15 @@ const actions = {
     const { kase, duplicate } = await ctx.desk.reportProblem({ orderId, statement: String(statement).slice(0, 500) });
     return { caseId: kase.id, duplicate };
   },
+  /** Quick check, deep check, two keys; money moves only when the keys agree. Otherwise the case waits for a person. */
   async investigate(ctx, { caseId }) {
-    await ctx.desk.investigate(caseId);
-    await ctx.desk.settle(caseId);
+    const kase = await ctx.desk.investigate(caseId);
+    if (kase.verdict) await ctx.desk.settle(caseId);
+    return { status: kase.status };
+  },
+  /** The operator's choice for a case in HUMAN_REVIEW: STORE, AGENT, BUYER or UNDETERMINED. */
+  async resolveReview(ctx, { caseId, liable, note }) {
+    await ctx.desk.resolveReview(caseId, String(liable || ''), String(note || '').slice(0, 500));
     return {};
   },
   async dispute(ctx, { caseId, text }) {

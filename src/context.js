@@ -46,18 +46,19 @@ export function createContext({ overrides = {}, dbName = null, fresh = false, li
     );
     return providerPromise;
   };
-  const liveFacts =
-    live ||
-    (async (args) => {
-      const blockedBy = budget.blockedBy();
-      if (blockedBy) return { facts: {}, note: `AI not called: ${blockedBy}` }; // all unknown -> buyer keeps the refund
-      return (await liveProvider()).extractFacts(args);
-    });
+  // Over a cap the AI is not called: the quick check closes nothing, and the deep check's key counts
+  // as UNDETERMINED, so money moves only if the rules also say UNDETERMINED (buyer keeps the refund).
+  const guarded = (job) => async (args) => {
+    const blockedBy = budget.blockedBy();
+    if (blockedBy) return { facts: {}, firstDeviation: null, verdict: null, note: `AI not called: ${blockedBy}` };
+    return (await liveProvider())[job](args);
+  };
+  const liveCalls = live || { quick: guarded('quickCheck'), deep: guarded('deepCheck') };
 
   const factExtractor = createFactExtractor({
     provider: config.ai.provider,
     recordedDir: join(config.root, 'scenarios', 'recorded'),
-    live: liveFacts,
+    live: liveCalls,
     reuseRecorded: config.ai.reuseRecorded,
   });
   const desk = createDesk({ db, paypal, factExtractor, clock, ledger, config });
@@ -71,4 +72,19 @@ export function expandFixtureFacts(compact) {
     out[key] = { value, evidence: quote ? [{ doc, quote }] : [] };
   }
   return out;
+}
+
+/**
+ * The hand-written stand-in answers for a prepared case: the fact table, and for the deep check the
+ * first deviation and verdict from the answer key. Only the fixture provider reads them.
+ */
+export function fixtureFromCase(sc) {
+  const fd = sc.expected?.firstDeviation;
+  const firstDeviation = Number.isInteger(fd)
+    ? { kind: 'STEP', step: fd, condition: sc.firstDeviationCondition || null, quote: sc.firstDeviationQuote || '' }
+    : { kind: fd === 'NONE' ? 'NONE' : 'INSUFFICIENT', step: null, condition: null, quote: '' };
+  return {
+    fixtureFacts: expandFixtureFacts(sc.fixtureFacts),
+    fixtureDeep: { firstDeviation, verdict: { liable: sc.expected.liable, reason: 'answer key (fixture)' } },
+  };
 }

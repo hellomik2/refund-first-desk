@@ -5,7 +5,7 @@
 // Usage:  node scripts/abuse.mjs       Writes data/evidence/abuse-<time>.json
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createContext, expandFixtureFacts } from '../src/context.js';
+import { createContext, fixtureFromCase } from '../src/context.js';
 
 const ctx = createContext({ dbName: 'abuse', fresh: true, overrides: { POLICY_RESERVE_START_CENTS: '1000000' } });
 const { desk, db, clock, paypal, config } = ctx;
@@ -18,7 +18,7 @@ const refundsAtPayPal = async (order) => (await paypal.getOrder(order.paypal.ord
 async function purchase(buyer, caseId) {
   const sc = CASES[caseId];
   const mandate = desk.approveMandate(desk.draftMandate({ buyerId: buyer.id, instruction: sc.instruction, conditions: sc.conditions }).id);
-  const order = await desk.agentPurchase({ mandateId: mandate.id, store: sc.store, cart: sc.cart, agentCart: sc.agentCart, agentLog: sc.agentLog, storeRecord: sc.storeRecord, scenarioId: sc.id, fixtureFacts: expandFixtureFacts(sc.fixtureFacts) });
+  const order = await desk.agentPurchase({ mandateId: mandate.id, store: sc.store, cart: sc.cart, agentCart: sc.agentCart, agentLog: sc.agentLog, storeRecord: sc.storeRecord, scenarioId: sc.id, ...fixtureFromCase(sc) });
   return { order, sc };
 }
 async function toVerdict(order, sc) {

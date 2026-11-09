@@ -52,6 +52,7 @@ export function checkAtReport({ policy, order, buyerCases, reserveAvailableCents
 /** Every condition must hold before the desk charges a buyer again. Returns the first failing guard. */
 export function rechargeGuard({ order, kase, buyer, amountCents, now }) {
   if (kase.verdict?.liable !== 'BUYER') return 'NOT_BUYER_RESPONSIBILITY';
+  if (kase.rechargeClosed) return 'RECHARGE_CLOSED_BY_QUICK_CHECK'; // a closing quick check is final
   if (kase.recharge?.status === 'COMPLETED') return 'ALREADY_CHARGED';
   if (!kase.refund?.completedAt) return 'NOTHING_WAS_REFUNDED';
   if (kase.dispute) return 'BUYER_DISPUTED';

@@ -1,12 +1,15 @@
-// The fact table is the only thing the AI contributes to a decision. It reads the records and
-// answers seven yes/no/unknown questions, each with a quote from the record it relied on.
+// What the AI contributes, in two jobs. Neither decides money; code checks every quote and decides.
+//   quick  reads only the mandate and the PayPal order: item, exclusions (and quantity when code cannot tell)
+//   deep   the investigator: reads every record and the numbered agent log, and gives the first step that
+//          went off the mandate, the seven-fact table and its own verdict (one of the two keys)
 // Providers:
-//   fixture    development plumbing only: returns facts written by hand next to a prepared case
-//   recorded   replays answers a live model gave earlier for the same evidence (keyed by evidence hash)
+//   fixture    development plumbing only: answers written by hand next to a prepared case (tests can override them)
+//   recorded   replays answers a live model gave earlier, kept apart by job and evidence hash
 //   anthropic  calls the model live
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { QUICK_AI_FACTS } from '../domain/verdict.js';
 
 export const FACT_QUESTIONS = {
   purchaseAuthorized: 'Did the buyer-approved mandate allow the agent to pay without asking again?',
@@ -22,9 +25,10 @@ export const FACT_QUESTIONS = {
 // hash, so the answer recorded for a prepared case can be replayed when the same case runs again.
 const VOLATILE_LINE = /^(Approved at:|custom_id:)/;
 
-export function evidenceHash(evidence, statement) {
+export function evidenceHash(evidence, statement, purpose) {
   const stable = (text) => text.split('\n').filter((line) => !VOLATILE_LINE.test(line)).join('\n');
   const canonical = JSON.stringify({
+    purpose,
     statement,
     docs: Object.keys(evidence)
       .sort()
@@ -33,37 +37,60 @@ export function evidenceHash(evidence, statement) {
   return createHash('sha256').update(canonical, 'utf8').digest('hex').slice(0, 24);
 }
 
+const NO_FIRST_DEVIATION = { kind: 'INSUFFICIENT', step: null, condition: null, quote: '' };
+
+/**
+ * Hand-written answers. quick: `fixture.quick` if a test set it, else the matching slots of the fact
+ * table. deep: the fact table (or `fixture.deep.facts`), `fixture.deep.firstDeviation`, and
+ * `fixture.deep.verdict` (a liable string or {liable, reason}); with no verdict the desk uses the rules'
+ * answer, so a bare fixture reads the records the way the rules do.
+ */
+function fixtureAnswer(purpose, fixture = {}) {
+  if (purpose === 'quick') {
+    const facts = fixture.quick || Object.fromEntries(QUICK_AI_FACTS.filter((k) => fixture.facts?.[k]).map((k) => [k, fixture.facts[k]]));
+    return { facts };
+  }
+  const deep = fixture.deep || {};
+  const verdict = typeof deep.verdict === 'string' ? { liable: deep.verdict, reason: '' } : deep.verdict || null;
+  return { facts: deep.facts || fixture.facts || {}, firstDeviation: deep.firstDeviation || NO_FIRST_DEVIATION, verdict };
+}
+
 /**
  * @param {object} opts
  * @param {'fixture'|'recorded'|'anthropic'} opts.provider
  * @param {string|null} opts.recordedDir   where live answers are saved and replayed from
- * @param {Function|null} opts.live        ({evidence, statement}) => {facts, model}
+ * @param {{quick: Function, deep: Function}|null} opts.live   live calls ({evidence, statement, candidates}) => answer
  * @param {boolean} opts.reuseRecorded     with provider "anthropic": replay a saved answer instead of calling again
  */
 export function createFactExtractor({ provider = 'fixture', recordedDir = null, live = null, reuseRecorded = false }) {
+  async function ask(purpose, { evidence, statement = '', candidates = [], fixture }) {
+    const hash = evidenceHash(evidence, statement, purpose);
+    if (provider === 'fixture') {
+      return { ...fixtureAnswer(purpose, fixture), provider: 'fixture', hash };
+    }
+    const file = recordedDir ? join(recordedDir, `${purpose}-${hash}.json`) : null;
+    if (provider === 'recorded' || (provider === 'anthropic' && reuseRecorded && file && existsSync(file))) {
+      if (!file || !existsSync(file)) throw new Error(`No recorded AI answer for ${purpose} evidence ${hash}`);
+      return { ...JSON.parse(readFileSync(file, 'utf8')), provider: 'recorded', hash };
+    }
+    if (provider === 'anthropic') {
+      if (!live?.[purpose]) throw new Error('Live AI provider is not configured.');
+      const startedAtMs = Date.now();
+      const answer = await live[purpose]({ evidence, statement, candidates });
+      const ms = Date.now() - startedAtMs;
+      if (file && answer.model) {
+        mkdirSync(recordedDir, { recursive: true });
+        writeFileSync(file, JSON.stringify({ ...answer, recordedAt: new Date().toISOString() }, null, 1));
+      }
+      return { ...answer, provider: 'anthropic', hash, ms };
+    }
+    throw new Error(`Unknown AI provider: ${provider}`);
+  }
   return {
     provider,
     /** @returns {Promise<{facts: object, provider: string, model?: string, hash: string}>} */
-    async extract({ evidence, statement, fixtureFacts }) {
-      const hash = evidenceHash(evidence, statement);
-      if (provider === 'fixture') {
-        return { facts: fixtureFacts || {}, provider: 'fixture', hash };
-      }
-      const file = recordedDir ? join(recordedDir, `${hash}.json`) : null;
-      if (provider === 'recorded' || (provider === 'anthropic' && reuseRecorded && file && existsSync(file))) {
-        if (!file || !existsSync(file)) throw new Error(`No recorded AI answer for evidence ${hash}`);
-        return { ...JSON.parse(readFileSync(file, 'utf8')), provider: 'recorded', hash };
-      }
-      if (provider === 'anthropic') {
-        if (!live) throw new Error('Live AI provider is not configured.');
-        const answer = await live({ evidence, statement });
-        if (file) {
-          mkdirSync(recordedDir, { recursive: true });
-          writeFileSync(file, JSON.stringify({ facts: answer.facts, model: answer.model, recordedAt: new Date().toISOString() }, null, 1));
-        }
-        return { facts: answer.facts, model: answer.model, provider: 'anthropic', hash };
-      }
-      throw new Error(`Unknown AI provider: ${provider}`);
-    },
+    quick: (args) => ask('quick', args),
+    /** @returns {Promise<{facts: object, firstDeviation: object, verdict: {liable, reason}|null, provider: string, model?: string, hash: string}>} */
+    deep: (args) => ask('deep', args),
   };
 }

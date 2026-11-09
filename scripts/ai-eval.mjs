@@ -1,15 +1,17 @@
-// Measures the fact-table AI on the prepared cases without moving sandbox money: the desk runs
-// against the in-memory PayPal stand-in, builds the same records it builds on the sandbox, asks the
-// configured AI provider for the fact table, and compares the verdict with the answer key.
-// Use it to tune the prompt; the final measurement runs on the real sandbox with scripts/loop.mjs.
+// Measures the AI on the prepared cases without moving sandbox money: the desk runs against the
+// in-memory PayPal stand-in, builds the same records it builds on the sandbox, runs the quick check,
+// the deep check (AI investigator) and the two keys, settles where the keys agree, and compares
+// everything with the answer key. Pass lines 3 and 10-15 and the report values go to the result file.
+// Use it to tune the prompts; the final measurement runs on the real sandbox with scripts/loop.mjs.
 //
 // Usage:  node scripts/ai-eval.mjs [S01 S02 ...]     (no ids = every case)
-// Each live call counts against the AI caps in src/ai/budget.js.
+// Each live call counts against the AI caps in src/ai/budget.js (up to two calls per case: quick and deep).
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createContext, expandFixtureFacts } from '../src/context.js';
+import { createContext, fixtureFromCase } from '../src/context.js';
 import { ALL_FACTS } from '../src/domain/verdict.js';
 import { createFakePayPal } from '../test/fake-paypal.js';
+import { caseRow, printPassLines, summarize } from './metrics.mjs';
 
 const wanted = process.argv.slice(2);
 const ctx = createContext({
@@ -25,18 +27,16 @@ console.log(`AI provider: ${config.ai.provider}${config.ai.model ? ` (${config.a
 
 const rows = [];
 for (const sc of cases) {
-  const row = { id: sc.id, expected: sc.expected.liable };
+  let row = { id: sc.id, expected: { liable: sc.expected.liable } };
   try {
     const buyer = desk.createBuyer({ name: `Eval ${sc.id}`, useDemoWallet: true });
     const mandate = desk.approveMandate(desk.draftMandate({ buyerId: buyer.id, instruction: sc.instruction, conditions: sc.conditions }).id);
-    const order = await desk.agentPurchase({ mandateId: mandate.id, store: sc.store, cart: sc.cart, agentCart: sc.agentCart, agentLog: sc.agentLog, storeRecord: sc.storeRecord, scenarioId: sc.id, fixtureFacts: expandFixtureFacts(sc.fixtureFacts) });
+    const order = await desk.agentPurchase({ mandateId: mandate.id, store: sc.store, cart: sc.cart, agentCart: sc.agentCart, agentLog: sc.agentLog, storeRecord: sc.storeRecord, scenarioId: sc.id, ...fixtureFromCase(sc) });
     const { kase } = await desk.reportProblem({ orderId: order.id, statement: sc.complaint });
     await desk.investigate(kase.id);
+    if (kase.verdict) await desk.settle(kase.id); // the stand-in moves no real money; line 15 needs the refund timing
     const inv = kase.investigation;
-    row.liable = kase.verdict.liable;
-    row.rule = kase.verdict.rule;
-    row.match = row.liable === row.expected;
-    row.ai = inv.ai;
+    row = { ...caseRow({ sc, kase, order, db, policy: config.policy }), ai: { quick: kase.quick.ai, deep: inv.ai } };
     // Fact by fact against the answer key, after the quote check and the code-computed facts.
     row.factDiffs = ALL_FACTS.filter((k) => inv.facts[k].value !== sc.fixtureFacts[k][0]).map((k) => ({
       fact: k,
@@ -54,7 +54,9 @@ for (const sc of cases) {
   console.log(
     row.error
       ? `${row.id} ERROR ${row.error}`
-      : `${row.id} ${row.match ? 'MATCH   ' : 'MISMATCH'} verdict=${row.liable}(${row.rule}) expected=${row.expected}` +
+      : `${row.id} ${row.decided ? `verdict=${row.decided.liable}(${row.decided.rule})` : `HUMAN_REVIEW code=${row.keys.code} ai=${row.keys.ai}`} expected=${row.expected.liable}` +
+          ` | quick ${row.quickClosed ? `closed ${row.quickReasons.join(',')}` : 'open'} (key: ${row.expected.quickClose ?? '-'})` +
+          ` | first deviation ${row.firstDeviation?.kind === 'STEP' ? `step ${row.firstDeviation.step}${row.firstDeviation.verified ? '' : ' (quote not verified)'}` : row.firstDeviation?.kind} (key: ${row.expected.firstDeviation ?? '-'})` +
           (row.factDiffs.length ? `\n   facts differing from the key: ${row.factDiffs.map((d) => `${d.fact} key=${d.key} ai=${d.ai}`).join('; ')}` : '') +
           (row.downgraded.length ? `\n   quote not found, discarded: ${row.downgraded.join(', ')}` : ''),
   );
@@ -69,15 +71,16 @@ const summary = {
   effort: config.ai.effort,
   cases: rows.length,
   errors: rows.length - ok.length,
-  verdictMatches: ok.filter((r) => r.match).length,
-  mismatches: ok.filter((r) => !r.match).map((r) => `${r.id}: ${r.liable} vs ${r.expected}`),
-  wrongBuyerVerdicts: ok.filter((r) => r.liable === 'BUYER' && r.expected !== 'BUYER').map((r) => r.id), // the costly error: a buyer charged who should not be
+  wrongBuyerVerdicts: ok.filter((r) => r.decided?.liable === 'BUYER' && r.expected.liable !== 'BUYER').map((r) => r.id), // the costly error: a buyer charged who should not be
   liveCalls: calls.length,
+  liveCallsByPurpose: Object.fromEntries(['quick', 'deep'].map((p) => [p, calls.filter((c) => c.purpose === p).length])),
   inputTokens: calls.reduce((s, c) => s + c.inputTokens, 0),
   outputTokens: calls.reduce((s, c) => s + c.outputTokens, 0),
+  passLines: summarize(rows, { provider: config.ai.provider }),
 };
-console.log('\nSUMMARY', JSON.stringify(summary));
-const dir = join(config.root, 'data', 'evidence');
+printPassLines(summary.passLines);
+console.log('\nSUMMARY', JSON.stringify({ ...summary, passLines: undefined }));
+const dir = join(config.dataDir, 'evidence');
 mkdirSync(dir, { recursive: true });
 const file = join(dir, `ai-eval-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
 writeFileSync(file, JSON.stringify({ summary, rows, aiCalls: calls }, null, 1));
