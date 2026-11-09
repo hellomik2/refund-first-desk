@@ -4,6 +4,17 @@
 
 Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) and Payouts, in the PayPal sandbox. Claude reads the purchase records; fixed rules in code decide responsibility and move money.
 
+## Try the demo
+
+**https://refund-first-desk.onrender.com** (PayPal sandbox, live Claude)
+
+1. Pick a case, approve the buyer's conditions, let the agent pay, then press **Report it**. No sign-in is needed: the agent pays from a sandbox wallet saved earlier.
+2. Each visitor gets a separate workspace. A buyer gets **2 instant refunds per 30 days**, so the third case in one workspace is checked first instead of refunded first. That is the limit working. To try more cases, press **Start a fresh workspace** (top right).
+3. For the buyer-responsible ending, press **Fast-forward the notice period** to skip the 5-business-day notice; the saved wallet is then charged again.
+4. The server runs on Render's free plan. After a quiet spell the first page load can take about a minute while it wakes up.
+
+The **Pay at PayPal and save the wallet** button shows how the wallet gets saved in the first place. On this screen we checked it as far as PayPal's sign-in page and back through Cancel. Approving at PayPal, capturing the payment and saving the wallet were checked with the same PayPal calls in a separate test script on 2026-11-09, not through this screen. To try it you need your own PayPal sandbox personal account, signed in at `sandbox.paypal.com` first.
+
 ## Who runs this
 
 - **Today, on PayPal as it is:** a company that operates AI shopping agents runs the desk. It receives the purchase payment, refunds from it, and makes an innocent store whole from its own funds.
