@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x Lemon Dish Soap, 750 ml (sku DS-LEM-750) @ $4.49"
+    }
+   ],
+   "note": "Lemon dish soap matches the mandate item 'dish soap, lemon'; shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "quantityMatchesMandate": {
+   "value": "unknown",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: (not specified)"
+    }
+   ],
+   "note": "Quantity is not specified and the order has two units, so more than one unit is unknown per the rules."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:34:34.029Z"
+}

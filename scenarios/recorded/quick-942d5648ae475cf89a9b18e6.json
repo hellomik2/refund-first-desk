@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: extra virgin olive oil, 500 ml bottle"
+    }
+   ],
+   "note": "PayPal order contains extra virgin olive oil in 750 ml, not the 500 ml bottle the mandate specifies."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists nothing to exclude."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "Order has 1 x olive oil, matching quantity 1; shipping line is not an item."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:31:52.878Z"
+}

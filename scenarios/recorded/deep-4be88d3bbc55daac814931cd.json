@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x 2-Year Protection Plan (sku ADDON-PROTECT) @ $4.99"
+    }
+   ],
+   "note": "The order contains an add-on the mandate does not ask for, in addition to the approved power bank."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One power bank was ordered, matching the mandate quantity."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $33.98"
+    }
+   ],
+   "note": "The PayPal total of $33.98 is within the $35.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "2-Year Protection Plan ($4.99) is pre-selected at checkout and was added to this order."
+    }
+   ],
+   "note": "The store charged a $4.99 protection plan the agent's submitted cart did not include, raising the total from $28.99 to $33.98."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Power Bank 10,000 mAh, Grey."
+    }
+   ],
+   "note": "The store shipped the ordered power bank."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 7,
+  "condition": "storeChargedAsOrdered",
+  "quote": "Power Bank 10,000 mAh, Grey $24.99; 2-Year Protection Plan $4.99; shipping $4.00; total charged $33.98."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The final PayPal order of $33.98 includes a 2-Year Protection Plan that the buyer's mandate does not ask for, so the order differs from the approved item. The agent paid this total although it had approved only $28.99, and the agent is responsible for the order."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:32:49.458Z"
+}

@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Extra Virgin Olive Oil, 750 ml (sku EVOO-750) @ $16.49"
+    }
+   ],
+   "note": "The mandate asks for a 500 ml bottle, but the order contains a 750 ml bottle."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order contains one unit, matching the mandate."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $19.49"
+    }
+   ],
+   "note": "The total of $19.49 is within the $20.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $19.49 as per submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart amount."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Extra Virgin Olive Oil, 750 ml."
+    }
+   ],
+   "note": "The store shipped the 750 ml bottle that was ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 4,
+  "condition": "itemMatchesMandate",
+  "quote": "Added 1 x Extra Virgin Olive Oil, 750 ml ($16.49)."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent added and paid for a 750 ml bottle, but the buyer approved a 500 ml bottle, so the order differs from the mandate in its item."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:31:59.903Z"
+}

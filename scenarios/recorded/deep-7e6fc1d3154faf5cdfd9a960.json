@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Washable Felt-Tip Markers, Set of 20 (sku MRK-WASH-20) @ $17.99"
+    }
+   ],
+   "note": "The ordered item is the 20-piece washable felt-tip marker set the mandate asks for."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one set and the order has one set."
+  },
+  "withinSpendingLimit": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $21.98"
+    }
+   ],
+   "note": "The order total of $21.98 is above the $20.00 limit in the mandate."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Item price changed from $14.99 to $17.99 on this order."
+    }
+   ],
+   "note": "The store raised the item price from the $14.99 the agent submitted to $17.99."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Washable Felt-Tip Markers, Set of 20."
+    }
+   ],
+   "note": "The store says it shipped the ordered item and quantity."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 6,
+  "condition": "storeChargedAsOrdered",
+  "quote": "Payment captured: $21.98. Item price $17.99 (sale ended before capture), shipping $3.99."
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The agent submitted a $18.98 cart that matched the mandate and paid within the limit. The store then changed the item price to $17.99 and captured $21.98, which is more than the cart it was given, so the over-limit charge comes from the store's pricing, not the agent's cart. The buyer should not be charged again on the basis of this order."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:34:52.165Z"
+}

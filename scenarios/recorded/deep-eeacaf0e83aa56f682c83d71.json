@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: dish soap, lemon"
+    }
+   ],
+   "note": "The ordered product is Lemon Dish Soap, 750 ml, which matches the lemon dish soap the mandate asks for."
+  },
+  "quantityMatchesMandate": {
+   "value": "unknown",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: (not specified)"
+    }
+   ],
+   "note": "The mandate does not specify a quantity, and the agent ordered two units. Under the rule for an unspecified quantity, more than one unit is unknown."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $12.48"
+    }
+   ],
+   "note": "The PayPal total of $12.48 is under the $15.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions, so none can be broken."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $12.48, same as the submitted cart."
+    }
+   ],
+   "note": "The store record says it charged the same amount as the submitted cart."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 2 x Lemon Dish Soap, 750 ml."
+    }
+   ],
+   "note": "The store shipped the same two units of lemon dish soap that were ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "INSUFFICIENT",
+  "step": null,
+  "condition": "quantityMatchesMandate",
+  "quote": "Added 2 x Lemon Dish Soap, 750 ml ($8.98)."
+ },
+ "verdict": {
+  "liable": "UNDETERMINED",
+  "reason": "The store charged and shipped as ordered and the item, limit and exclusions all match. The mandate does not specify a quantity, so whether two bottles were allowed cannot be settled from the records. That keeps this from being a BUYER verdict and also from a clear AGENT verdict."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:34:42.103Z"
+}

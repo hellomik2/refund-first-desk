@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Insulated Stainless Steel Water Bottle, 32 oz (sku WB-32-SS) @ $26.99"
+    }
+   ],
+   "note": "The ordered bottle is the 32 oz insulated stainless steel water bottle the mandate describes."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One bottle was ordered and the mandate asks for one."
+  },
+  "withinSpendingLimit": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $30.48"
+    }
+   ],
+   "note": "The total of $30.48 is above the $30.00 spending limit in the mandate."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $30.48: bottle $26.99 and standard shipping $3.49, as in the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart exactly."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Insulated Stainless Steel Water Bottle, 32 oz."
+    }
+   ],
+   "note": "The store shipped the ordered bottle."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 8,
+  "condition": "withinSpendingLimit",
+  "quote": "Paid $30.48 with the saved PayPal wallet."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent paid $30.48, which exceeds the $30.00 spending limit in the mandate. The store charged and shipped as ordered, so the error is in the agent's payment decision."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:32:36.389Z"
+}

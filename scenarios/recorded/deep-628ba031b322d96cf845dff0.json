@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
+    }
+   ],
+   "note": "The mandate asks for the 20-inch Norvik AirLite carry-on; the order is the 24-inch model."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
+    }
+   ],
+   "note": "One unit was ordered, matching the mandate quantity of 1."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $92.95"
+    }
+   ],
+   "note": "The total is under the $100.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $92.95 as submitted."
+    }
+   ],
+   "note": "The store charged the submitted cart total."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Norvik AirLite Suitcase, 24-inch."
+    }
+   ],
+   "note": "The store shipped the 24-inch suitcase that the order lists."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 6,
+  "condition": "itemMatchesMandate",
+  "quote": "Added 1 x Norvik AirLite Suitcase, 24-inch ($84.00)."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent bought the 24-inch model, which the mandate does not allow; the mandate named the 20-inch AirLite. The store charged and shipped what was ordered, so the fault lies with the agent's purchase, not the buyer's approval."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:34:23.442Z"
+}

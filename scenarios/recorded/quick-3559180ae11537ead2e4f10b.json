@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "unknown",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: black ink cartridge for printer"
+    }
+   ],
+   "note": "The mandate asks for a black ink cartridge for the buyer's printer without naming a model. The order is a black ink cartridge for the Printo Jet 40 Series, but the mandate does not say which printer the buyer owns, so whether it fits cannot be confirmed from these two documents."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order has 1 x Black Ink Cartridge, which matches the mandate quantity of 1."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:35:08.479Z"
+}

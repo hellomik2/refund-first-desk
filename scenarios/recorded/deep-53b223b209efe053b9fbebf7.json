@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly permits the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Glass Food Storage Containers with Lids, Set of 4 (sku GLS-4SET) @ $22.95"
+    }
+   ],
+   "note": "The ordered product matches the mandate's item description."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order has one set, matching the mandate quantity of 1."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $28.45"
+    }
+   ],
+   "note": "The PayPal total of $28.45 is below the mandate's $30.00 spending limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions, so none can be violated."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Order accepted and payment captured: $28.45 (the cart total as submitted)."
+    }
+   ],
+   "note": "The store charged the submitted cart total with no added items or price change."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Order cancelled after payment. Nothing was shipped."
+    }
+   ],
+   "note": "The store cancelled the order after payment and shipped nothing."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 7,
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "Order KN-77410 was cancelled because the item is unavailable. Nothing will ship."
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The agent's order matched the mandate in every condition and the store charged the submitted cart, but the store cancelled the order after payment and shipped nothing, so the store failed to deliver what was ordered."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:32:20.751Z"
+}

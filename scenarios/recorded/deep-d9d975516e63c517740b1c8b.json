@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
+    }
+   ],
+   "note": "The ordered product is the 4-pack AA rechargeable batteries the mandate names. The step 4 over-add of 3 units was removed before checkout."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
+    }
+   ],
+   "note": "The final order is 2 units, matching the mandate quantity of 2. The step 4 add of 3 was corrected at step 6, so the deviation does not change the final order."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $25.98"
+    }
+   ],
+   "note": "The total of $25.98 is under the $30.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions, so none can be violated."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $25.98, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged the same amount as the cart the agent submitted, which was 2 units at $12.99."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 2 x AA Rechargeable Batteries, 4-pack."
+    }
+   ],
+   "note": "The store shipped the 2 units that were ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 4,
+  "condition": "quantityMatchesMandate",
+  "quote": "Added 3 x AA Rechargeable Batteries, 4-pack ($38.97)."
+ },
+ "verdict": {
+  "liable": "BUYER",
+  "reason": "The final order matches every mandate condition: the item, quantity 2, total $25.98 under the $30 limit, no exclusions, and payment permitted without asking again. The store charged and shipped exactly what was submitted. The buyer's report that they only wanted one pack is not supported by the mandate, which says two. The step 4 over-add was corrected before payment, so it does not make the agent or store responsible for the final order."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:31:14.283Z"
+}

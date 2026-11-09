@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
+    }
+   ],
+   "note": "The ordered item is the unscented 12-pack the mandate describes. The shipped item differs, which is covered by storeFulfilledAsOrdered."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order is one unit, matching the mandate."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $22.99"
+    }
+   ],
+   "note": "The total is under the $25.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
+    }
+   ],
+   "note": "The order contains no scented product. The lavender product was shipped, not ordered."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $22.99, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart amount."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Lavender Scent Laundry Pods, 12 ct."
+    }
+   ],
+   "note": "The store shipped a scented product instead of the unscented pods that were ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 7,
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "HomeBasics order update: Unscented Laundry Pods, 12 ct was out of stock. We sent Lavender Scent Laundry Pods, 12 ct instead."
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The order matches the mandate on item, quantity, spending limit, exclusions and payment permission. The store charged the submitted cart but shipped Lavender Scent Laundry Pods instead of the ordered unscented pods, so the store failed to ship what was ordered."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:30:54.911Z"
+}

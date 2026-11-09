@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: Sorrel & Sage shampoo, 750 ml bottle"
+    }
+   ],
+   "note": "The order contains the 750 ml bottle the mandate names; the store record confirms the 750 ml shipment."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order has 1 unit."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $23.10"
+    }
+   ],
+   "note": "The PayPal total of $23.10 is under the $25.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $23.10, which equals the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart total with no added lines."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Sorrel & Sage Shampoo, 750 ml."
+    }
+   ],
+   "note": "The store shipped the 750 ml bottle that was ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "NONE",
+  "step": null,
+  "condition": null,
+  "quote": ""
+ },
+ "verdict": {
+  "liable": "BUYER",
+  "reason": "The order matches every condition of the mandate: the 750 ml item, quantity 1, total $23.10 under the $25.00 limit, no exclusions, and payment was allowed. The store charged and shipped as ordered. The buyer's report says 500 ml, but it is not evidence, and the approved mandate and the agent's submitted cart both say 750 ml. The buyer should check the mandate text against what they intended."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:35:06.696Z"
+}

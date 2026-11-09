@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x LED Bulb 9 W Warm White 2700K, 4-pack (sku LED-9W-27K-4) @ $10.99"
+    }
+   ],
+   "note": "The ordered item matches the mandate's item. The buyer's report that the bulbs look blue-white is not evidence; the shipped substitute is handled under storeFulfilledAsOrdered."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the order has one unit."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $15.49"
+    }
+   ],
+   "note": "$15.49 is within the $18.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $15.49, same as the cart submitted."
+    }
+   ],
+   "note": "The store charged the same total as the submitted cart."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x LED Bulb 9 W Daylight 5000K, 4-pack."
+    }
+   ],
+   "note": "The store shipped the Daylight 5000K instead of the warm white 2700K that was ordered and charged."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 9,
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "BrightAisle: Your order has shipped."
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The order matches the mandate in every condition and the agent was allowed to pay, but the store shipped a Daylight 5000K substitute instead of the warm white 2700K 4-pack that was ordered and charged, so the store is responsible for the non-delivery."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:35:28.582Z"
+}

@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
+    }
+   ],
+   "note": "Product is medium roast compostable coffee pods, 18 count, matching the mandate item; the shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
+    }
+   ],
+   "note": "Mandate quantity is 1 and the order has one box of 18 pods."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:31:34.310Z"
+}

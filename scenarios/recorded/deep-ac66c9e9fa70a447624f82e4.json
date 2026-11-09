@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate lets the agent pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Silicone Spatula Set, 3-piece (sku SPAT-SIL-3) @ $6.99"
+    }
+   ],
+   "note": "The mandate asks only for a non-stick frying pan. The order adds a spatula set the buyer did not ask for."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Non-Stick Frying Pan, 10-inch (sku FP-NS-10) @ $24.99"
+    }
+   ],
+   "note": "The mandate asks for 1 frying pan and the order has 1. The extra spatula is covered under itemMatchesMandate."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $31.98"
+    }
+   ],
+   "note": "The total is under the $35.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $31.98, identical to the cart received."
+    }
+   ],
+   "note": "The store charged the same cart the agent submitted."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Non-Stick Frying Pan, 10-inch; 1 x Silicone Spatula Set, 3-piece."
+    }
+   ],
+   "note": "The store shipped the two items in the order."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 6,
+  "condition": "itemMatchesMandate",
+  "quote": "Added 1 x Silicone Spatula Set, 3-piece ($6.99)."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent added a silicone spatula set (step 6) that the mandate did not ask for, and the order was paid with it included. The store charged and shipped what was ordered, so the fault lies with the agent, not the buyer."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:34:01.004Z"
+}

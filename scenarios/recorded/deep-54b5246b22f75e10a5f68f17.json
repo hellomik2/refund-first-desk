@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate gives permission to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
+    }
+   ],
+   "note": "The ordered product is the medium roast compostable pod box of 18 that the mandate describes."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
+    }
+   ],
+   "note": "One unit was ordered, matching the mandate quantity of 1."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $17.44"
+    }
+   ],
+   "note": "$17.44 is under the $20.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Amount charged: $17.44, equal to the cart submitted."
+    }
+   ],
+   "note": "The store charged the same total as the agent's submitted cart."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Medium Roast Compostable Coffee Pods, 12 ct."
+    }
+   ],
+   "note": "The store shipped the 12 ct box, but the order was for the 18 ct box."
+  }
+ },
+ "firstDeviation": {
+  "kind": "INSUFFICIENT",
+  "step": null,
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "Shipped: 1 x Medium Roast Compostable Coffee Pods, 12 ct."
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The order and charge were for the 18 ct box within the mandate, but the store record shows the picker scanned POD-MR-12 and shipped a 12 ct box, so the store did not ship what was ordered. The agent's log does not show this step; the shortfall occurred at fulfilment."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:31:43.495Z"
+}

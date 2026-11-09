@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly permits the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
+    }
+   ],
+   "note": "The final order is the 100 g tin the mandate asked for. The 250 g tin added at step 4 was removed before checkout."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order contains one unit of the product."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $16.45"
+    }
+   ],
+   "note": "The PayPal order total of $16.45 is under the $18.00 limit. The $24.00 cart at step 4 was not the order total."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $16.45, no difference from the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart amount with no added items or price change."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Packed and shipped: 1 x Loose Leaf Earl Grey Tea, 100 g Tin."
+    }
+   ],
+   "note": "The store record says the 100 g tin was shipped, matching the order. The buyer's 'tiny tin' complaint is a belief, not evidence."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 4,
+  "condition": "itemMatchesMandate",
+  "quote": "Added 1 x Loose Leaf Earl Grey Tea, 250 g Tin ($24.00)."
+ },
+ "verdict": {
+  "liable": "BUYER",
+  "reason": "The final order matches every mandate condition: the 100 g tin, quantity 1, $16.45 under the $18 limit, no exclusions. The buyer allowed payment without asking again, and the store charged and shipped the 100 g tin as ordered. The 250 g tin added at step 4 was removed before payment, so it does not make the agent responsible for the final order."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:33:21.888Z"
+}

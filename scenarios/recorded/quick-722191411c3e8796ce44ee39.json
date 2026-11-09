@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
+    }
+   ],
+   "note": "Ordered product is AA rechargeable batteries, 4-pack, matching the mandate's Item slot."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so the exclusion condition is satisfied."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
+    }
+   ],
+   "note": "Ordered quantity is 2, matching the mandate's Quantity of 2."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:31:04.814Z"
+}

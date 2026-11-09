@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: whole bean coffee, medium roast, 12 oz bag"
+    }
+   ],
+   "note": "The ordered product is medium roast whole bean coffee in a 12 oz bag. The subscription plan is an exclusion, not an item attribute, and is treated under exclusionsRespected."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order has one bag, matching the mandate quantity."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $18.38"
+    }
+   ],
+   "note": "The total of $18.38 is within the $20.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: subscriptions; auto-renewing plans"
+    }
+   ],
+   "note": "The order is a Subscribe & Save monthly subscription, which the mandate excludes. The store record confirms a monthly subscription was created."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $18.38, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart amount with no added items or price change."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly)."
+    }
+   ],
+   "note": "The store shipped the item that was ordered, including its subscription plan."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 2,
+  "condition": "exclusionsRespected",
+  "quote": "Added 1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly) ($14.39) from the search results."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent added and paid for a Subscribe & Save monthly subscription, which the mandate excludes ('Must not include: subscriptions; auto-renewing plans'). The store charged and shipped the cart as submitted, so the order differs from the approved mandate in exclusions."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:33:41.973Z"
+}

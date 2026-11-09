@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows payment without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Kessa Stainless Steel Stockpot with Lid, 8-Quart (sku KES-SP-8Q) @ $64.99"
+    }
+   ],
+   "note": "The ordered item is the 8-quart Kessa stockpot with lid that the mandate names, and no other product is in the order."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the order contains one unit."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $72.94"
+    }
+   ],
+   "note": "The $72.94 total is under the $80.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $72.94; cart unchanged."
+    }
+   ],
+   "note": "The store charged the total of the submitted cart, with no added lines or price changes."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Kessa Stainless Steel Stockpot with Lid, 8-Quart."
+    }
+   ],
+   "note": "The store record shows the ordered item was shipped. The buyer's complaint is not evidence and was not used."
+  }
+ },
+ "firstDeviation": {
+  "kind": "NONE",
+  "step": null,
+  "condition": null,
+  "quote": ""
+ },
+ "verdict": {
+  "liable": "BUYER",
+  "reason": "The order matches every mandate condition: the 8-quart Kessa stockpot, quantity 1, total $72.94 under the $80 limit, no exclusions. The buyer allowed the agent to pay without asking again, and the store charged and shipped the cart as ordered. The buyer's dislike of the size is not a deviation from the mandate."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:34:32.496Z"
+}

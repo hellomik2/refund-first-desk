@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Wild Bird Seed Blend, 40 lb (sku WBS-40) @ $44.99"
+    }
+   ],
+   "note": "The ordered product is a 40 lb wild bird seed bag, matching the mandate item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One unit was ordered and the mandate asks for one."
+  },
+  "withinSpendingLimit": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $58.08"
+    }
+   ],
+   "note": "The mandate caps the total at $55.00, and the PayPal total is $58.08."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $58.08: item $44.99, shipping $9.49, tax $3.60. Matches the submitted cart line for line."
+    }
+   ],
+   "note": "The store charged the submitted cart line for line."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Wild Bird Seed Blend, 40 lb."
+    }
+   ],
+   "note": "The store shipped the ordered item."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 5,
+  "condition": "withinSpendingLimit",
+  "quote": "Placed the order with the saved PayPal wallet: $58.08 total (item $44.99, heavy item shipping $9.49, sales tax $3.60)."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent placed an order totalling $58.08, which exceeds the mandate's $55.00 spending limit, so the order differs from the approved mandate. The store charged and shipped as submitted, so the store is not responsible, and the buyer is not responsible because the order does not match the mandate."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:34:58.892Z"
+}

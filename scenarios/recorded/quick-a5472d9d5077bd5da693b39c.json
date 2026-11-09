@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "4 x A5 Dotted Notebook, Hardcover (sku NB-A5-DOT-HC) @ $12.95"
+    }
+   ],
+   "note": "Product is an A5 dotted notebook, hardcover, matching the mandate Item slot; shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists nothing to exclude, so exclusions are respected."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "4 x A5 Dotted Notebook, Hardcover (sku NB-A5-DOT-HC) @ $12.95"
+    }
+   ],
+   "note": "Ordered quantity is 4, matching the mandate Quantity of 4."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:33:24.266Z"
+}

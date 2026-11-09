@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
+    }
+   ],
+   "note": "Ordered product is salmon cat treats in a 150 g size, matching the mandate item (cat treats, salmon flavour, 150 g bag). The shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so exclusions are respected."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
+    }
+   ],
+   "note": "Mandate quantity is 1 and the order has 1 unit of the treats."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:32:52.075Z"
+}

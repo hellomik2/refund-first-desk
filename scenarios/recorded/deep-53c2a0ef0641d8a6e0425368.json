@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The buyer allowed the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
+    }
+   ],
+   "note": "The ordered salmon 150 g cat treats match the mandate item. The buyer's complaint about chicken flavour is not used as evidence."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
+    }
+   ],
+   "note": "One unit was ordered, matching Quantity: 1 in the mandate."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Spending limit: (none)"
+    }
+   ],
+   "note": "The mandate sets no spending limit, so the $9.48 total is within it."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Payment of $9.48 received, equal to the cart total."
+    }
+   ],
+   "note": "The charge of $9.48 equals the cart the agent submitted ($5.99 + $3.49)."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "unknown",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Parcel handed to carrier, tracking PP48213907."
+    }
+   ],
+   "note": "The store record says a parcel was handed to the carrier but does not say what was shipped."
+  }
+ },
+ "firstDeviation": {
+  "kind": "INSUFFICIENT",
+  "step": null,
+  "condition": null,
+  "quote": ""
+ },
+ "verdict": {
+  "liable": "UNDETERMINED",
+  "reason": "The order matches the mandate on item, quantity, limit, exclusions and payment permission, and the store charged the cart as submitted. The store record does not say what was shipped, so whether the store delivered as ordered cannot be settled from the records."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:32:59.861Z"
+}

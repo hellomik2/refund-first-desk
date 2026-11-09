@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
+    }
+   ],
+   "note": "The ordered product is unscented laundry pods, 12 count, matching the mandate item. Standard shipping is a fee line, not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
+    }
+   ],
+   "note": "Mandate excludes scented products; the only product ordered is unscented."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
+    }
+   ],
+   "note": "Mandate quantity is 1; the order has 1 unit of the product."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:30:47.181Z"
+}

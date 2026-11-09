@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: Halden clip-on LED desk lamp, black"
+    }
+   ],
+   "note": "The ordered SKU is the Halden Clip-On LED Desk Lamp, Black, which is the mandate item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One unit was ordered and the mandate asks for one."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $34.99"
+    }
+   ],
+   "note": "The $34.99 total is within the $40.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions, so none can be in the order."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $34.99. No changes to the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart price of $34.99 with no added lines."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Halden Clip-On LED Desk Lamp, Black."
+    }
+   ],
+   "note": "The store shipped the ordered item and quantity."
+  }
+ },
+ "firstDeviation": {
+  "kind": "NONE",
+  "step": null,
+  "condition": null,
+  "quote": ""
+ },
+ "verdict": {
+  "liable": "BUYER",
+  "reason": "The order matches every mandate condition (item, quantity, $34.99 within the $40 limit, no exclusions), the buyer allowed the agent to pay, and the store charged and shipped as ordered. The buyer's regret about a $27 price elsewhere is not a mandate condition."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:31:51.273Z"
+}

@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: A5 dotted notebook, hardcover"
+    }
+   ],
+   "note": "The ordered item is A5 Dotted Notebook, Hardcover, which matches the mandate item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 4"
+    }
+   ],
+   "note": "The order and cart both have 4 units, matching the mandate quantity of 4."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $56.30"
+    }
+   ],
+   "note": "The PayPal total of $56.30 is within the mandate's $60.00 spending limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $56.30 in line with the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart amount with no added items or price changes."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 3 x A5 Dotted Notebook, Hardcover."
+    }
+   ],
+   "note": "The store shipped 3 notebooks against 4 ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 7,
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "3 x A5 Dotted Notebook, Hardcover. Your order is complete."
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The order matches the mandate on item, quantity, spending limit, exclusions and permission to pay, and the store charged as submitted. The store shipped only 3 of the 4 notebooks ordered, so the store is responsible for the shortfall."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:33:32.666Z"
+}

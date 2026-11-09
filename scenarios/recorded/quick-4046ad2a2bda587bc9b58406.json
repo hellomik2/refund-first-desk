@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
+    }
+   ],
+   "note": "The ordered product is loose leaf Earl Grey tea in a 100 g tin, matching the mandate's Item slot. The shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
+    }
+   ],
+   "note": "The mandate asks for Quantity 1 and the order has 1 unit of the tea."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-09T23:33:13.045Z"
+}
