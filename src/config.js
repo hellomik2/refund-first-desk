@@ -29,7 +29,8 @@ export function loadConfig(overrides = {}) {
   return {
     root: ROOT,
     port,
-    publicBaseUrl: (env.PUBLIC_BASE_URL || `http://localhost:${port}`).replace(/\/$/, ''),
+    // Render sets RENDER_EXTERNAL_URL to the service's own https address.
+    publicBaseUrl: (env.PUBLIC_BASE_URL || env.RENDER_EXTERNAL_URL || `http://localhost:${port}`).replace(/\/$/, ''),
     dataDir: env.DATA_DIR || join(ROOT, 'data'),
     paypal: {
       apiBase,

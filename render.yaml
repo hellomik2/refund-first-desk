@@ -1,4 +1,8 @@
-# Render blueprint for the hosted demo. Secrets are entered in the Render dashboard (sync: false).
+# Render blueprint for the hosted demo.
+# Secrets are not in this file: after the first deploy, open the service's Environment page,
+# choose "Add from .env" and paste PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, DEMO_VAULT_ID,
+# DEMO_CUSTOMER_ID, STORE_PAYPAL_EMAIL and ANTHROPIC_API_KEY. The return address for PayPal comes
+# from RENDER_EXTERNAL_URL, which Render sets.
 services:
   - type: web
     name: refund-first-desk
@@ -10,22 +14,6 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
-      - key: PUBLIC_BASE_URL # the service's own https URL, used as PayPal's return address
-        sync: false
-      - key: PAYPAL_CLIENT_ID
-        sync: false
-      - key: PAYPAL_CLIENT_SECRET
-        sync: false
-      - key: DEMO_VAULT_ID
-        sync: false
-      - key: DEMO_CUSTOMER_ID
-        sync: false
-      - key: DEMO_BUYER_EMAIL
-        sync: false
-      - key: STORE_PAYPAL_EMAIL
-        sync: false
-      - key: ANTHROPIC_API_KEY
-        sync: false
       - key: AI_PROVIDER
         value: anthropic
       - key: AI_MODEL
