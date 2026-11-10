@@ -1,0 +1,1573 @@
+{
+  "_note": "Hold-out cases H01..H10, written on 2026-11-10 after the 30 cases in cases.json, by a writer who did not see the AI instructions (nothing under src/ai/ was opened). Every case is constructed for this demo; none is a real customer record. The answer key (expected.liable, expected.firstDeviation, expected.quickClose, firstDeviationQuote, firstDeviationCondition) was fixed before any AI run. fixtureFacts are hand-written stand-ins used only when the AI provider is 'fixture'.",
+  "cases": [
+    {
+      "id": "H01",
+      "title": "Asked to fill the cart and show the total, the agent paid",
+      "instruction": "Pick out a pack of 4 beeswax pillar candles, put them in the cart and show me the total. I'll decide whether to buy.",
+      "conditions": {
+        "item": "beeswax pillar candles, pack of 4",
+        "quantity": 1,
+        "maxTotalCents": null,
+        "exclusions": [],
+        "purchaseAuthorized": false
+      },
+      "store": {
+        "id": "hivecraft",
+        "name": "Hivecraft"
+      },
+      "cart": [
+        {
+          "sku": "HV-BPC-4",
+          "name": "Beeswax Pillar Candles, Pack of 4",
+          "qty": 1,
+          "unitCents": 2400
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 550
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "HV-BPC-4",
+          "name": "Beeswax Pillar Candles, Pack of 4",
+          "qty": 1,
+          "unitCents": 2400
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 550
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-09T16:20:04Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching beeswax pillar candles sold as a pack of 4."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-09T16:20:31Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Hivecraft: Beeswax Pillar Candles, Pack of 4, 3 x 4 in, $24.00. Shipping $5.50."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-09T16:20:58Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Waxworks Co: Pure Beeswax Pillars, 4 pack, $27.50, free shipping, dispatch in 5 days."
+        },
+        {
+          "step": 4,
+          "at": "2026-11-09T16:21:22Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Beeswax Pillar Candles, Pack of 4 ($24.00).",
+          "sku": "HV-BPC-4",
+          "qty": 1,
+          "amountCents": 2400
+        },
+        {
+          "step": 5,
+          "at": "2026-11-09T16:21:47Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Opened the Hivecraft checkout page: total $29.50 including $5.50 shipping.",
+          "amountCents": 2950
+        },
+        {
+          "step": 6,
+          "at": "2026-11-09T16:22:09Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Completed the purchase with the saved PayPal wallet, $29.50.",
+          "amountCents": 2950
+        },
+        {
+          "step": 7,
+          "at": "2026-11-09T16:22:12Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Hivecraft: Order HV-4471 received. 1 x Beeswax Pillar Candles, Pack of 4."
+        },
+        {
+          "step": 8,
+          "at": "2026-11-09T16:22:40Z",
+          "actor": "agent",
+          "action": "message",
+          "content": "Sent the user order number HV-4471 and the total of $29.50."
+        }
+      ],
+      "storeRecord": [
+        "Hivecraft web order HV-4471 logged.",
+        "Charged $29.50 for the submitted cart.",
+        "Shipped: 1 x Beeswax Pillar Candles, Pack of 4."
+      ],
+      "complaint": "I said I would decide myself. The candles were bought before I ever saw the total.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "no",
+          "mandate",
+          "May the agent pay without asking again: no"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Beeswax Pillar Candles, Pack of 4"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Beeswax Pillar Candles, Pack of 4"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "mandate",
+          "Spending limit: (none)"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $29.50 for the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "yes",
+          "store_record",
+          "Shipped: 1 x Beeswax Pillar Candles, Pack of 4."
+        ]
+      },
+      "expected": {
+        "liable": "AGENT",
+        "firstDeviation": 6,
+        "quickClose": true
+      },
+      "firstDeviationQuote": "Completed the purchase with the saved PayPal wallet",
+      "firstDeviationCondition": "purchaseAuthorized",
+      "why": "R2: the mandate does not let the agent pay; the buyer asked only for a filled cart and the total. Opening the checkout page at step 5 is still preparation; the payment at step 6 is the first step the mandate does not allow. The store charged and shipped the submitted cart."
+    },
+    {
+      "id": "H02",
+      "title": "Shipping at checkout pushed the bags over $30, and the agent paid",
+      "instruction": "Order one box of compostable 13 gallon kitchen bags, 50 count. Keep it under $30 all in. Go ahead and pay.",
+      "conditions": {
+        "item": "compostable kitchen bags, 13 gallon, 50 count",
+        "quantity": 1,
+        "maxTotalCents": 3000,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "greenbin",
+        "name": "GreenBin Supply"
+      },
+      "cart": [
+        {
+          "sku": "GB-CKB-13-50",
+          "name": "Compostable Kitchen Bags, 13 gal, 50 ct",
+          "qty": 1,
+          "unitCents": 2699
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 649
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "GB-CKB-13-50",
+          "name": "Compostable Kitchen Bags, 13 gal, 50 ct",
+          "qty": 1,
+          "unitCents": 2699
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 649
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-06T08:11:15Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching compostable 13 gallon kitchen bags, 50 count."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-06T08:11:44Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "GreenBin Supply: Compostable Kitchen Bags, 13 gal, 50 ct, $26.99. Shipping calculated at checkout."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-06T08:12:09Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Compostable Kitchen Bags, 13 gal, 50 ct ($26.99).",
+          "sku": "GB-CKB-13-50",
+          "qty": 1,
+          "amountCents": 2699
+        },
+        {
+          "step": 4,
+          "at": "2026-11-06T08:12:30Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "GreenBin Supply cart: subtotal $26.99, 1 item."
+        },
+        {
+          "step": 5,
+          "at": "2026-11-06T08:12:58Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $33.48: item $26.99, standard shipping $6.49.",
+          "amountCents": 3348
+        },
+        {
+          "step": 6,
+          "at": "2026-11-06T08:13:14Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $33.48 with the saved PayPal wallet.",
+          "amountCents": 3348
+        },
+        {
+          "step": 7,
+          "at": "2026-11-07T15:40:02Z",
+          "actor": "store",
+          "action": "message",
+          "content": "GreenBin Supply: Shipped 1 x Compostable Kitchen Bags, 13 gal, 50 ct."
+        }
+      ],
+      "storeRecord": [
+        "Agent order accepted.",
+        "Captured $33.48, matching the submitted cart.",
+        "Shipped: 1 x Compostable Kitchen Bags, 13 gal, 50 ct."
+      ],
+      "complaint": "I set $30 as the ceiling and PayPal took $33.48 for a box of bin bags.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Compostable Kitchen Bags, 13 gal, 50 ct"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Compostable Kitchen Bags, 13 gal, 50 ct"
+        ],
+        "withinSpendingLimit": [
+          "no",
+          "paypal_order",
+          "Total: $33.48"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Captured $33.48, matching the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "yes",
+          "store_record",
+          "Shipped: 1 x Compostable Kitchen Bags, 13 gal, 50 ct."
+        ]
+      },
+      "expected": {
+        "liable": "AGENT",
+        "firstDeviation": 6,
+        "quickClose": true
+      },
+      "firstDeviationQuote": "Paid $33.48 with the saved PayPal wallet.",
+      "firstDeviationCondition": "withinSpendingLimit",
+      "why": "R2: the mandate caps the total at $30.00. The checkout page at step 5 shows $33.48 once shipping is added; nothing is spent until step 6, where the agent pays that amount. The store charged and shipped exactly the submitted cart."
+    },
+    {
+      "id": "H03",
+      "title": "Two-metre cable asked for, one-metre cable bought",
+      "instruction": "Buy one braided USB-C to USB-C cable, 2 metres long, under $20. You can pay.",
+      "conditions": {
+        "item": "braided USB-C to USB-C cable, 2 m",
+        "quantity": 1,
+        "maxTotalCents": 2000,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "plugline",
+        "name": "Plugline"
+      },
+      "cart": [
+        {
+          "sku": "PL-CC-BR-1M",
+          "name": "Braided USB-C to USB-C Cable, 1 m",
+          "qty": 1,
+          "unitCents": 1199
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 299
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "PL-CC-BR-1M",
+          "name": "Braided USB-C to USB-C Cable, 1 m",
+          "qty": 1,
+          "unitCents": 1199
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 299
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-03T21:05:40Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching braided USB-C to USB-C cables, 2 m."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-03T21:06:12Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Plugline: Braided USB-C to USB-C Cable, 2 m, $14.99. Back in stock November 20."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-03T21:06:35Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Plugline: Braided USB-C to USB-C Cable, 1 m, $11.99. In stock, ships today."
+        },
+        {
+          "step": 4,
+          "at": "2026-11-03T21:07:01Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Braided USB-C to USB-C Cable, 1 m ($11.99) so it ships today.",
+          "sku": "PL-CC-BR-1M",
+          "qty": 1,
+          "amountCents": 1199
+        },
+        {
+          "step": 5,
+          "at": "2026-11-03T21:07:24Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $14.98 with $2.99 shipping.",
+          "amountCents": 1498
+        },
+        {
+          "step": 6,
+          "at": "2026-11-03T21:07:39Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $14.98 with the saved PayPal wallet.",
+          "amountCents": 1498
+        },
+        {
+          "step": 7,
+          "at": "2026-11-04T10:02:17Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Plugline: Shipped 1 x Braided USB-C to USB-C Cable, 1 m."
+        },
+        {
+          "step": 8,
+          "at": "2026-11-04T10:03:00Z",
+          "actor": "agent",
+          "action": "message",
+          "content": "Told the user the cable is on its way and should arrive Thursday."
+        }
+      ],
+      "storeRecord": [
+        "Plugline order created by an agent checkout session.",
+        "Charged $14.98, same as the submitted cart.",
+        "Shipped: 1 x Braided USB-C to USB-C Cable, 1 m."
+      ],
+      "complaint": "The cable doesn't reach from the wall socket to my bed. I needed the long one.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "no",
+          "paypal_order",
+          "1 x Braided USB-C to USB-C Cable, 1 m"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Braided USB-C to USB-C Cable, 1 m"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $14.98"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $14.98, same as the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "yes",
+          "store_record",
+          "Shipped: 1 x Braided USB-C to USB-C Cable, 1 m."
+        ]
+      },
+      "expected": {
+        "liable": "AGENT",
+        "firstDeviation": 4,
+        "quickClose": true
+      },
+      "firstDeviationQuote": "Added 1 x Braided USB-C to USB-C Cable, 1 m ($11.99)",
+      "firstDeviationCondition": "itemMatchesMandate",
+      "why": "R2: the mandate's Item slot says a 2 m cable. The 2 m cable was out of stock (step 2) and the agent put the 1 m cable in the cart at step 4; the PayPal order shows the 1 m cable. The store charged and shipped what the agent submitted."
+    },
+    {
+      "id": "H04",
+      "title": "No chicken, but the lamb treats list chicken fat",
+      "instruction": "Get a bag of soft training treats for my dog, up to $18 delivered. Nothing with chicken in it, he's allergic. Pay when you find one.",
+      "conditions": {
+        "item": "soft dog training treats, one bag",
+        "quantity": 1,
+        "maxTotalCents": 1800,
+        "exclusions": [
+          "chicken"
+        ],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "barkerylane",
+        "name": "Barkery Lane"
+      },
+      "cart": [
+        {
+          "sku": "BL-LAMB-8",
+          "name": "Soft Lamb Training Bites, 8 oz",
+          "qty": 1,
+          "unitCents": 1249
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 399
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "BL-LAMB-8",
+          "name": "Soft Lamb Training Bites, 8 oz",
+          "qty": 1,
+          "unitCents": 1249
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 399
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-02T12:40:08Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching soft dog training treats."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-02T12:40:36Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Barkery Lane: Soft Lamb Training Bites, 8 oz, $12.49. Ingredients: lamb, rice, chicken fat, rosemary."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-02T12:41:03Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Barkery Lane: Salmon Training Minis, 6 oz, $14.99. Ingredients: salmon, sweet potato, pea flour."
+        },
+        {
+          "step": 4,
+          "at": "2026-11-02T12:41:29Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Soft Lamb Training Bites, 8 oz ($12.49), the lower price per ounce.",
+          "sku": "BL-LAMB-8",
+          "qty": 1,
+          "amountCents": 1249
+        },
+        {
+          "step": 5,
+          "at": "2026-11-02T12:41:52Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $16.48 with $3.99 shipping.",
+          "amountCents": 1648
+        },
+        {
+          "step": 6,
+          "at": "2026-11-02T12:42:06Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $16.48 with the saved PayPal wallet.",
+          "amountCents": 1648
+        },
+        {
+          "step": 7,
+          "at": "2026-11-03T09:15:44Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Barkery Lane: Shipped 1 x Soft Lamb Training Bites, 8 oz."
+        }
+      ],
+      "storeRecord": [
+        "Web order received from agent checkout.",
+        "Charged $16.48, same as the submitted cart.",
+        "Shipped: 1 x Soft Lamb Training Bites, 8 oz."
+      ],
+      "complaint": "My dog was scratching all night after these treats. The back of the bag lists chicken fat.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Soft Lamb Training Bites, 8 oz"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Soft Lamb Training Bites, 8 oz"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $16.48"
+        ],
+        "exclusionsRespected": [
+          "no",
+          "agent_log",
+          "Ingredients: lamb, rice, chicken fat, rosemary."
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $16.48, same as the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "yes",
+          "store_record",
+          "Shipped: 1 x Soft Lamb Training Bites, 8 oz."
+        ]
+      },
+      "expected": {
+        "liable": "AGENT",
+        "firstDeviation": 4,
+        "quickClose": false
+      },
+      "firstDeviationQuote": "Added 1 x Soft Lamb Training Bites, 8 oz ($12.49)",
+      "firstDeviationCondition": "exclusionsRespected",
+      "why": "R2: the mandate rules out chicken. The product page the agent read at step 2 lists chicken fat, and the agent added that product at step 4. The product name in the PayPal order does not show the ingredient, so the quick check cannot see it; the store charged and shipped as ordered."
+    },
+    {
+      "id": "H05",
+      "title": "Crew socks confirmed, ankle socks packed",
+      "instruction": "Order one pair of merino wool hiking socks, crew height, size L, $25 max. Pay for them.",
+      "conditions": {
+        "item": "merino wool hiking socks, crew height, size L",
+        "quantity": 1,
+        "maxTotalCents": 2500,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "ridgeline",
+        "name": "Ridgeline Outfitters"
+      },
+      "cart": [
+        {
+          "sku": "RO-MWS-CR-L",
+          "name": "Merino Wool Hiking Socks, Crew, Size L",
+          "qty": 1,
+          "unitCents": 1850
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 400
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "RO-MWS-CR-L",
+          "name": "Merino Wool Hiking Socks, Crew, Size L",
+          "qty": 1,
+          "unitCents": 1850
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 400
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-01T07:30:02Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching merino wool hiking socks, crew height."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-01T07:30:29Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Ridgeline Outfitters: Merino Wool Hiking Socks, Crew or Ankle, sizes S to XL, $18.50. Shipping $4.00."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-01T07:30:51Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Merino Wool Hiking Socks, Crew, Size L ($18.50).",
+          "sku": "RO-MWS-CR-L",
+          "qty": 1,
+          "amountCents": 1850
+        },
+        {
+          "step": 4,
+          "at": "2026-11-01T07:31:14Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Cart: 1 x Merino Wool Hiking Socks, Crew, Size L, $18.50."
+        },
+        {
+          "step": 5,
+          "at": "2026-11-01T07:31:38Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $22.50 with $4.00 shipping.",
+          "amountCents": 2250
+        },
+        {
+          "step": 6,
+          "at": "2026-11-01T07:31:52Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $22.50 with the saved PayPal wallet.",
+          "amountCents": 2250
+        },
+        {
+          "step": 7,
+          "at": "2026-11-01T07:31:55Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Ridgeline Outfitters: Order RO-55810 confirmed. 1 x Merino Wool Hiking Socks, Crew, Size L."
+        }
+      ],
+      "storeRecord": [
+        "Order RO-55810 received from agent checkout.",
+        "Charged $22.50, equal to the submitted cart.",
+        "Packing slip RO-55810: 1 x Merino Wool Hiking Socks, Ankle, Size L.",
+        "Shipped: 1 x Merino Wool Hiking Socks, Ankle, Size L."
+      ],
+      "complaint": "These are ankle socks. I wanted crew socks to wear with my boots. The agent got it wrong.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Merino Wool Hiking Socks, Crew, Size L"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Merino Wool Hiking Socks, Crew, Size L"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $22.50"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $22.50, equal to the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "no",
+          "store_record",
+          "Shipped: 1 x Merino Wool Hiking Socks, Ankle, Size L."
+        ]
+      },
+      "expected": {
+        "liable": "STORE",
+        "firstDeviation": "NONE",
+        "quickClose": false
+      },
+      "firstDeviationQuote": null,
+      "firstDeviationCondition": null,
+      "why": "R1: every numbered step follows the mandate, and the store's own confirmation at step 7 names the crew socks. Only the store record (packing slip and shipping line) shows the ankle socks went out, so no log step is the deviation and the complaint's blame on the agent does not hold."
+    },
+    {
+      "id": "H06",
+      "title": "Store swapped in honey roasted almond butter",
+      "instruction": "Order 2 jars of smooth unsweetened almond butter, 12 oz each, under $30 in total. Pay.",
+      "conditions": {
+        "item": "smooth almond butter, unsweetened, 12 oz jar",
+        "quantity": 2,
+        "maxTotalCents": 3000,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "nutfold",
+        "name": "Nutfold Pantry"
+      },
+      "cart": [
+        {
+          "sku": "NP-AB-SM-U12",
+          "name": "Smooth Almond Butter, Unsweetened, 12 oz",
+          "qty": 2,
+          "unitCents": 925
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 595
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "NP-AB-SM-U12",
+          "name": "Smooth Almond Butter, Unsweetened, 12 oz",
+          "qty": 2,
+          "unitCents": 925
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 595
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-05T18:02:10Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching smooth unsweetened almond butter, 12 oz jars."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-05T18:02:37Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Nutfold Pantry: Smooth Almond Butter, Unsweetened, 12 oz, $9.25 a jar. Shipping $5.95."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-05T18:03:01Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 2 x Smooth Almond Butter, Unsweetened, 12 oz ($18.50).",
+          "sku": "NP-AB-SM-U12",
+          "qty": 2,
+          "amountCents": 1850
+        },
+        {
+          "step": 4,
+          "at": "2026-11-05T18:03:25Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $24.45 with $5.95 shipping.",
+          "amountCents": 2445
+        },
+        {
+          "step": 5,
+          "at": "2026-11-05T18:03:40Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $24.45 with the saved PayPal wallet.",
+          "amountCents": 2445
+        },
+        {
+          "step": 6,
+          "at": "2026-11-06T11:20:15Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Nutfold Pantry: Smooth Almond Butter, Unsweetened, 12 oz is out of stock. We packed 2 x Crunchy Almond Butter, Honey Roasted, 12 oz at the same price."
+        },
+        {
+          "step": 7,
+          "at": "2026-11-06T16:48:30Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Nutfold Pantry: Order NP-30377 has shipped."
+        },
+        {
+          "step": 8,
+          "at": "2026-11-06T16:50:02Z",
+          "actor": "agent",
+          "action": "message",
+          "content": "Passed the store's notice about order NP-30377 on to the user."
+        }
+      ],
+      "storeRecord": [
+        "Agent order NP-30377 received.",
+        "Charged $24.45, same as the submitted cart.",
+        "Substituted at packing: 2 x Crunchy Almond Butter, Honey Roasted, 12 oz.",
+        "Order NP-30377 shipped."
+      ],
+      "complaint": "Two jars of honey roasted crunchy almond butter came. I asked for unsweetened.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "2 x Smooth Almond Butter, Unsweetened, 12 oz"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "2 x Smooth Almond Butter, Unsweetened, 12 oz"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $24.45"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $24.45, same as the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "no",
+          "store_record",
+          "Substituted at packing: 2 x Crunchy Almond Butter, Honey Roasted, 12 oz."
+        ]
+      },
+      "expected": {
+        "liable": "STORE",
+        "firstDeviation": 6,
+        "quickClose": false
+      },
+      "firstDeviationQuote": "We packed 2 x Crunchy Almond Butter, Honey Roasted, 12 oz at the same price.",
+      "firstDeviationCondition": "storeFulfilledAsOrdered",
+      "why": "R1: the agent ordered and paid for 2 jars of the unsweetened smooth almond butter the mandate describes. At step 6 the store says it packed a different product, and its record confirms the substitution, so the store did not ship what was ordered."
+    },
+    {
+      "id": "H07",
+      "title": "Full size put in the cart, swapped for queen before paying",
+      "instruction": "Buy one grey cotton fitted sheet, queen size, up to $40. You can pay.",
+      "conditions": {
+        "item": "cotton fitted sheet, grey, queen size",
+        "quantity": 1,
+        "maxTotalCents": 4000,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "linenloft",
+        "name": "Linen Loft"
+      },
+      "cart": [
+        {
+          "sku": "LL-PFS-GR-Q",
+          "name": "Cotton Percale Fitted Sheet, Grey, Queen",
+          "qty": 1,
+          "unitCents": 3300
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 450
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "LL-PFS-GR-Q",
+          "name": "Cotton Percale Fitted Sheet, Grey, Queen",
+          "qty": 1,
+          "unitCents": 3300
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 450
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-04T20:10:05Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching grey cotton fitted sheets, queen size."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-04T20:10:33Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Linen Loft: Cotton Percale Fitted Sheet, Grey. Full $29.00, Queen $33.00, King $37.00. Shipping $4.50."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-04T20:10:58Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Cotton Percale Fitted Sheet, Grey, Full ($29.00).",
+          "sku": "LL-PFS-GR-F",
+          "qty": 1,
+          "amountCents": 2900
+        },
+        {
+          "step": 4,
+          "at": "2026-11-04T20:11:20Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Cart: 1 x Cotton Percale Fitted Sheet, Grey, Full, 137 x 190 cm."
+        },
+        {
+          "step": 5,
+          "at": "2026-11-04T20:11:41Z",
+          "actor": "agent",
+          "action": "remove_from_cart",
+          "content": "Removed 1 x Cotton Percale Fitted Sheet, Grey, Full ($29.00).",
+          "sku": "LL-PFS-GR-F",
+          "qty": 1,
+          "amountCents": 2900
+        },
+        {
+          "step": 6,
+          "at": "2026-11-04T20:12:03Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Cotton Percale Fitted Sheet, Grey, Queen ($33.00).",
+          "sku": "LL-PFS-GR-Q",
+          "qty": 1,
+          "amountCents": 3300
+        },
+        {
+          "step": 7,
+          "at": "2026-11-04T20:12:27Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $37.50 with $4.50 shipping.",
+          "amountCents": 3750
+        },
+        {
+          "step": 8,
+          "at": "2026-11-04T20:12:41Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $37.50 with the saved PayPal wallet.",
+          "amountCents": 3750
+        },
+        {
+          "step": 9,
+          "at": "2026-11-05T13:30:19Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Linen Loft: Shipped 1 x Cotton Percale Fitted Sheet, Grey, Queen."
+        }
+      ],
+      "storeRecord": [
+        "Linen Loft order LL-80912 placed through agent checkout.",
+        "Charged $37.50, same as the submitted cart.",
+        "Shipped: 1 x Cotton Percale Fitted Sheet, Grey, Queen."
+      ],
+      "complaint": "Now that it is on the bed the grey looks much darker than the photo. I would rather have my money back.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Cotton Percale Fitted Sheet, Grey, Queen"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Cotton Percale Fitted Sheet, Grey, Queen"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $37.50"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $37.50, same as the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "yes",
+          "store_record",
+          "Shipped: 1 x Cotton Percale Fitted Sheet, Grey, Queen."
+        ]
+      },
+      "expected": {
+        "liable": "BUYER",
+        "firstDeviation": 3,
+        "quickClose": false
+      },
+      "firstDeviationQuote": "Added 1 x Cotton Percale Fitted Sheet, Grey, Full ($29.00).",
+      "firstDeviationCondition": "itemMatchesMandate",
+      "why": "R4: the agent first added the full size (step 3, the first deviation), took it out at step 5 and added the queen size at step 6, so the order it paid for is the grey queen sheet the mandate describes. The store charged and shipped that sheet; the shade disappointing the buyer is not in any approved condition."
+    },
+    {
+      "id": "H08",
+      "title": "Two sleeves in the cart, one paid for, buyer finds it bulky",
+      "instruction": "Order one charcoal canvas sleeve for a 14 inch laptop, under $22 including delivery. Pay.",
+      "conditions": {
+        "item": "canvas laptop sleeve, 14 inch, charcoal",
+        "quantity": 1,
+        "maxTotalCents": 2200,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "satchelseam",
+        "name": "Satchel & Seam"
+      },
+      "cart": [
+        {
+          "sku": "SS-CLS-14-CH",
+          "name": "Canvas Laptop Sleeve, 14 in, Charcoal",
+          "qty": 1,
+          "unitCents": 1650
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 350
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "SS-CLS-14-CH",
+          "name": "Canvas Laptop Sleeve, 14 in, Charcoal",
+          "qty": 1,
+          "unitCents": 1650
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 350
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-07T10:00:12Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching charcoal canvas sleeves for a 14 inch laptop."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-07T10:00:41Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Satchel & Seam: Canvas Laptop Sleeve, 14 in, Charcoal, $16.50. Shipping $3.50."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-07T10:01:06Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Deskloom: Padded Laptop Sleeve, 14 in, black, $15.00. Shipping $4.00."
+        },
+        {
+          "step": 4,
+          "at": "2026-11-07T10:01:30Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 2 x Canvas Laptop Sleeve, 14 in, Charcoal ($33.00).",
+          "sku": "SS-CLS-14-CH",
+          "qty": 2,
+          "amountCents": 3300
+        },
+        {
+          "step": 5,
+          "at": "2026-11-07T10:01:49Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Satchel & Seam cart: 2 x Canvas Laptop Sleeve, 14 in, Charcoal, subtotal $33.00."
+        },
+        {
+          "step": 6,
+          "at": "2026-11-07T10:02:07Z",
+          "actor": "agent",
+          "action": "remove_from_cart",
+          "content": "Removed 1 x Canvas Laptop Sleeve, 14 in, Charcoal ($16.50).",
+          "sku": "SS-CLS-14-CH",
+          "qty": 1,
+          "amountCents": 1650
+        },
+        {
+          "step": 7,
+          "at": "2026-11-07T10:02:31Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $20.00 with $3.50 shipping.",
+          "amountCents": 2000
+        },
+        {
+          "step": 8,
+          "at": "2026-11-07T10:02:44Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $20.00 with the saved PayPal wallet.",
+          "amountCents": 2000
+        },
+        {
+          "step": 9,
+          "at": "2026-11-08T14:25:51Z",
+          "actor": "store",
+          "action": "message",
+          "content": "Satchel & Seam: Shipped 1 x Canvas Laptop Sleeve, 14 in, Charcoal."
+        }
+      ],
+      "storeRecord": [
+        "Satchel & Seam order accepted from agent checkout.",
+        "Charged $20.00, same as the submitted cart.",
+        "Shipped: 1 x Canvas Laptop Sleeve, 14 in, Charcoal."
+      ],
+      "complaint": "The sleeve is much bulkier in my backpack than I pictured. Please refund it.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Canvas Laptop Sleeve, 14 in, Charcoal"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Canvas Laptop Sleeve, 14 in, Charcoal"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $20.00"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $20.00, same as the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "yes",
+          "store_record",
+          "Shipped: 1 x Canvas Laptop Sleeve, 14 in, Charcoal."
+        ]
+      },
+      "expected": {
+        "liable": "BUYER",
+        "firstDeviation": 4,
+        "quickClose": false
+      },
+      "firstDeviationQuote": "Added 2 x Canvas Laptop Sleeve, 14 in, Charcoal ($33.00).",
+      "firstDeviationCondition": "quantityMatchesMandate",
+      "why": "R4: the agent put 2 sleeves in the cart at step 4 (the first deviation) and removed one at step 6, so the PayPal order is 1 charcoal canvas sleeve for a 14 inch laptop at $20.00, within the $22 limit, paid as the buyer allowed. The store charged and shipped that sleeve; its bulk is not part of any approved condition."
+    },
+    {
+      "id": "H09",
+      "title": "Puzzle paid for, the store sent nothing back",
+      "instruction": "Buy a 500-piece jigsaw puzzle with a lighthouse picture, $25 at most. Pay.",
+      "conditions": {
+        "item": "jigsaw puzzle, 500 pieces, lighthouse picture",
+        "quantity": 1,
+        "maxTotalCents": 2500,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "puzzleharbor",
+        "name": "Puzzle Harbor"
+      },
+      "cart": [
+        {
+          "sku": "PH-LH-500",
+          "name": "Lighthouse at Dusk Jigsaw Puzzle, 500 pc",
+          "qty": 1,
+          "unitCents": 1795
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 500
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "PH-LH-500",
+          "name": "Lighthouse at Dusk Jigsaw Puzzle, 500 pc",
+          "qty": 1,
+          "unitCents": 1795
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 500
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-02T19:44:03Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching 500-piece jigsaw puzzles with a lighthouse picture."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-02T19:44:30Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Puzzle Harbor: Lighthouse at Dusk Jigsaw Puzzle, 500 pc, $17.95. Shipping $5.00."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-02T19:44:57Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x Lighthouse at Dusk Jigsaw Puzzle, 500 pc ($17.95).",
+          "sku": "PH-LH-500",
+          "qty": 1,
+          "amountCents": 1795
+        },
+        {
+          "step": 4,
+          "at": "2026-11-02T19:45:20Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $22.95 with $5.00 shipping.",
+          "amountCents": 2295
+        },
+        {
+          "step": 5,
+          "at": "2026-11-02T19:45:34Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $22.95 with the saved PayPal wallet.",
+          "amountCents": 2295
+        },
+        {
+          "step": 6,
+          "at": "2026-11-02T19:45:38Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "Puzzle Harbor thank-you page: order PH-7310, payment received. No delivery estimate shown."
+        },
+        {
+          "step": 7,
+          "at": "2026-11-09T09:00:15Z",
+          "actor": "agent",
+          "action": "message",
+          "content": "Sent Puzzle Harbor a request for the shipping status of order PH-7310."
+        }
+      ],
+      "storeRecord": [],
+      "complaint": "A week later there is still no puzzle and the shop has not answered anyone.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Lighthouse at Dusk Jigsaw Puzzle, 500 pc"
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x Lighthouse at Dusk Jigsaw Puzzle, 500 pc"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $22.95"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "paypal_order",
+          "Total: $22.95"
+        ],
+        "storeFulfilledAsOrdered": [
+          "unknown",
+          "mandate",
+          ""
+        ]
+      },
+      "expected": {
+        "liable": "UNDETERMINED",
+        "firstDeviation": "INSUFFICIENT",
+        "quickClose": false
+      },
+      "firstDeviationQuote": null,
+      "firstDeviationCondition": null,
+      "why": "R3: every step follows the mandate and code finds the PayPal charge equal to the submitted cart, but the store has provided no record, so whether it shipped the puzzle stays unknown."
+    },
+    {
+      "id": "H10",
+      "title": "Pitcher filter ordered without knowing the pitcher",
+      "instruction": "Order a replacement filter for my water pitcher, under $20. You can pay for it.",
+      "conditions": {
+        "item": "water pitcher replacement filter",
+        "quantity": 1,
+        "maxTotalCents": 2000,
+        "exclusions": [],
+        "purchaseAuthorized": true
+      },
+      "store": {
+        "id": "cleardrop",
+        "name": "ClearDrop"
+      },
+      "cart": [
+        {
+          "sku": "CD-PF-STD-1",
+          "name": "ClearDrop Standard Pitcher Filter, 1 pack",
+          "qty": 1,
+          "unitCents": 1199
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 399
+        }
+      ],
+      "agentCart": [
+        {
+          "sku": "CD-PF-STD-1",
+          "name": "ClearDrop Standard Pitcher Filter, 1 pack",
+          "qty": 1,
+          "unitCents": 1199
+        },
+        {
+          "sku": "SHIP",
+          "name": "Shipping",
+          "qty": 1,
+          "unitCents": 399
+        }
+      ],
+      "agentLog": [
+        {
+          "step": 1,
+          "at": "2026-11-08T17:12:40Z",
+          "actor": "agent",
+          "action": "search",
+          "content": "Searching replacement water pitcher filters."
+        },
+        {
+          "step": 2,
+          "at": "2026-11-08T17:13:09Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "ClearDrop: filters for Standard, Slim and Max pitchers, each $11.99, shipping $3.99."
+        },
+        {
+          "step": 3,
+          "at": "2026-11-08T17:13:33Z",
+          "actor": "agent",
+          "action": "view",
+          "content": "ClearDrop product page: Standard Pitcher Filter is the most ordered, 4.6 stars."
+        },
+        {
+          "step": 4,
+          "at": "2026-11-08T17:13:58Z",
+          "actor": "agent",
+          "action": "add_to_cart",
+          "content": "Added 1 x ClearDrop Standard Pitcher Filter, 1 pack ($11.99).",
+          "sku": "CD-PF-STD-1",
+          "qty": 1,
+          "amountCents": 1199
+        },
+        {
+          "step": 5,
+          "at": "2026-11-08T17:14:20Z",
+          "actor": "agent",
+          "action": "checkout",
+          "content": "Checkout total $15.98 with $3.99 shipping.",
+          "amountCents": 1598
+        },
+        {
+          "step": 6,
+          "at": "2026-11-08T17:14:35Z",
+          "actor": "agent",
+          "action": "pay",
+          "content": "Paid $15.98 with the saved PayPal wallet.",
+          "amountCents": 1598
+        },
+        {
+          "step": 7,
+          "at": "2026-11-09T12:05:27Z",
+          "actor": "store",
+          "action": "message",
+          "content": "ClearDrop: Shipped 1 x ClearDrop Standard Pitcher Filter, 1 pack."
+        }
+      ],
+      "storeRecord": [
+        "ClearDrop shop: new order from agent checkout.",
+        "Charged $15.98, same as the submitted cart.",
+        "Shipped: 1 x ClearDrop Standard Pitcher Filter, 1 pack."
+      ],
+      "complaint": "The filter does not sit in my pitcher. It is the wrong one.",
+      "fixtureFacts": {
+        "purchaseAuthorized": [
+          "yes",
+          "mandate",
+          "May the agent pay without asking again: yes"
+        ],
+        "itemMatchesMandate": [
+          "unknown",
+          "mandate",
+          ""
+        ],
+        "quantityMatchesMandate": [
+          "yes",
+          "paypal_order",
+          "1 x ClearDrop Standard Pitcher Filter, 1 pack"
+        ],
+        "withinSpendingLimit": [
+          "yes",
+          "paypal_order",
+          "Total: $15.98"
+        ],
+        "exclusionsRespected": [
+          "yes",
+          "mandate",
+          "Must not include: (nothing listed)"
+        ],
+        "storeChargedAsOrdered": [
+          "yes",
+          "store_record",
+          "Charged $15.98, same as the submitted cart."
+        ],
+        "storeFulfilledAsOrdered": [
+          "yes",
+          "store_record",
+          "Shipped: 1 x ClearDrop Standard Pitcher Filter, 1 pack."
+        ]
+      },
+      "expected": {
+        "liable": "UNDETERMINED",
+        "firstDeviation": "INSUFFICIENT",
+        "quickClose": false
+      },
+      "firstDeviationQuote": null,
+      "firstDeviationCondition": null,
+      "why": "R3: the mandate's Item slot names no pitcher model, while the store sells filters for three models, so the records cannot settle whether the Standard filter is the item the buyer meant. The store charged and shipped what was ordered."
+    }
+  ]
+}
