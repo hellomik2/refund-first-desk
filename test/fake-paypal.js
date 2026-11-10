@@ -142,6 +142,10 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
       return ok({ batch_header: { payout_batch_id: p.batchId, batch_status: 'PENDING' } }, 201);
     },
     async getPayout(batchId) {
+      if (api.failNextGetPayout) {
+        api.failNextGetPayout = false;
+        throw new Error('network error while looking up the payout');
+      }
       const p = state.payouts.get(batchId);
       return ok({
         batch_header: { payout_batch_id: p.batchId, batch_status: 'SUCCESS', fees: { currency: 'USD', value: fromCents(p.feeCents) } },
@@ -165,6 +169,11 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
 
   api.refundsPending = false;
   api.payoutStatus = 'SUCCESS'; // set to FAILED, RETURNED, BLOCKED or UNCLAIMED to mimic a payout that did not reach the store
+  api.failNextGetPayout = false;
+  /** PayPal finishes payouts that were still in flight: every existing payout item takes this status. */
+  api.setPayoutStatus = (status) => {
+    for (const p of state.payouts.values()) p.status = status;
+  };
   /** The eCheck clears: every pending refund becomes COMPLETED. */
   api.completePendingRefunds = () => {
     for (const r of state.refunds.values()) if (r.status === 'PENDING') r.status = 'COMPLETED';
@@ -177,6 +186,7 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
     captures: state.captures.size,
     capturedCents: [...state.captures.values()].reduce((s, c) => s + c.grossCents, 0),
     payouts: state.payouts.size,
+    payoutCalls: state.log.filter((l) => l === 'createPayout').length,
   });
   return api;
 }

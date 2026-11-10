@@ -33,7 +33,11 @@ export class DeskError extends Error {
   }
 }
 
-export function createDesk({ db, paypal, factExtractor, clock, ledger, config, pollMs = 1500, refundWaitMs = 60_000 }) {
+// Payout item statuses (PayPal Payouts transaction_status). SUCCESS reached the store; these never will;
+// any other (PENDING, UNCLAIMED, ONHOLD) may still be paid later and is looked up again.
+const PAYOUT_NEVER_PAID = ['FAILED', 'RETURNED', 'BLOCKED', 'REFUNDED', 'REVERSED'];
+
+export function createDesk({ db, paypal, factExtractor, clock, ledger, config, pollMs = 1500, refundWaitMs = 60_000, payoutWaitMs = 45_000 }) {
   const S = db.data;
   const policy = config.policy;
 
@@ -614,14 +618,16 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
 
   // ---- settle -------------------------------------------------------------------------------------
 
+  /** The store is paid once. Desk funds set aside for it stay set aside until PayPal reports the payout as SUCCESS. */
   async function payStore(order, kase, source, note) {
-    if (['PAID', 'CANCELLED', 'AWAITING_DESK_FUNDS'].includes(order.storePayable.status)) return;
+    if (['PAID', 'CANCELLED', 'AWAITING_DESK_FUNDS', 'PAYOUT_FAILED'].includes(order.storePayable.status)) return;
+    if (order.storePayable.payout?.batchId) return refreshStorePayout(order, kase); // already sent: look it up, never send again
     const cents = order.storePayable.cents;
-    const base = { orderId: order.id, caseId: kase?.id || null, kind: 'STORE_PAID', from: source, to: 'store', cents, note };
     if (!config.storePayoutEmail) {
       // No store PayPal account configured: the payment is shown on the ledger only and marked as such.
-      ledger.post({ ...base, simulated: true });
+      ledger.post({ orderId: order.id, caseId: kase?.id || null, kind: 'STORE_PAID', from: source, to: 'store', cents, note, simulated: true });
       order.storePayable = { ...order.storePayable, status: 'PAID', source, simulated: true, paidAt: new Date().toISOString() };
+      if (source === 'desk:reserve') ledger.settleAllocation(order.id, kase?.id || null, 'CONSUMED', note);
       return;
     }
     const batchId = `store-${order.id}`;
@@ -633,28 +639,48 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       if (kase) event(kase, 'STORE_PAYOUT_FAILED', { error: err.message });
       return;
     }
-    const giveUpAt = Date.now() + 45_000;
-    for (;;) {
-      payout = readPayout((await paypal.getPayout(payout.batchId)).body);
-      const s = payout.item?.status;
-      if (s === 'SUCCESS' || s === 'FAILED' || s === 'RETURNED' || s === 'BLOCKED' || s === 'UNCLAIMED' || Date.now() > giveUpAt) break;
-      await sleep(pollMs);
-    }
-    const itemStatus = payout.item?.status;
-    // Only a payout PayPal reports as SUCCESS reached the store. FAILED, RETURNED, BLOCKED, UNCLAIMED, or
-    // still pending when the wait ran out, is recorded as not paid and is never shown as paid on the ledger.
-    if (itemStatus === 'SUCCESS') ledger.post({ ...base, paypal: { type: 'payout_item', id: payout.item?.id || payout.batchId } });
-    if (payout.feeCents) {
-      ledger.post({ orderId: order.id, caseId: kase?.id || null, kind: 'PAYPAL_FEE', from: 'desk:reserve', to: 'paypal:fees', cents: payout.feeCents, paypal: { type: 'payout_item', id: payout.item?.id || payout.batchId }, note: 'PayPal fee on the store payout' });
-    }
-    const payoutRecord = { batchId: payout.batchId, itemId: payout.item?.id, itemStatus, feeCents: payout.feeCents ?? 0 };
-    if (itemStatus !== 'SUCCESS') {
-      order.storePayable = { ...order.storePayable, status: itemStatus && itemStatus !== 'PENDING' ? 'PAYOUT_FAILED' : 'PAYOUT_PENDING', source, simulated: false, payout: payoutRecord };
-      if (kase) event(kase, 'STORE_PAYOUT_FAILED', { error: `PayPal payout item ${itemStatus || 'without a status'}` });
+    // PayPal has the payout: keep its id before anything else can fail, so it is only ever looked up again.
+    order.storePayable = { ...order.storePayable, status: 'PAYOUT_PENDING', source, note, simulated: false, payout: { batchId: payout.batchId, itemId: null, itemStatus: null, feeCents: 0 } };
+    await refreshStorePayout(order, kase, payoutWaitMs);
+  }
+
+  /** Look a sent store payout up (waiting up to waitMs for a final status) and record what PayPal says. */
+  async function refreshStorePayout(order, kase, waitMs = 0) {
+    const sp = order.storePayable;
+    if (sp.status !== 'PAYOUT_PENDING' || !sp.payout?.batchId) return;
+    const giveUpAt = Date.now() + waitMs;
+    let payout;
+    try {
+      for (;;) {
+        payout = readPayout((await paypal.getPayout(sp.payout.batchId)).body);
+        const s = payout.item?.status;
+        if (s === 'SUCCESS' || PAYOUT_NEVER_PAID.includes(s) || Date.now() >= giveUpAt) break;
+        await sleep(pollMs);
+      }
+    } catch (err) {
+      if (kase) event(kase, 'STORE_PAYOUT_LOOKUP_FAILED', { error: err.message }); // stays pending with its id
       return;
     }
-    order.storePayable = { ...order.storePayable, status: 'PAID', source, simulated: false, payout: payoutRecord, paidAt: new Date().toISOString() };
-    if (kase) event(kase, 'STORE_PAID', { source, payoutItemStatus: itemStatus });
+    const itemStatus = payout.item?.status || null;
+    sp.payout = { ...sp.payout, itemId: payout.item?.id || null, itemStatus, feeCents: payout.feeCents ?? 0 };
+    if (itemStatus === 'SUCCESS') {
+      const ref = { type: 'payout_item', id: payout.item?.id || sp.payout.batchId };
+      ledger.post({ orderId: order.id, caseId: kase?.id || null, kind: 'STORE_PAID', from: sp.source, to: 'store', cents: sp.cents, note: sp.note || '', paypal: ref });
+      if (payout.feeCents) ledger.post({ orderId: order.id, caseId: kase?.id || null, kind: 'PAYPAL_FEE', from: 'desk:reserve', to: 'paypal:fees', cents: payout.feeCents, paypal: ref, note: 'PayPal fee on the store payout' });
+      if (sp.source === 'desk:reserve') ledger.settleAllocation(order.id, kase?.id || null, 'CONSUMED', sp.note || 'store paid from desk funds');
+      sp.status = 'PAID';
+      sp.paidAt = new Date().toISOString();
+      if (kase) event(kase, 'STORE_PAID', { source: sp.source, payoutItemStatus: itemStatus });
+      return;
+    }
+    if (PAYOUT_NEVER_PAID.includes(itemStatus)) {
+      // Never reached the store. The desk funds set aside for it stay set aside: the store is still owed.
+      sp.status = 'PAYOUT_FAILED';
+      if (kase) event(kase, 'STORE_PAYOUT_FAILED', { error: `PayPal payout item ${itemStatus}` });
+      return;
+    }
+    // Still on its way (PENDING, UNCLAIMED, ONHOLD): looked up again on the next fast-forward or ledger check.
+    if (kase && !kase.events.some((e) => e.type === 'STORE_PAYOUT_PENDING')) event(kase, 'STORE_PAYOUT_PENDING', { payoutItemStatus: itemStatus });
   }
 
   /** Apply the verdict. Money rules only; nothing here asks the AI anything. */
@@ -699,13 +725,12 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       ledger.settleAllocation(order.id, kase.id, 'RELEASED', 'store is responsible and is not paid for this order');
       kase.status = 'CLOSED_STORE_RESPONSIBLE';
     } else if (liable === 'AGENT') {
-      ledger.settleAllocation(order.id, kase.id, 'CONSUMED', 'innocent store paid from the desk\'s own funds');
-      await payStore(order, kase, 'desk:reserve', 'agent error, store made whole from desk funds');
+      // The set-aside is used when PayPal reports the payout as SUCCESS (refreshStorePayout), not before.
+      await payStore(order, kase, 'desk:reserve', 'agent error, innocent store paid from the desk\'s own funds');
       ledger.memo({ orderId: order.id, caseId: kase.id, kind: 'AGENT_COMPANY_OWES', cents: order.totalCents, note: 'invoice to the agent company (shown only; not counted as funds until paid)' });
       kase.status = 'CLOSED_AGENT_RESPONSIBLE';
     } else if (liable === 'UNDETERMINED') {
-      ledger.settleAllocation(order.id, kase.id, 'CONSUMED', 'could not be decided: buyer keeps the refund, desk pays the store');
-      await payStore(order, kase, 'desk:reserve', 'undetermined, desk absorbs');
+      await payStore(order, kase, 'desk:reserve', 'could not be decided: buyer keeps the refund, desk pays the store');
       kase.status = 'CLOSED_UNDETERMINED_BUYER_KEEPS_REFUND';
     } else if (liable === 'BUYER') {
       if (!kase.refund?.completedAt) {
@@ -738,8 +763,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     kase.status = 'RECHARGE_HALTED';
     event(kase, 'RECHARGE_HALTED', { reason });
     // The store did nothing wrong and is still paid, from the desk's own funds.
-    ledger.settleAllocation(order.id, kase.id, 'CONSUMED', `re-charge halted (${reason}); store paid from desk funds`);
-    await payStore(order, kase, 'desk:reserve', `re-charge halted: ${reason}`);
+    await payStore(order, kase, 'desk:reserve', `re-charge halted (${reason}); store paid from desk funds`);
   }
 
   /** The buyer objects to being charged again. The charge is stopped and stays stopped. */
@@ -768,6 +792,9 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const blockedBy = rechargeGuard({ order, kase, buyer, amountCents: amount, now: clock.now() });
     if (blockedBy) {
       event(kase, 'RECHARGE_REFUSED', { blockedBy, amountCents: amount });
+      // The wallet that paid this order is gone; no later wallet may stand in for it. The charge stops for good
+      // and the innocent store is paid from the desk's own funds, as after a dispute.
+      if (blockedBy === 'NOT_THE_WALLET_THAT_PAID' && kase.recharge?.status === 'SCHEDULED') await haltRecharge(kase, blockedBy);
       db.save();
       return { charged: false, blockedBy, kase };
     }
@@ -817,12 +844,14 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
         if (r.charged) done.recharged.push(kase.id);
       }
     }
-    const withCase = new Set(Object.values(S.cases).map((c) => c.orderId));
+    const caseOf = new Map(Object.values(S.cases).map((c) => [c.orderId, c]));
     for (const order of Object.values(S.orders)) {
-      if (order.storePayable.status === 'HELD' && !withCase.has(order.id) && now >= new Date(order.storePayable.releaseAt).getTime()) {
+      if (order.storePayable.status === 'HELD' && !caseOf.has(order.id) && now >= new Date(order.storePayable.releaseAt).getTime()) {
         await payStore(order, null, 'desk:purchase', 'no problem reported during the hold window');
-        done.storesPaid.push(order.id);
-      }
+      } else if (order.storePayable.status === 'PAYOUT_PENDING') {
+        await refreshStorePayout(order, caseOf.get(order.id) || null); // sent earlier and not final yet: look it up again
+      } else continue;
+      if (order.storePayable.status === 'PAID') done.storesPaid.push(order.id);
     }
     db.save();
     return done;
@@ -834,6 +863,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   async function reconcile(orderId) {
     const order = must(S.orders, orderId, 'order');
     const kase = Object.values(S.cases).find((c) => c.orderId === orderId) || null;
+    await refreshStorePayout(order, kase); // a payout still on its way is looked up first, so the ledger is current
     const fromPayPal = { buyer: 0, store: 0, 'paypal:fees': 0 };
     const lookups = [];
     const cap = readCapture((await paypal.getCapture(order.paypal.captureId)).body);
@@ -853,8 +883,11 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     }
     if (order.storePayable.payout?.batchId) {
       const payout = readPayout((await paypal.getPayout(order.storePayable.payout.batchId)).body);
-      if (payout.item?.status === 'SUCCESS') fromPayPal.store += payout.item.amountCents;
-      fromPayPal['paypal:fees'] += payout.feeCents ?? 0;
+      // The ledger books the payout fee only with a SUCCESS payout (refreshStorePayout); compared on the same terms.
+      if (payout.item?.status === 'SUCCESS') {
+        fromPayPal.store += payout.item.amountCents;
+        fromPayPal['paypal:fees'] += payout.feeCents ?? 0;
+      }
       lookups.push({ type: 'payout_item', id: payout.item?.id, status: payout.item?.status, amountCents: payout.item?.amountCents, feeCents: payout.feeCents });
     }
     const totals = ledger.orderTotals(orderId);

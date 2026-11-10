@@ -57,7 +57,7 @@ function view(id, ctx) {
     name: b.name,
     wallet: b.wallet && { consent: b.wallet.consent, source: b.wallet.source, consentAt: b.wallet.consentAt }, // vault and customer ids never leave the server
   }));
-  const orders = Object.values(d.orders).map(({ fixtureFacts, fixtureDeep, fixtureQuick, pendingPayPalOrderId, ...o }) => o);
+  const orders = Object.values(d.orders).map(({ fixtureFacts, fixtureDeep, fixtureQuick, pendingPayPalOrderId, paidWithVaultId, ...o }) => o); // the vault id stays on the server
   return {
     workspace: id,
     environment: 'PayPal sandbox',

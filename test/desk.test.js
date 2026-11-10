@@ -434,6 +434,98 @@ for (const itemStatus of ['FAILED', 'RETURNED', 'BLOCKED', 'UNCLAIMED']) {
   });
 }
 
+// ---- store payouts that do not finish at once (codex cross-check 2026-11-10, G-1 to G-4 and G-6) ----
+
+test('G-1. a store payout that did not reach the store keeps its desk funds set aside', async () => {
+  for (const itemStatus of ['FAILED', 'PENDING']) {
+    const ctx = setup({}, { payoutWaitMs: 5 });
+    const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) }); // agent responsible: store paid from desk funds
+    ctx.paypal.payoutStatus = itemStatus;
+    await runToVerdict(ctx, order);
+    assert.notEqual(order.storePayable.status, 'PAID');
+    assert.equal(ctx.ledger.reserveAllocatedCents(), order.totalCents, `${itemStatus}: the store is still owed, so the funds stay set aside`);
+  }
+});
+
+test('G-2. a payout still pending when the wait ran out is looked up again later and recorded once PayPal says SUCCESS', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.payoutStatus = 'PENDING';
+  const kase = await runToVerdict(ctx, order);
+  assert.equal(order.storePayable.status, 'PAYOUT_PENDING');
+  assert.ok(order.storePayable.payout?.batchId, 'the PayPal payout id is kept');
+  ctx.paypal.setPayoutStatus('SUCCESS');
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.equal(ctx.ledger.orderTotals(order.id).store.netCents, order.totalCents, 'one STORE_PAID line');
+  assert.equal(ctx.ledger.reserveAllocatedCents(), 0, 'the set-aside is used once the store is paid');
+  assert.equal(ctx.paypal.totals().payoutCalls, 1, 'looked up again, never sent again');
+  assert.ok(kase.events.some((e) => e.type === 'STORE_PAID'));
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.ok(recon.ok, JSON.stringify(recon.rows));
+});
+
+test('G-2b. checking the ledger against PayPal looks a pending payout up first', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.payoutStatus = 'PENDING';
+  await runToVerdict(ctx, order);
+  ctx.paypal.setPayoutStatus('SUCCESS');
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.ok(recon.ok, JSON.stringify(recon.rows));
+});
+
+test('G-2c. UNCLAIMED and ONHOLD can still be paid later, so they stay pending', async () => {
+  for (const itemStatus of ['UNCLAIMED', 'ONHOLD']) {
+    const ctx = setup({}, { payoutWaitMs: 5 });
+    const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+    ctx.paypal.payoutStatus = itemStatus;
+    await runToVerdict(ctx, order);
+    assert.equal(order.storePayable.status, 'PAYOUT_PENDING', itemStatus);
+  }
+});
+
+test('G-3. a lookup that fails right after PayPal took the payout keeps the payout id and finishes later', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.failNextGetPayout = true;
+  await runToVerdict(ctx, order);
+  assert.equal(order.storePayable.status, 'PAYOUT_PENDING');
+  assert.ok(order.storePayable.payout?.batchId);
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.equal(ctx.paypal.totals().payoutCalls, 1);
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.ok(recon.ok, JSON.stringify(recon.rows));
+});
+
+test('G-4. a re-charge refused because the wallet changed stops for good and the store is paid from desk funds', async () => {
+  const ctx = setup();
+  const { buyer, order } = await buy(ctx);
+  const kase = await runToVerdict(ctx, order);
+  const mandate = ctx.desk.draftMandate({ buyerId: buyer.id, instruction: 'Buy eggs.', conditions: { item: 'eggs', quantity: 1, purchaseAuthorized: true } });
+  ctx.desk.approveMandate(mandate.id);
+  const started = await ctx.desk.startConsentPurchase({ mandateId: mandate.id, store: { id: 'freshcart', name: 'FreshCart' }, cart: [{ sku: 'EGG-12', name: 'Large Eggs, 12 ct', qty: 1, unitCents: 3143 }], agentLog: [AGENT_LINE], storeRecord: [STORE_LINE], fixtureFacts: facts() });
+  await ctx.desk.completeConsentPurchase(started.order.id);
+  ctx.clock.fastForwardDays(8);
+  await ctx.desk.processDue();
+  assert.equal(kase.recharge.status, 'HALTED');
+  assert.equal(kase.recharge.blockedBy, 'NOT_THE_WALLET_THAT_PAID');
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.equal(order.storePayable.source, 'desk:reserve');
+});
+
+test('G-6. fast-forward lists a store as paid only when PayPal says the payout succeeded', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx); // never reported: the store is paid when the hold window ends
+  ctx.paypal.payoutStatus = 'FAILED';
+  ctx.clock.fastForwardDays(30);
+  const done = await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAYOUT_FAILED');
+  assert.deepEqual(done.storesPaid, []);
+});
+
 test('a declined re-charge is recorded as not collected and the store is still paid', async () => {
   const ctx = setup();
   const { order } = await buy(ctx);

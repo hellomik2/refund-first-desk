@@ -35,6 +35,7 @@ const REASONS = {
   RECHARGE_CLOSED_BY_QUICK_CHECK: 'the quick check closed the re-charge for this order',
   CHARGE_FAILED: 'the charge did not go through',
   CAPTURE_NOT_COMPLETED: 'PayPal did not complete the charge',
+  NOT_THE_WALLET_THAT_PAID: 'the wallet that paid this order is no longer saved, and no other wallet may be charged for it',
 };
 const FACT_LABELS = {
   purchaseAuthorized: 'The mandate allowed the agent to pay',
@@ -109,17 +110,52 @@ async function act(name, body = {}, label = '') {
   if (busy) return null;
   busy = true;
   render(label);
+  const watch = watchProgress(label);
   try {
     const result = await api(`/api/act/${name}`, { ws: state.workspace, ...body });
+    watch.stop();
     state = result.state;
     return result;
   } catch (err) {
     toast(err.message);
     return null;
   } finally {
+    watch.stop();
     busy = false;
     render();
   }
+}
+
+// One action can take a while (the deep check, waiting for PayPal to confirm the store payout). The desk
+// records each step as it happens, so while the action runs the page reads the state again and shows the
+// buyer each notice the moment it exists: "Refund requested", then "PayPal refund completed", then the rest.
+function watchProgress(label) {
+  let stopped = false;
+  let inFlight = false;
+  let last = '';
+  const timer = setInterval(async () => {
+    if (stopped || inFlight) return;
+    inFlight = true;
+    try {
+      const res = await fetch(`/api/state?ws=${encodeURIComponent(state.workspace)}`, { cache: 'no-store' });
+      const text = res.ok ? await res.text() : '';
+      if (!stopped && text && text !== last) {
+        last = text;
+        state = JSON.parse(text);
+        render(label);
+      }
+    } catch {
+      // A missed read is fine: the next one, or the action's own answer, brings the state.
+    } finally {
+      inFlight = false;
+    }
+  }, 400);
+  return {
+    stop() {
+      stopped = true;
+      clearInterval(timer);
+    },
+  };
 }
 
 function toast(message) {
@@ -408,7 +444,10 @@ function buyerOutcome(kase) {
     return `<div class="stamp info"><div class="big">Charged again: ${usd(r.amountCents)}</div><p>After the notice period, from the saved wallet, with no dispute on file. PayPal capture <code>${esc(r.captureId)}</code>.</p>${noticeLine}</div>`;
   }
   if (r.status === 'HALTED') {
-    return `<div class="stamp go"><div class="big">The charge is stopped</div><p>Because ${esc(label(REASONS, r.blockedBy))}. You keep the refund; the store is still paid, from the desk's own funds.</p>${noticeLine}</div>`;
+    // Say what PayPal reported for the store payout, not what was intended.
+    const sp = state.orders.find((o) => o.id === kase.orderId)?.storePayable;
+    const store = sp?.status === 'PAID' ? "the store is still paid, from the desk's own funds" : sp?.status === 'PAYOUT_FAILED' ? "the store payout from the desk's own funds did not go through, and that money stays set aside for the store" : "the store's payout from the desk's own funds is on its way at PayPal";
+    return `<div class="stamp go"><div class="big">The charge is stopped</div><p>Because ${esc(label(REASONS, r.blockedBy))}. You keep the refund; ${store}.</p>${noticeLine}</div>`;
   }
   return '';
 }
@@ -634,6 +673,7 @@ function afterCard(k, order) {
     if (e.type === 'RECHARGE_COMPLETED') rows.push(`<li class="money">${at}<div class="what">Saved wallet charged again</div><div class="detail">${usd(e.amountCents)}, buyer not present, capture ${esc(e.captureId)}.</div></li>`);
     if (e.type === 'STORE_PAID') rows.push(`<li class="money">${at}<div class="what">Store paid from ${e.source === 'desk:reserve' ? "the desk's own funds" : 'the purchase money'}</div><div class="detail">PayPal payout item: ${esc(e.payoutItemStatus || 'unknown')}.</div></li>`);
     if (e.type === 'STORE_PAYOUT_FAILED') rows.push(`<li class="halt">${at}<div class="what">Store payout failed</div><div class="detail">${esc(e.error || '')}</div></li>`);
+    if (e.type === 'STORE_PAYOUT_PENDING') rows.push(`<li class="halt">${at}<div class="what">Store payout sent, not confirmed yet</div><div class="detail">PayPal payout item: ${esc(e.payoutItemStatus || 'no status yet')}. Looked up again on the next fast-forward or ledger check.</div></li>`);
     if (e.type === 'RESERVE_SHORTFALL') rows.push(`<li class="halt">${at}<div class="what">The desk's own funds are short</div><div class="detail">The store payment waits for an operator.</div></li>`);
   }
   const sp = order.storePayable;
@@ -748,11 +788,7 @@ document.addEventListener('click', async (event) => {
   if (name === 'report') {
     const statement = $('statement').value;
     const reported = await act('report', { orderId: order.id, statement }, 'report');
-    if (reported) {
-      // Let the refund be seen on its own before the check starts drawing attention.
-      await new Promise((r) => setTimeout(r, 1400));
-      await act('investigate', { caseId: reported.caseId }, 'investigate');
-    }
+    if (reported) await act('investigate', { caseId: reported.caseId }, 'investigate');
   }
   if (name === 'resolve') {
     const note = $('review-note')?.value || '';
