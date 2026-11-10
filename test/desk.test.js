@@ -187,6 +187,32 @@ test('3. an amount over the per-case cap is checked first, not refunded first', 
   assert.equal(kase.refund.status, 'COMPLETED', 'not the buyer\'s fault, so the refund follows the check');
 });
 
+test('3b. a refund that fails inside settle clears the settling mark, is recorded on the case, and a retry refunds once', async () => {
+  const ctx = setup();
+  const { order } = await buy(ctx, { cents: 8900, fixtureFacts: facts({ storeFulfilledAsOrdered: 'no' }) });
+  const { kase } = await ctx.desk.reportProblem({ orderId: order.id, statement: 'Only half of it arrived.' });
+  await ctx.desk.investigate(kase.id);
+  assert.equal(kase.path, 'VERIFY_FIRST');
+  assert.equal(kase.verdict.liable, 'STORE');
+  assert.equal(kase.refund, null, 'over the cap and not closed by the quick check: the refund is sent by settle');
+  // PayPal accepts the refund, then the status lookup fails once.
+  const getRefund = ctx.paypal.getRefund;
+  ctx.paypal.getRefund = async () => {
+    ctx.paypal.getRefund = getRefund;
+    throw new Error('PayPal get-refund failed: HTTP 503');
+  };
+  await assert.rejects(() => ctx.desk.settle(kase.id), /HTTP 503/);
+  assert.equal(kase.settling, undefined, 'the case can be settled again');
+  assert.equal(kase.settledAt, undefined);
+  assert.ok(kase.events.some((e) => e.type === 'SETTLE_FAILED' && /HTTP 503/.test(e.error)), 'the failure is on the case record');
+  // The retry, with a second call at the same moment: one refund at PayPal and one refund line in the ledger.
+  await Promise.all([ctx.desk.settle(kase.id), ctx.desk.settle(kase.id)]);
+  assert.ok(kase.refund.completedAt);
+  assert.equal(kase.status, 'CLOSED_STORE_RESPONSIBLE');
+  assert.equal(ctx.paypal.totals().refunds, 1);
+  assert.equal(ctx.db.data.ledger.filter((l) => l.kind === 'REFUND').length, 1);
+});
+
 test('4. more instant refunds than the 30-day count allows are checked first', async () => {
   const ctx = setup();
   const buyer = ctx.desk.createBuyer({ name: 'Frequent Reporter', useDemoWallet: true });

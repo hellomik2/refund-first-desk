@@ -300,7 +300,13 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       events: [],
     };
     S.cases[kase.id] = kase; // registered before the first await, so a concurrent report sees it
-    notify(kase, 'REFUND_REQUESTED', 'Refund requested. We have your report and the refund is on its way.');
+    notify(
+      kase,
+      'REFUND_REQUESTED',
+      kase.path === 'REFUND_FIRST'
+        ? 'Refund requested. We have your report and the refund is on its way.'
+        : 'Refund requested. We have your report. This order is checked before any refund is sent.',
+    );
     event(kase, 'REPORT_RECEIVED', { path: kase.path, reasons: limitCheck.reasons });
     if (kase.path === 'REFUND_FIRST') {
       ledger.allocateReserve(order.id, kase.id, order.totalCents);
@@ -543,7 +549,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       'HUMAN_REVIEW',
       kase.refund?.completedAt
         ? 'Two independent checks of this order disagree, so a person will look at it. Your refund stays where it is meanwhile.'
-        : 'The check could not finish within 5 minutes, so a person will look at it. Nothing is charged or paid out meanwhile.',
+        : 'Two independent checks of this order disagree, so a person will decide. That can take longer than 5 minutes. Nothing is charged or paid out meanwhile.',
     );
   }
 
@@ -640,7 +646,23 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const liable = kase.verdict.liable;
     if (liable === 'BUYER' && kase.rechargeClosed) throw new DeskError('RECHARGE_CLOSED', 'The quick check closed the re-charge for this order');
     kase.settling = true; // set before the first await so a repeated call cannot settle twice
+    try {
+      await applyVerdict(kase, order, liable);
+    } catch (err) {
+      // Cleared so the case can be settled again. A retry is safe: the refund reuses its request id,
+      // the reserve is set aside once, and a store that is already paid is not paid again.
+      delete kase.settling;
+      event(kase, 'SETTLE_FAILED', { liable, error: err.message });
+      db.save();
+      throw err;
+    }
+    kase.settledAt = new Date().toISOString();
+    delete kase.settling;
+    db.save();
+    return kase;
+  }
 
+  async function applyVerdict(kase, order, liable) {
     if (kase.path === 'VERIFY_FIRST' && liable !== 'BUYER' && !kase.refund?.completedAt) {
       // Over a limit, so the check came first. The buyer is not responsible: refund now.
       if (liable !== 'STORE') setAsideForStore(kase, order);
@@ -681,10 +703,6 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
         if (kase.dispute) await haltRecharge(kase, 'BUYER_DISPUTED');
       }
     }
-    kase.settledAt = new Date().toISOString();
-    delete kase.settling;
-    db.save();
-    return kase;
   }
 
   // ---- re-charge and the things that stop it -----------------------------------------------------

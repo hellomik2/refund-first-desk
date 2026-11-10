@@ -39,15 +39,24 @@ export function evidenceHash(evidence, statement, purpose) {
 
 const NO_FIRST_DEVIATION = { kind: 'INSUFFICIENT', step: null, condition: null, quote: '' };
 
+// The quick check reads only these two documents. A fact-table slot is used there only with its quotes
+// from them; with none left it is unknown, the way a model that read only these two would answer.
+const QUICK_DOCS = ['mandate', 'paypal_order'];
+function quickSlot(fact) {
+  const evidence = (fact.evidence || []).filter((e) => QUICK_DOCS.includes(e.doc));
+  return evidence.length ? { ...fact, evidence } : { value: 'unknown', evidence: [] };
+}
+
 /**
- * Hand-written answers. quick: `fixture.quick` if a test set it, else the matching slots of the fact
- * table. deep: the fact table (or `fixture.deep.facts`), `fixture.deep.firstDeviation`, and
+ * Hand-written answers. quick: `fixture.quick` if a test set it (passed as written), else the matching
+ * slots of the fact table, keeping only quotes from the mandate and the PayPal order. deep: the fact
+ * table (or `fixture.deep.facts`), `fixture.deep.firstDeviation`, and
  * `fixture.deep.verdict` (a liable string or {liable, reason}); with no verdict the desk uses the rules'
  * answer, so a bare fixture reads the records the way the rules do.
  */
 function fixtureAnswer(purpose, fixture = {}) {
   if (purpose === 'quick') {
-    const facts = fixture.quick || Object.fromEntries(QUICK_AI_FACTS.filter((k) => fixture.facts?.[k]).map((k) => [k, fixture.facts[k]]));
+    const facts = fixture.quick || Object.fromEntries(QUICK_AI_FACTS.filter((k) => fixture.facts?.[k]).map((k) => [k, quickSlot(fixture.facts[k])]));
     return { facts };
   }
   const deep = fixture.deep || {};

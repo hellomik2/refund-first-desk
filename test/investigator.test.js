@@ -3,7 +3,7 @@
 // Fake PayPal and the fixture AI only. Several AI answers below are written wrong on purpose.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { defaultPolicy } from '../src/config.js';
@@ -13,6 +13,7 @@ import { createLedger } from '../src/domain/ledger.js';
 import { createFactExtractor, evidenceHash } from '../src/ai/facts.js';
 import { stepLine, violationCandidates } from '../src/domain/agentlog.js';
 import { createDesk } from '../src/desk.js';
+import { caseRow } from '../scripts/metrics.mjs';
 import { createFakePayPal } from './fake-paypal.js';
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
@@ -190,6 +191,36 @@ test('over the limit, both keys say the buyer: no refund, nothing charged, the d
   const r = await ctx.desk.recharge(kase.id);
   assert.equal(r.charged, false);
   assert.equal(ctx.paypal.totals().captures, 1);
+});
+
+test('over the limit: the first notice confirms the request without saying the refund is on its way', async () => {
+  const ctx = setup();
+  const inside = await purchase(ctx);
+  const a = (await ctx.desk.reportProblem({ orderId: inside.order.id, statement: 'Wrong.' })).kase;
+  assert.match(a.notices[0].text, /^Refund requested\./);
+  assert.match(a.notices[0].text, /on its way/, 'inside the limits the refund really is under way');
+
+  // Like S24: over the limit and the order matches the mandate, so no refund ever comes.
+  const over = await purchase(ctx, { cart: OVER_CART, log: OVER_LOG, conditions: OVER_MANDATE });
+  const b = await reportAndCheck(ctx, over.order);
+  await ctx.desk.settle(b.id);
+  assert.equal(b.status, 'CLOSED_NO_REFUND');
+  assert.equal(b.notices[0].type, 'REFUND_REQUESTED');
+  assert.match(b.notices[0].text, /^Refund requested\./);
+  assert.ok(b.notices.every((n) => !/on its way/.test(n.text)), b.notices.map((n) => n.text).join(' | '));
+});
+
+test('over the limit, keys disagree: the notice says the checks disagree and that it can take longer than 5 minutes', async () => {
+  const ctx = setup();
+  const { order } = await purchase(ctx, { cart: OVER_CART, log: OVER_LOG, conditions: OVER_MANDATE, deep: { verdict: 'AGENT' } });
+  const kase = await reportAndCheck(ctx, order);
+  assert.equal(kase.status, 'HUMAN_REVIEW');
+  const n = kase.notices.at(-1);
+  assert.equal(n.type, 'HUMAN_REVIEW');
+  assert.ok(n.atMs - kase.receivedAtMs < FIVE_MINUTES_MS, 'the notice comes long before 5 minutes have passed');
+  assert.doesNotMatch(n.text, /could not finish/);
+  assert.match(n.text, /disagree/);
+  assert.match(n.text, /longer than 5 minutes/);
 });
 
 test('two checks of the same over-limit case at the same moment refund it once', async () => {
@@ -399,6 +430,50 @@ test('deep check: code lists violation candidates per step for the AI', async ()
   const { order } = await purchase(ctx, { conditions: { purchaseAuthorized: false } });
   const kase = await reportAndCheck(ctx, order);
   assert.deepEqual(kase.investigation.candidates.map((c) => `${c.step}:${c.condition}`), ['5:purchaseAuthorized', '6:purchaseAuthorized']);
+});
+
+test('deep check: a checkout or pay total over the limit is a candidate even when the cart alone is under it', () => {
+  // Cart $28.00 under the $30 limit; shipping takes checkout and payment to $32.00.
+  const log = agentLog({ total: '$32.00', addCents: 2800, payCents: 3200 });
+  assert.deepEqual(violationCandidates(log, MANDATE).map((c) => `${c.step}:${c.condition}`), ['5:withinSpendingLimit', '6:withinSpendingLimit']);
+  // S27: $44.99 in the cart, $58.08 paid after shipping and tax, limit $55.
+  const s27 = JSON.parse(readFileSync(new URL('../scenarios/cases.json', import.meta.url), 'utf8')).cases.find((c) => c.id === 'S27');
+  const found = violationCandidates(s27.agentLog, s27.conditions).map((c) => `${c.step}:${c.condition}`);
+  assert.ok(found.includes(`${s27.expected.firstDeviation}:withinSpendingLimit`), `S27 candidates: ${found.join(', ') || '(none)'}`);
+});
+
+test('fixture quick answer quotes only the mandate and the PayPal order; otherwise it answers unknown', async () => {
+  const extractor = createFactExtractor({ provider: 'fixture' });
+  const table = facts({
+    itemMatchesMandate: ['yes', 'agent_log', 'Viewed Oatly Barista Edition 1 L'],
+    exclusionsRespected: ['no', 'store_record', 'Shipped 2 x Oatly Barista Edition 1 L.'],
+  });
+  const answer = await extractor.quick({ evidence: {}, fixture: { facts: table } });
+  assert.equal(answer.facts.itemMatchesMandate.value, 'unknown', 'the agent log is not read by the quick check');
+  assert.deepEqual(answer.facts.itemMatchesMandate.evidence, []);
+  assert.equal(answer.facts.exclusionsRespected.value, 'unknown', 'the store record is not read by the quick check');
+  assert.deepEqual(answer.facts.quantityMatchesMandate, { value: 'yes', evidence: [{ doc: 'paypal_order', quote: '2 x Oatly Barista Edition 1 L' }] });
+
+  // In the desk: the quick check discards nothing, and the deep check still keeps the agent-log quote.
+  const ctx = setup();
+  const { order } = await purchase(ctx, { fixtureFacts: facts({ itemMatchesMandate: ['yes', 'agent_log', 'Viewed Oatly Barista Edition 1 L'] }) });
+  const kase = await reportAndCheck(ctx, order);
+  assert.deepEqual(kase.quick.downgraded, []);
+  assert.equal(kase.quick.aiFacts.itemMatchesMandate.value, 'unknown');
+  assert.equal(kase.quick.closed, false);
+  assert.equal(kase.investigation.facts.itemMatchesMandate.value, 'yes');
+  assert.deepEqual(kase.investigation.downgraded, []);
+});
+
+test('pass line 15 times the refund from server records: report received to the COMPLETED refund lookup', async () => {
+  const ctx = setup();
+  const conditions = { ...MANDATE, ...OVER_MANDATE, purchaseAuthorized: false };
+  const { order } = await purchase(ctx, { cart: OVER_CART, log: OVER_LOG, conditions });
+  const kase = await reportAndCheck(ctx, order);
+  kase.refund.secondsFromReport = 9999; // a stored duration must not reach line 15; only the two server times do
+  const sc = { id: 'T1', expected: { liable: 'AGENT', firstDeviation: 5, quickClose: true }, agentLog: OVER_LOG, cart: OVER_CART, agentCart: OVER_CART, conditions };
+  const row = caseRow({ sc, kase, order, db: ctx.db, policy: ctx.config.policy });
+  assert.equal(row.refundSecondsFromReport, (kase.refund.completedAtMs - kase.receivedAtMs) / 1000);
 });
 
 test('evidence: each step is one line in the agreed form; old one-string logs still read as steps', async () => {

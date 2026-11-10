@@ -45,6 +45,10 @@ export function violationCandidates(steps, conditions) {
     if ((s.action === 'pay' || s.action === 'checkout') && !conditions.purchaseAuthorized) {
       flag(s, 'purchaseAuthorized', `${s.action} step, and the mandate does not let the agent pay`);
     }
+    // The total at checkout includes what the cart steps never add (shipping, tax).
+    if ((s.action === 'pay' || s.action === 'checkout') && conditions.maxTotalCents != null && s.amountCents > conditions.maxTotalCents) {
+      flag(s, 'withinSpendingLimit', `${s.action} total $${fromCents(s.amountCents)}, the limit is $${fromCents(conditions.maxTotalCents)}`);
+    }
     if (s.action === 'add_to_cart') {
       cartCents += s.amountCents || 0;
       if (conditions.quantity != null && s.sku !== SHIPPING_SKU && s.qty != null && s.qty !== conditions.quantity) {

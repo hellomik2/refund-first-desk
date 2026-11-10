@@ -61,6 +61,8 @@ for (const sc of file.cases) {
     // A fixture "yes"/"no" whose quote is not in the records would be silently downgraded. Catch it here.
     const intendedUnknown = Object.entries(sc.fixtureFacts).filter(([, v]) => v[0] === 'unknown').map(([k]) => k);
     assert.deepEqual(kase.investigation.downgraded, [], `quotes not found in the records for: ${kase.investigation.downgraded.join(', ')}`);
+    // The quick check reads only the mandate and the PayPal order; the fixture must not cite anything else there.
+    assert.deepEqual(kase.quick.downgraded, [], `quick check discarded quotes for: ${kase.quick.downgraded.join(', ')}`);
     // The two facts code computes must agree with what the case author wrote.
     assert.deepEqual(kase.investigation.overrides, [], `fixture disagrees with code-computed facts: ${JSON.stringify(kase.investigation.overrides)}`);
     assert.equal(kase.verdict.liable, sc.expected.liable, `rule ${kase.verdict.rule}, reasons ${kase.verdict.reasons.join(', ')}, unknown by design: ${intendedUnknown.join(', ')}`);

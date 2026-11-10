@@ -2,7 +2,8 @@
 // It checks the shape of every case, the case mix, the agent step logs, the answer key
 // (responsibility, first deviation, quick close), that every hand-written quote really appears in the
 // records the desk shows, and that the fixed rules reach the expected responsibility once the facts
-// code can compute are put in. It also measures two naive baselines for the first deviation.
+// code can compute are put in. It also measures two naive baselines for the first deviation, and how
+// often the first step the code's violation candidates flag is the answer key's first deviation.
 // Any failed condition prints a reason and the script exits with code 1.
 //
 // Usage:  node scripts/case-audit.mjs
@@ -11,6 +12,7 @@ import { createHash } from 'node:crypto';
 import { ALL_FACTS, MANDATE_FACTS, STORE_FACTS, verifyFacts, decideLiability } from '../src/domain/verdict.js';
 import { normalizeConditions, conditionsAsText, fingerprintMandate } from '../src/domain/mandate.js';
 import { cartTotalCents, fromCents } from '../src/domain/money.js';
+import { violationCandidates } from '../src/domain/agentlog.js';
 import { defaultPolicy } from '../src/config.js';
 
 const FILE = new URL('../scenarios/cases.json', import.meta.url);
@@ -228,7 +230,7 @@ cases.forEach((sc, i) => {
 
 const rows = [];
 const counts = { mix: { AGENT: 0, STORE: 0, BUYER: 0, UNDETERMINED: 0 }, kinds: { STEP: 0, NONE: 0, INSUFFICIENT: 0 } };
-const tally = { overCap: [], admits: [], corrected: [], lastHits: 0, payHits: 0, quickTrue: 0, quickByCode: 0, quickByAiOnly: 0, quickMismatch: 0, codeOverrideMismatch: 0, quoteMisses: 0, verdictMismatch: 0 };
+const tally = { overCap: [], admits: [], corrected: [], lastHits: 0, payHits: 0, candidateHits: [], quickTrue: 0, quickByCode: 0, quickByAiOnly: 0, quickMismatch: 0, codeOverrideMismatch: 0, quoteMisses: 0, verdictMismatch: 0 };
 const steps = [];
 
 for (const sc of cases) {
@@ -295,6 +297,9 @@ for (const sc of cases) {
   const firstPay = sc.agentLog.find((s) => s.action === 'pay' || s.action === 'checkout')?.step ?? null;
   if (isInt(n) && n === last) tally.lastHits += 1;
   if (isInt(n) && n === firstPay) tally.payHits += 1;
+  // The step candidates the desk hands the investigator (src/domain/agentlog.js), not a baseline with a cap.
+  const flagged = violationCandidates(sc.agentLog, normalizeConditions(sc.conditions)).map((c) => c.step);
+  if (isInt(n) && flagged.length && Math.min(...flagged) === n) tally.candidateHits.push(sc.id);
 
   rows.push(`${sc.id}  ${liable.padEnd(12)} dev ${String(n).padEnd(12)} quick ${String(quickClose).padEnd(5)} ${over ? 'OVER ' : 'under'} $${fromCents(totalCents).padStart(6)}  steps ${String(last).padStart(2)}  first pay/checkout ${firstPay}  rules ${verdict.rule}${admission.length ? `  admits@${admission.join('/')}` : ''}${corrected(sc) ? '  corrected' : ''}`);
 }
@@ -343,6 +348,7 @@ console.log(`fixture vs code-computed      ${tally.codeOverrideMismatch} disagre
 console.log(`rules vs expected.liable      ${cases.length - tally.verdictMismatch}/${cases.length} agree`);
 console.log(`baseline "last step"          ${tally.lastHits}/${cases.length} = ${pct(tally.lastHits, N)} (of ${counts.kinds.STEP} step cases: ${pct(tally.lastHits, S)}) (50% at most)`);
 console.log(`baseline "first pay/checkout" ${tally.payHits}/${cases.length} = ${pct(tally.payHits, N)} (of ${counts.kinds.STEP} step cases: ${pct(tally.payHits, S)}) (50% at most)`);
+console.log(`code candidates, first step   ${tally.candidateHits.length}/${counts.kinds.STEP} step cases match the first deviation: ${tally.candidateHits.join(', ') || '-'} (report only)`);
 console.log(`detector self-test            ${broken.length ? `FAILED (${broken.length})` : 'passed (5 known-bad samples caught)'}`);
 console.log('');
 if (errors.length) {
