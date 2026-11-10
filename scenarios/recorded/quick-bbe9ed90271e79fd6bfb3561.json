@@ -4,11 +4,11 @@
    "value": "no",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: compact travel umbrella, black"
+     "doc": "paypal_order",
+     "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
     }
    ],
-   "note": "The order is a Navy umbrella, while the mandate asks for a black one. The colour attribute the buyer named does not match."
+   "note": "Mandate asks for a black umbrella; the order is a navy one, so the colour attribute the buyer named does not match."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
+   "note": "The mandate lists nothing to exclude, so the order cannot contain an excluded item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
     }
    ],
-   "note": "The mandate asks for one unit and the order has one umbrella."
+   "note": "Mandate quantity is 1 and the order has 1 umbrella."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:53:14.685Z"
+ "recordedAt": "2026-11-10T08:22:06.477Z"
 }

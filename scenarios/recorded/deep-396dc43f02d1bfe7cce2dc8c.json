@@ -18,17 +18,17 @@
      "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm (sku BCB-M-3020) @ $16.95"
     }
    ],
-   "note": "The ordered product is the medium bamboo cutting board, about 30 x 20 cm, that the mandate describes."
+   "note": "The ordered product is the medium 30 x 20 cm bamboo cutting board the mandate describes."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm (sku BCB-M-3020) @ $16.95"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "The order has one unit, and the mandate asks for quantity 1."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $21.90"
     }
    ],
-   "note": "The PayPal total of $21.90 is under the mandate's $25.00 limit."
+   "note": "The PayPal total of $21.90 is under the $25.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,17 +48,17 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be broken."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "unknown",
    "evidence": [],
-   "note": "The store has provided no record, so what it actually charged cannot be checked against the cart. The PayPal total matches the cart, but that is not the store's own record."
+   "note": "No store record was provided, so what the store actually charged cannot be checked against the submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "unknown",
    "evidence": [],
-   "note": "No store record says what was shipped. The agent's log shows only that no shipping notice arrived."
+   "note": "No store record or shipping notice was provided, so what was shipped is not known."
   }
  },
  "firstDeviation": {
@@ -69,8 +69,8 @@
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The order matches the mandate on item, quantity, spending limit, exclusions and permission to pay, and no numbered step breaks a condition. However, the store has provided no record, so it is not known whether the store charged and shipped what was ordered. The buyer cannot yet be held responsible, and the store cannot be shown at fault, so the records do not settle liability."
+  "reason": "The order matches the mandate on item, quantity, spending limit and exclusions, and the buyer allowed payment. However, the store has provided no record, so it is not established that the store charged and shipped what was ordered. The buyer reports that no board has arrived, so the outcome cannot be settled from these records."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:52:09.129Z"
+ "recordedAt": "2026-11-10T08:21:08.666Z"
 }

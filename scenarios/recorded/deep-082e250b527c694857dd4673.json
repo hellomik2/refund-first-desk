@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate expressly allows the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,17 +18,17 @@
      "quote": "4 x A5 Dotted Notebook, Hardcover (sku NB-A5-DOT-HC) @ $12.95"
     }
    ],
-   "note": "The ordered product is the A5 dotted notebook, hardcover named in the mandate Item slot."
+   "note": "The ordered product is the A5 dotted notebook, hardcover named in the mandate."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 4"
+     "doc": "paypal_order",
+     "quote": "4 x A5 Dotted Notebook, Hardcover (sku NB-A5-DOT-HC) @ $12.95"
     }
    ],
-   "note": "The order contains 4 units, matching the mandate quantity. The store shipped only 3, which is a fulfilment problem recorded separately."
+   "note": "Ordered quantity is 4, which matches the mandate quantity of 4."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $56.30"
     }
    ],
-   "note": "The PayPal total of $56.30 is under the $60.00 limit."
+   "note": "The $56.30 total is within the $60.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be breached."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,29 +58,29 @@
      "quote": "Charged $56.30 in line with the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart total with no added lines or price changes."
+   "note": "The store charged the submitted cart total."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
    "evidence": [
     {
      "doc": "store_record",
-     "quote": "Shipped: 3 x A5 Dotted Notebook, Hardcover. Order closed as complete."
+     "quote": "Shipped: 3 x A5 Dotted Notebook, Hardcover."
     }
    ],
-   "note": "The order was for 4 notebooks but the store shipped 3, and the record says the shelf count was short by one."
+   "note": "Four notebooks were ordered and charged, but the store says only three were shipped."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 7,
   "condition": "storeFulfilledAsOrdered",
-  "quote": "Shipment sent: 3 x A5 Dotted Notebook, Hardcover. Your order is complete."
+  "quote": "PaperTrail: Shipment sent: 3 x A5 Dotted Notebook, Hardcover. Your order is complete."
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The agent's order matched the mandate in item, quantity, spending limit, exclusions and permission to pay, and the store charged the submitted cart. The store then shipped only 3 of the 4 notebooks ordered, so the store did not fulfil the order as placed."
+  "reason": "The order matched the mandate and was charged as submitted, but the store shipped 3 notebooks instead of the 4 ordered and charged for, so the store did not fulfil the order as placed."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:51:08.719Z"
+ "recordedAt": "2026-11-10T08:20:19.014Z"
 }

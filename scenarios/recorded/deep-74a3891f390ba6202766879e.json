@@ -8,14 +8,14 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives permission to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Insulated Stainless Steel Water Bottle, 32 oz (sku WB-32-SS) @ $26.99"
+     "doc": "mandate",
+     "quote": "Item: insulated stainless steel water bottle, 32 oz"
     }
    ],
    "note": "The ordered bottle is the 32 oz insulated stainless steel water bottle the mandate describes."
@@ -38,7 +38,7 @@
      "quote": "Total: $30.48"
     }
    ],
-   "note": "The order total of $30.48 is above the $30.00 limit, including shipping."
+   "note": "The PayPal total of $30.48 is over the $30.00 total limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so nothing can be excluded."
+   "note": "The mandate lists no exclusions, so none can be broken."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $30.48: bottle $26.99 and standard shipping $3.49, as in the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart lines at the submitted prices."
+   "note": "The store charged the same two lines the agent submitted, at the same prices."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Insulated Stainless Steel Water Bottle, 32 oz."
     }
    ],
-   "note": "The store shipped the ordered bottle."
+   "note": "The store shipped the one bottle that was ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid $30.48 for the order, which is over the mandate's $30.00 all-in spending limit, so the final order differs from the approved mandate. The store charged and shipped as ordered, so the deviation lies with the agent, not the buyer."
+  "reason": "The agent paid $30.48 against a mandate capped at $30.00 total, so the order breaks the spending-limit condition. The store charged and shipped as ordered, so the store is not at fault, and BUYER cannot apply because the order does not match every mandate condition."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:48:21.155Z"
+ "recordedAt": "2026-11-10T08:17:50.116Z"
 }

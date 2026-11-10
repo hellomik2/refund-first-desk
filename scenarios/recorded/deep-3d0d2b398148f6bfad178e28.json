@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate explicitly allows the agent to pay without asking again."
+   "note": "The mandate explicitly allows paying without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,17 +18,17 @@
      "quote": "1 x LED Bulb 9 W Warm White 2700K, 4-pack (sku LED-9W-27K-4) @ $10.99"
     }
    ],
-   "note": "The ordered item is the warm white 2700K 4-pack the mandate asks for. The shipped Daylight item is a fulfilment problem, not the order."
+   "note": "The order is for the warm white 2700K 4-pack the mandate asks for. The buyer's report is not evidence and was not used. The wrong item was shipped, which is recorded under storeFulfilledAsOrdered."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x LED Bulb 9 W Warm White 2700K, 4-pack (sku LED-9W-27K-4) @ $10.99"
     }
    ],
-   "note": "The order contains one unit of the 4-pack, matching the mandate quantity."
+   "note": "Mandate quantity is 1 and the order has 1 unit of the item."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $15.49"
     }
    ],
-   "note": "The PayPal total of $15.49 is under the $18.00 limit."
+   "note": "The total is below the $18.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be broken."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $15.49, same as the cart submitted."
     }
    ],
-   "note": "The store charged the same total as the submitted cart."
+   "note": "The store charged the submitted cart total with no added lines."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x LED Bulb 9 W Daylight 5000K, 4-pack."
     }
    ],
-   "note": "The store shipped the Daylight 5000K bulbs instead of the warm white 2700K bulbs that were ordered."
+   "note": "The store shipped the Daylight 5000K bulbs, not the warm white 2700K bulbs that were ordered and charged."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The order as placed matches the mandate on item, quantity, spending limit, exclusions and permission to pay, and the store charged as submitted. The store then shipped a different product (Daylight 5000K) in place of the warm white 4-pack, so the store did not fulfil what was ordered. The agent's step 3 was corrected before payment and does not make the agent liable for the final order. The buyer's complaint is not evidence and does not change this."
+  "reason": "The order matches the mandate on item, quantity, spending limit, exclusions and permission to pay. The store substituted and shipped Daylight 5000K bulbs instead of the warm white 2700K bulbs it charged for, so the store did not ship what was ordered. The agent's step 3 added the wrong product but was corrected before payment, so it does not make the agent responsible for the final order."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:57:10.634Z"
+ "recordedAt": "2026-11-10T08:26:03.204Z"
 }

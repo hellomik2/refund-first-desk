@@ -8,7 +8,7 @@
      "quote": "1 x Kessa Stainless Steel Stockpot with Lid, 8-Quart (sku KES-SP-8Q) @ $64.99"
     }
    ],
-   "note": "Ordered product matches the mandate item: Kessa stainless steel stockpot with lid, 8-quart. Shipping line is not an item."
+   "note": "Ordered product matches the mandate item: Kessa stainless steel stockpot with lid, 8-quart. The shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists nothing to exclude, so the order cannot contain an excluded item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "1 x Kessa Stainless Steel Stockpot with Lid, 8-Quart (sku KES-SP-8Q) @ $64.99"
     }
    ],
-   "note": "Mandate quantity is 1; order has 1 unit."
+   "note": "Mandate quantity is 1 and the order has 1 unit of the stockpot."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:54:02.201Z"
+ "recordedAt": "2026-11-10T08:22:53.192Z"
 }

@@ -18,7 +18,7 @@
      "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
     }
    ],
-   "note": "The mandate asks for a black umbrella; the order is for a navy one."
+   "note": "The mandate asks for a black compact travel umbrella; the order is for a navy one."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "The mandate asks for one unit and the order has one unit."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $20.98"
     }
    ],
-   "note": "The total is under the $25.00 limit."
+   "note": "The PayPal total of $20.98 is under the $25.00 spending limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be broken."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $20.98, same as the cart that was submitted."
     }
    ],
-   "note": "The store charged the submitted cart total."
+   "note": "The store charged the same total as the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Compact Travel Umbrella, Red."
     }
    ],
-   "note": "The store shipped a red umbrella instead of the navy one ordered."
+   "note": "The store shipped a red umbrella, but the order was for a navy one."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent added a navy umbrella, not the black one the mandate approved, and paid for it without asking again. The order therefore differs from the mandate in item, so the agent is responsible. The store also shipped a red umbrella, which is not the ordered item, but the mandate deviation comes from the agent."
+  "reason": "The agent added a navy umbrella at step 4 when the buyer's mandate required black, so the final order differs from the approved mandate in item. The store also shipped a red umbrella instead of the navy one ordered, but the order itself already departed from the mandate."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:53:20.567Z"
+ "recordedAt": "2026-11-10T08:22:13.292Z"
 }

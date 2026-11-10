@@ -8,7 +8,7 @@
      "quote": "Item: extra virgin olive oil, 500 ml bottle"
     }
    ],
-   "note": "The order is for a 750 ml extra virgin olive oil, not the 500 ml bottle the mandate names as the item."
+   "note": "The order is for a 750 ml extra virgin olive oil, but the mandate specifies a 500 ml bottle. The size attribute the buyer named does not match."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the exclusion condition is met."
+   "note": "The mandate lists nothing to exclude, so the order cannot contain any excluded item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "1 x Extra Virgin Olive Oil, 750 ml (sku EVOO-750) @ $16.49"
     }
    ],
-   "note": "Ordered quantity is 1, matching the mandate's Quantity of 1."
+   "note": "Quantity is 1, matching the mandate's Quantity of 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:46:16.004Z"
+ "recordedAt": "2026-11-10T08:15:49.978Z"
 }

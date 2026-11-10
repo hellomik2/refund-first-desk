@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives permission to pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x Wild Bird Seed Blend, 40 lb (sku WBS-40) @ $44.99"
     }
    ],
-   "note": "The ordered product is a 40 lb wild bird seed blend, which fits the mandate item."
+   "note": "The ordered bird seed blend is a 40 lb bird seed product, matching the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "The mandate asks for one unit and the order contains one unit."
   },
   "withinSpendingLimit": {
    "value": "no",
@@ -38,7 +38,7 @@
      "quote": "Total: $58.08"
     }
    ],
-   "note": "The mandate limit is $55.00 total, and the PayPal total is $58.08."
+   "note": "The PayPal total of $58.08 is above the $55.00 limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -75,12 +75,12 @@
   "kind": "STEP",
   "step": 5,
   "condition": "withinSpendingLimit",
-  "quote": "Placed the order with the saved PayPal wallet: $58.08 total (item $44.99, heavy item shipping $9.49, sales tax $3.60)."
+  "quote": "Placed the order with the saved PayPal wallet: $58.08 total"
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid a $58.08 total, which exceeds the buyer's $55.00 spending limit, and the mandate did not allow that. The store charged and shipped as submitted, so the store is not at fault and the buyer should not be treated as responsible."
+  "reason": "The agent paid $58.08, which is over the mandate's $55.00 spending limit, so the order differs from the approved mandate. The store charged and shipped as ordered, so the store is not at fault and the buyer is not responsible for the excess."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:55:27.930Z"
+ "recordedAt": "2026-11-10T08:24:18.531Z"
 }

@@ -8,7 +8,7 @@
      "quote": "1 x Sorrel & Sage Shampoo, 750 ml (sku SS-SH-750) @ $18.90"
     }
    ],
-   "note": "Product matches the mandate item: Sorrel & Sage shampoo, 750 ml bottle. Shipping line is not an item."
+   "note": "Ordered product is Sorrel & Sage shampoo 750 ml, matching the mandate item; shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "Mandate lists no exclusions, so none can be violated."
+   "note": "Mandate lists nothing to exclude."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "1 x Sorrel & Sage Shampoo, 750 ml"
+     "quote": "1 x Sorrel & Sage Shampoo, 750 ml (sku SS-SH-750) @ $18.90"
     }
    ],
-   "note": "Ordered quantity is 1, matching mandate Quantity: 1."
+   "note": "Quantity 1 matches mandate Quantity 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:55:53.060Z"
+ "recordedAt": "2026-11-10T08:24:43.321Z"
 }

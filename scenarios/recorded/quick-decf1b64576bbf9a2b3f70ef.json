@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the condition holds."
+   "note": "The mandate lists nothing to exclude."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x LED Bulb 9 W Warm White 2700K, 4-pack (sku LED-9W-27K-4) @ $10.99"
     }
    ],
-   "note": "Mandate asks for quantity 1 and the order has 1 x the 4-pack product."
+   "note": "Mandate Quantity is 1 and the order has 1 unit of the item."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:57:03.170Z"
+ "recordedAt": "2026-11-10T08:25:54.428Z"
 }

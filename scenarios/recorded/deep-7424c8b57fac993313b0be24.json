@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The mandate explicitly allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: mint toothpaste"
+     "doc": "paypal_order",
+     "quote": "6 x FreshMint Toothpaste, 100 ml (sku TP-MINT-100) @ $1.99"
     }
    ],
-   "note": "The ordered product is FreshMint Toothpaste, 100 ml, which is mint toothpaste."
+   "note": "The mandate asks for mint toothpaste, and the ordered item is FreshMint Toothpaste, a mint toothpaste."
   },
   "quantityMatchesMandate": {
    "value": "no",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 3"
     }
    ],
-   "note": "The mandate asks for 3 units, but the order contains 6 units."
+   "note": "The mandate asks for 3 units, but the order contains 6."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $14.93"
     }
    ],
-   "note": "The total of $14.93 is within the $15.00 limit."
+   "note": "The PayPal total of $14.93 is within the $15.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $14.93, same as submitted."
     }
    ],
-   "note": "The store charged the submitted cart total."
+   "note": "The store charged the same total as the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "At step 5 the agent added 3 more tubes, so the order holds 6 units against the mandate's 3. The order therefore differs from the approved mandate in quantity, and the agent is responsible even though the store charged and shipped as ordered."
+  "reason": "The agent added 6 tubes at step 5 although the mandate allowed 3. The store charged and shipped what was ordered, but the order differs from the mandate's quantity, so the agent is responsible and the buyer is not."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:47:49.245Z"
+ "recordedAt": "2026-11-10T08:17:18.462Z"
 }

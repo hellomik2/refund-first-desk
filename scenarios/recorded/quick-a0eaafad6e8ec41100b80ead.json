@@ -4,11 +4,11 @@
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
+     "doc": "mandate",
+     "quote": "Item: cat treats, salmon flavour, 150 g bag"
     }
    ],
-   "note": "Salmon-flavoured cat treats in a 150 g bag, matching the mandate item; the shipping line is not an item."
+   "note": "PayPal order line reads Crunchy Cat Treats, Salmon, 150 g, which matches the mandate item; the shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists nothing to exclude."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "Ordered quantity is 1, matching the mandate quantity of 1."
+   "note": "PayPal order shows 1 x the treats, matching quantity 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:49:06.433Z"
+ "recordedAt": "2026-11-10T08:18:33.382Z"
 }

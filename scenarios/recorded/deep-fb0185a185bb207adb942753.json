@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives permission to pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
     }
    ],
-   "note": "The ordered item is the unscented 12-pack the mandate asks for."
+   "note": "The ordered product is the unscented 12-pack the mandate asks for."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "One unit was ordered and the mandate asks for quantity 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,17 +38,17 @@
      "quote": "Total: $22.99"
     }
    ],
-   "note": "The total is under the $25.00 limit."
+   "note": "The total of $22.99 is under the $25.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
+     "doc": "mandate",
+     "quote": "Must not include: scented products"
     }
    ],
-   "note": "The order contains no scented product. The scented item was a substitution by the store at fulfilment, recorded under storeFulfilledAsOrdered."
+   "note": "The order contains only the unscented pods, so no scented product is in it."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $22.99, same as the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart total with no added lines."
+   "note": "The store charged the same total as the submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Lavender Scent Laundry Pods, 12 ct."
     }
    ],
-   "note": "The store shipped a scented substitute instead of the unscented pods that were ordered."
+   "note": "The store shipped scented pods in place of the unscented pods that were ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The agent's order matched the mandate in item, quantity, limit and exclusions and was paid as approved. The store then charged as ordered but shipped a lavender-scented substitute, so the store did not ship what was ordered."
+  "reason": "The order matches the mandate and the store charged the submitted cart, but the store shipped lavender scented pods instead of the unscented pods ordered, so the store did not ship what was ordered."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:43:02.151Z"
+ "recordedAt": "2026-11-10T08:12:09.727Z"
 }

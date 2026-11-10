@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate lets the agent pay without asking again."
+   "note": "The mandate permits the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Item: AeroPress Go travel coffee maker"
     }
    ],
-   "note": "The PayPal order and store record both show the AeroPress Go Travel Coffee Maker (sku AP-GO), matching the mandate item."
+   "note": "The order is the AeroPress Go Travel Coffee Maker (sku AP-GO), which is the item the mandate names. The buyer's report says they wanted the bigger model, but the mandate is what was approved, so the report is not used as evidence."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "One unit was ordered, matching the mandate."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $39.95"
     }
    ],
-   "note": "The order total of $39.95 is under the $45.00 limit."
+   "note": "The total is under the $45.00 limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so nothing can be excluded."
+   "note": "The mandate lists no exclusions, so none can be breached."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x AeroPress Go Travel Coffee Maker."
     }
    ],
-   "note": "The store shipped the ordered item and quantity."
+   "note": "The store shipped the ordered item."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The order matches every mandate condition: the AeroPress Go, quantity 1, $39.95 under the $45 limit, no exclusions, and payment was permitted. The store charged and shipped as ordered. The buyer's complaint about wanting the bigger model conflicts with the mandate's wording, but the complaint is not evidence and the mandate governs."
+  "reason": "Every numbered step stays within the mandate. The order matches the mandate on item, quantity, spending limit and exclusions, the buyer allowed the agent to pay, and the store charged and shipped exactly what was ordered. The buyer's complaint describes a different product from the one the mandate approved, so it does not change the result."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:58:36.544Z"
+ "recordedAt": "2026-11-10T08:27:42.493Z"
 }

@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate lets the agent pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,17 +18,17 @@
      "quote": "1 x Sorrel & Sage Shampoo, 750 ml (sku SS-SH-750) @ $18.90"
     }
    ],
-   "note": "The mandate asks for the 750 ml bottle and the order is the 750 ml bottle. The 500 ml item added at step 3 was removed at step 5."
+   "note": "The mandate asks for the 750 ml bottle; the order is the 750 ml bottle. The 500 ml item was removed at step 5 and is not in the order."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Sorrel & Sage Shampoo, 750 ml (sku SS-SH-750) @ $18.90"
     }
    ],
-   "note": "The mandate asks for one unit and the order has one unit."
+   "note": "Mandate quantity is 1 and the order has 1 unit of the shampoo."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $23.10"
     }
    ],
-   "note": "The $23.10 total is under the $25.00 limit."
+   "note": "Mandate limit is $25.00 total; the PayPal total is $23.10."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be in the order."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $23.10, which equals the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart total."
+   "note": "The store charged the total of the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Sorrel & Sage Shampoo, 750 ml."
     }
    ],
-   "note": "The store shipped the 750 ml bottle that was ordered."
+   "note": "The store shipped the 750 ml shampoo that was ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The final order matches every mandate condition: the 750 ml bottle, one unit, $23.10 under the $25.00 limit, no exclusions. The buyer allowed the agent to pay, and the store charged and shipped as ordered. The 500 ml add at step 3 was corrected before payment. The buyer's belief that they asked for the 500 ml bottle conflicts with the approved mandate, which names the 750 ml bottle."
+  "reason": "The final order matches every mandate condition (750 ml item, quantity 1, $23.10 within the $25.00 limit, no exclusions), the buyer allowed the agent to pay, and the store charged and shipped as ordered. The buyer's belief that they asked for 500 ml conflicts with the approved mandate, which says 750 ml. The step 3 deviation was corrected at step 5 before payment."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:56:00.642Z"
+ "recordedAt": "2026-11-10T08:24:51.630Z"
 }

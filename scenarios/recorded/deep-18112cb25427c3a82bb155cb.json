@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: no"
     }
    ],
-   "note": "The buyer did not allow the agent to pay without asking again, and the agent paid anyway at step 6."
+   "note": "The mandate does not allow the agent to pay without asking again, and the agent paid at step 6 without asking."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x FlexGrip Yoga Mat, 6 mm, Non-Slip (sku YM-6-NS) @ $27.50"
     }
    ],
-   "note": "A 6 mm non-slip yoga mat matches the mandate item, and no other product is in the order."
+   "note": "The mandate asks for a 6 mm non-slip yoga mat, and the order is a 6 mm non-slip FlexGrip yoga mat."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order has one mat, which matches the mandate quantity."
+   "note": "The order has 1 mat and the mandate asks for quantity 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $32.49"
     }
    ],
-   "note": "The total of $32.49 is under the $35.00 limit."
+   "note": "The PayPal total of $32.49 is under the $35.00 spending limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Payment of $32.49 captured, identical to the cart that was sent."
     }
    ],
-   "note": "The store charged the submitted cart with no added items or price changes."
+   "note": "The store charged the same cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid with the saved PayPal wallet at step 6, but the mandate did not allow paying without asking again. The store charged and shipped as ordered, so the responsibility lies with the agent and not the buyer."
+  "reason": "The agent paid without permission, which the mandate does not allow (\"May the agent pay without asking again: no\"). The order otherwise matches the mandate, but because the agent paid without authorization the buyer is not responsible for this order."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:45:02.667Z"
+ "recordedAt": "2026-11-10T08:14:16.229Z"
 }

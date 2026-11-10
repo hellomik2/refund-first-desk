@@ -8,29 +8,29 @@
      "quote": "1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly) (sku COF-MR-12-SUB) @ $14.39"
     }
    ],
-   "note": "The order is for medium roast whole bean coffee 12 oz, but it is the Subscribe & Save monthly variant, which the buyer did not ask for; the mandate asked for a one-time purchase only."
+   "note": "The ordered product is medium roast whole bean coffee 12 oz, but it is the Subscribe & Save monthly variant, which the buyer did not ask for; the mandate asks for a one-time purchase."
   },
   "exclusionsRespected": {
    "value": "no",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "(Subscribe & Save, monthly)"
+     "doc": "mandate",
+     "quote": "Must not include: subscriptions; auto-renewing plans"
     }
    ],
-   "note": "The mandate says subscriptions and auto-renewing plans must not be included; the order is a monthly subscription."
+   "note": "The PayPal order is a monthly Subscribe & Save item, which is a subscription the mandate excludes."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "1 x Medium Roast Whole Bean Coffee, 12 oz"
+     "quote": "1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly) (sku COF-MR-12-SUB) @ $14.39"
     }
    ],
-   "note": "Quantity of one coffee bag matches the mandate's quantity of 1. Shipping line is not an item."
+   "note": "Quantity ordered is 1, matching the mandate quantity of 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:51:23.448Z"
+ "recordedAt": "2026-11-10T08:20:29.167Z"
 }

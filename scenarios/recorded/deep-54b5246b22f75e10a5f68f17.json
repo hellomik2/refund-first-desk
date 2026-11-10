@@ -18,7 +18,7 @@
      "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
     }
    ],
-   "note": "The ordered product is the medium roast compostable pods, box of 18, which is the mandate item."
+   "note": "The ordered product is medium roast compostable coffee pods, box of 18, which is the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
     }
    ],
-   "note": "One box was ordered, matching Quantity: 1."
+   "note": "The order is one box, matching the mandate quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $17.44"
     }
    ],
-   "note": "$17.44 is under the $20.00 limit."
+   "note": "The total of $17.44 is under the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Amount charged: $17.44, equal to the cart submitted."
     }
    ],
-   "note": "The store charged the same total as the agent's submitted cart."
+   "note": "The store charged the same total as the submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The agent's order matched the mandate in item, quantity, spending limit and exclusions, and the store charged the submitted cart. The store record shows it shipped a 12 ct box instead of the ordered 18 ct box, so the store did not ship what was ordered."
+  "reason": "The agent's steps stayed within the mandate and the order, and the store charged the submitted cart. The store record shows the 12 ct box was shipped instead of the ordered 18 ct box, so the store did not ship what was ordered."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:45:35.266Z"
+ "recordedAt": "2026-11-10T08:14:52.781Z"
 }
