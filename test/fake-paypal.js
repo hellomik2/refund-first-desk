@@ -135,7 +135,7 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
     async createPayout({ batchId, receiverEmail, amountCents, itemId }) {
       state.log.push('createPayout');
       const p = idem(batchId, () => {
-        const payout = { batchId: id('BATCH'), itemId: id('ITEM'), receiverEmail, amountCents, senderItemId: itemId, status: 'SUCCESS', feeCents: 25 };
+        const payout = { batchId: id('BATCH'), itemId: id('ITEM'), receiverEmail, amountCents, senderItemId: itemId, status: api.payoutStatus, feeCents: 25 };
         state.payouts.set(payout.batchId, payout);
         return payout;
       });
@@ -164,6 +164,7 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
   }
 
   api.refundsPending = false;
+  api.payoutStatus = 'SUCCESS'; // set to FAILED, RETURNED, BLOCKED or UNCLAIMED to mimic a payout that did not reach the store
   /** The eCheck clears: every pending refund becomes COMPLETED. */
   api.completePendingRefunds = () => {
     for (const r of state.refunds.values()) if (r.status === 'PENDING') r.status = 'COMPLETED';

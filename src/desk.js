@@ -156,6 +156,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   }
 
   function recordCapture(order, buyer, parsed) {
+    // The saved wallet that paid this order: the only one a re-charge for it may use (rechargeGuard).
+    order.paidWithVaultId = buyer.wallet?.vaultId ?? null;
     order.paypal = {
       orderId: parsed.orderId,
       captureId: parsed.capture.id,
@@ -638,19 +640,21 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       if (s === 'SUCCESS' || s === 'FAILED' || s === 'RETURNED' || s === 'BLOCKED' || s === 'UNCLAIMED' || Date.now() > giveUpAt) break;
       await sleep(pollMs);
     }
-    ledger.post({ ...base, paypal: { type: 'payout_item', id: payout.item?.id || payout.batchId } });
+    const itemStatus = payout.item?.status;
+    // Only a payout PayPal reports as SUCCESS reached the store. FAILED, RETURNED, BLOCKED, UNCLAIMED, or
+    // still pending when the wait ran out, is recorded as not paid and is never shown as paid on the ledger.
+    if (itemStatus === 'SUCCESS') ledger.post({ ...base, paypal: { type: 'payout_item', id: payout.item?.id || payout.batchId } });
     if (payout.feeCents) {
       ledger.post({ orderId: order.id, caseId: kase?.id || null, kind: 'PAYPAL_FEE', from: 'desk:reserve', to: 'paypal:fees', cents: payout.feeCents, paypal: { type: 'payout_item', id: payout.item?.id || payout.batchId }, note: 'PayPal fee on the store payout' });
     }
-    order.storePayable = {
-      ...order.storePayable,
-      status: 'PAID',
-      source,
-      simulated: false,
-      payout: { batchId: payout.batchId, itemId: payout.item?.id, itemStatus: payout.item?.status, feeCents: payout.feeCents ?? 0 },
-      paidAt: new Date().toISOString(),
-    };
-    if (kase) event(kase, 'STORE_PAID', { source, payoutItemStatus: payout.item?.status });
+    const payoutRecord = { batchId: payout.batchId, itemId: payout.item?.id, itemStatus, feeCents: payout.feeCents ?? 0 };
+    if (itemStatus !== 'SUCCESS') {
+      order.storePayable = { ...order.storePayable, status: itemStatus && itemStatus !== 'PENDING' ? 'PAYOUT_FAILED' : 'PAYOUT_PENDING', source, simulated: false, payout: payoutRecord };
+      if (kase) event(kase, 'STORE_PAYOUT_FAILED', { error: `PayPal payout item ${itemStatus || 'without a status'}` });
+      return;
+    }
+    order.storePayable = { ...order.storePayable, status: 'PAID', source, simulated: false, payout: payoutRecord, paidAt: new Date().toISOString() };
+    if (kase) event(kase, 'STORE_PAID', { source, payoutItemStatus: itemStatus });
   }
 
   /** Apply the verdict. Money rules only; nothing here asks the AI anything. */

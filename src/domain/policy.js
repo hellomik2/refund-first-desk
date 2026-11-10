@@ -57,6 +57,8 @@ export function rechargeGuard({ order, kase, buyer, amountCents, now }) {
   if (!kase.refund?.completedAt) return 'NOTHING_WAS_REFUNDED';
   if (kase.dispute) return 'BUYER_DISPUTED';
   if (!buyer.wallet || buyer.wallet.consent !== 'ACTIVE') return 'NO_ACTIVE_CONSENT';
+  // Only the wallet that paid this order may be charged again for it, never one saved later.
+  if (buyer.wallet.vaultId !== order.paidWithVaultId) return 'NOT_THE_WALLET_THAT_PAID';
   if (kase.recharge?.status === 'HALTED') return kase.recharge.blockedBy || 'RECHARGE_HALTED';
   if (!kase.notice) return 'NO_NOTICE_SENT';
   if (new Date(now).getTime() < new Date(kase.notice.chargeNotBefore).getTime()) return 'NOTICE_PERIOD_RUNNING';

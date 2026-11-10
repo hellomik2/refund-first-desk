@@ -400,6 +400,40 @@ test('9. a re-charge requested twice charges once', async () => {
   assert.equal(ctx.paypal.totals().capturedCents, order.totalCents * 2);
 });
 
+test('5d. a re-charge goes only to the wallet that paid this order, never to a wallet saved later', async () => {
+  const ctx = setup();
+  const { buyer, order } = await buy(ctx); // paid with the demo wallet VAULT-DEMO
+  const kase = await runToVerdict(ctx, order);
+  assert.equal(kase.verdict.liable, 'BUYER');
+  // Later the same buyer pays another order at PayPal and saves a different wallet.
+  const mandate = ctx.desk.draftMandate({ buyerId: buyer.id, instruction: 'Buy eggs.', conditions: { item: 'eggs', quantity: 1, purchaseAuthorized: true } });
+  ctx.desk.approveMandate(mandate.id);
+  const started = await ctx.desk.startConsentPurchase({ mandateId: mandate.id, store: { id: 'freshcart', name: 'FreshCart' }, cart: [{ sku: 'EGG-12', name: 'Large Eggs, 12 ct', qty: 1, unitCents: 3143 }], agentLog: [AGENT_LINE], storeRecord: [STORE_LINE], fixtureFacts: facts() });
+  await ctx.desk.completeConsentPurchase(started.order.id);
+  assert.notEqual(buyer.wallet.vaultId, 'VAULT-DEMO', 'the buyer now has a different saved wallet');
+  const capturesBefore = ctx.paypal.totals().captures;
+  ctx.clock.fastForwardDays(8);
+  const r = await ctx.desk.recharge(kase.id);
+  assert.equal(r.charged, false);
+  assert.equal(r.blockedBy, 'NOT_THE_WALLET_THAT_PAID');
+  assert.equal(ctx.paypal.totals().captures, capturesBefore, 'no charge on the wallet saved later');
+});
+
+for (const itemStatus of ['FAILED', 'RETURNED', 'BLOCKED', 'UNCLAIMED']) {
+  test(`a store payout PayPal reports as ${itemStatus} is not recorded as paid`, async () => {
+    const ctx = setup();
+    const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) }); // agent responsible: store paid from desk funds
+    ctx.paypal.payoutStatus = itemStatus;
+    const kase = await runToVerdict(ctx, order);
+    assert.equal(kase.verdict.liable, 'AGENT');
+    assert.notEqual(order.storePayable.status, 'PAID');
+    assert.equal(order.storePayable.payout?.itemStatus, itemStatus);
+    assert.equal(ctx.ledger.orderTotals(order.id).store.netCents, 0, 'no STORE_PAID line on the ledger');
+    const recon = await ctx.desk.reconcile(order.id);
+    assert.ok(recon.ok, JSON.stringify(recon.rows));
+  });
+}
+
 test('a declined re-charge is recorded as not collected and the store is still paid', async () => {
   const ctx = setup();
   const { order } = await buy(ctx);
