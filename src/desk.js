@@ -36,6 +36,7 @@ export class DeskError extends Error {
 // Payout item statuses (PayPal Payouts transaction_status). SUCCESS reached the store; these never will;
 // any other (PENDING, UNCLAIMED, ONHOLD) may still be paid later and is looked up again.
 const PAYOUT_NEVER_PAID = ['FAILED', 'RETURNED', 'BLOCKED', 'REFUNDED', 'REVERSED'];
+const PAYOUT_RESEND_WINDOW_MS = 29 * 24 * 60 * 60 * 1000; // PayPal keeps a sender_batch_id for 30 days
 
 export function createDesk({ db, paypal, factExtractor, clock, ledger, config, pollMs = 1500, refundWaitMs = 60_000, payoutWaitMs = 45_000 }) {
   const S = db.data;
@@ -641,15 +642,18 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
    */
   async function sendStorePayout(order, kase, waitMs) {
     const sp = order.storePayable;
+    const resend = sp.status === 'PAYOUT_UNCONFIRMED'; // an earlier send may have reached PayPal
+    if (!resend) sp.firstSentAtMs = Date.now();
     let batchId;
     try {
       batchId = readPayout((await paypal.createPayout({ batchId: `store-${order.id}`, receiverEmail: config.storePayoutEmail, amountCents: sp.cents, itemId: order.id, note: `Order ${order.id}: ${sp.note || ''}` })).body).batchId;
     } catch (err) {
       batchId = (err.links || []).map((l) => /\/v1\/payments\/payouts\/([^/?#]+)/.exec(l.href || '')?.[1]).find(Boolean);
       if (!batchId) {
-        // A clear refusal from PayPal (4xx) means nothing was sent. Anything else (no answer, 5xx) may have
-        // been sent: it stays unconfirmed, keeps its set-aside, and is sent again with the same id later.
-        const refused = err instanceof PayPalError && err.status >= 400 && err.status < 500;
+        // Only a clear refusal of the first send (bad request, auth, not found, unprocessable) means nothing
+        // was sent. Anything else (no answer, 5xx, 409, 429, or any answer to a repeat, which says nothing about
+        // the original) may have been sent: it stays unconfirmed, keeps its set-aside, and is sent again later.
+        const refused = !resend && err instanceof PayPalError && [400, 401, 403, 404, 422].includes(err.status);
         sp.status = refused ? 'PAYOUT_FAILED' : 'PAYOUT_UNCONFIRMED';
         sp.error = err.message;
         if (kase) event(kase, refused ? 'STORE_PAYOUT_FAILED' : 'STORE_PAYOUT_UNCONFIRMED', { error: err.message });
@@ -665,8 +669,16 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
 
   /** A payout sent earlier and not final yet: look it up, or send it again under the same id if no answer ever came. */
   async function followStorePayout(order, kase) {
-    if (order.storePayable.status === 'PAYOUT_UNCONFIRMED') return sendStorePayout(order, kase, 0);
-    return refreshStorePayout(order, kase);
+    const sp = order.storePayable;
+    if (sp.status !== 'PAYOUT_UNCONFIRMED') return refreshStorePayout(order, kase);
+    // PayPal keeps a sender_batch_id (and a request id) for 30 days. Past about 29 days of real time a repeat
+    // could become a second payout, so it is never sent again: a person checks the PayPal account.
+    if (Date.now() - (sp.firstSentAtMs ?? 0) > PAYOUT_RESEND_WINDOW_MS) {
+      if (!sp.needsPerson && kase) event(kase, 'STORE_PAYOUT_NEEDS_PERSON', { error: 'no answer from PayPal for about 30 days' });
+      sp.needsPerson = true;
+      return;
+    }
+    return sendStorePayout(order, kase, 0);
   }
 
   /**
@@ -676,7 +688,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
    */
   function coverPrepaidStore(order, kase, note) {
     const a = S.reserve.allocations[order.id];
-    if (!a || a.status !== 'HELD' || order.storePayable.source !== 'desk:purchase') return;
+    const refunded = Object.values(S.cases).some((c) => c.orderId === order.id && c.refund?.completedAt);
+    if (!a || a.status !== 'HELD' || !refunded || order.storePayable.status !== 'PAID' || order.storePayable.source !== 'desk:purchase') return;
     ledger.post({ orderId: order.id, caseId: kase?.id || null, kind: 'RESERVE_COVERS_REFUND', from: 'desk:reserve', to: 'desk:purchase', cents: a.cents, note: `store was paid before the report; desk funds cover the refund (${note})` });
     ledger.settleAllocation(order.id, kase?.id || null, 'CONSUMED', 'store was paid before the report; desk funds cover the refund');
   }
@@ -708,10 +721,17 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       sp.status = 'PAID';
       sp.paidAt = new Date().toISOString();
       if (kase) event(kase, 'STORE_PAID', { source: sp.source, payoutItemStatus: itemStatus });
+      // Sent from the purchase money before a report, confirmed after the refund: desk funds cover that refund.
+      coverPrepaidStore(order, kase, 'store payout confirmed after the report');
       return;
     }
     if (PAYOUT_NEVER_PAID.includes(itemStatus)) {
-      // Never reached the store. The desk funds set aside for it stay set aside: the store is still owed.
+      // Never reached the store. The desk funds set aside for it stay set aside: the store is still owed,
+      // unless the store was found responsible, in which case it is not owed and the set-aside is released.
+      if (kase?.verdict?.liable === 'STORE') {
+        ledger.settleAllocation(order.id, kase.id, 'RELEASED', 'store is responsible and its payout did not go through');
+        sp.storeOwesBack = false;
+      }
       sp.status = 'PAYOUT_FAILED';
       if (kase) event(kase, 'STORE_PAYOUT_FAILED', { error: `PayPal payout item ${itemStatus}` });
       return;
@@ -758,8 +778,17 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     }
 
     if (liable === 'STORE') {
-      order.storePayable.status = 'CANCELLED';
-      ledger.settleAllocation(order.id, kase.id, 'RELEASED', 'store is responsible and is not paid for this order');
+      const sp = order.storePayable;
+      if (['PAID', 'PAYOUT_PENDING', 'PAYOUT_UNCONFIRMED'].includes(sp.status)) {
+        // The store was paid (or a payout was already sent) before the report. That fact is kept; the desk
+        // records what the store owes back (shown only, not counted as funds) and its own funds cover the refund.
+        sp.storeOwesBack = true;
+        ledger.memo({ orderId: order.id, caseId: kase.id, kind: 'STORE_OWES_DESK', cents: order.totalCents, note: 'store responsible but paid before the report; to recover (shown only)' });
+        coverPrepaidStore(order, kase, 'store responsible, paid before the report');
+      } else {
+        sp.status = 'CANCELLED';
+        ledger.settleAllocation(order.id, kase.id, 'RELEASED', 'store is responsible and is not paid for this order');
+      }
       kase.status = 'CLOSED_STORE_RESPONSIBLE';
     } else if (liable === 'AGENT') {
       // The set-aside is used when PayPal reports the payout as SUCCESS (refreshStorePayout), not before.

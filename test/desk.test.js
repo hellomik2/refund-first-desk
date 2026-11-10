@@ -584,6 +584,71 @@ test('H-2. a store paid at the end of the hold window, then a report: desk funds
   assert.equal(ctx.paypal.totals().payouts, 1, 'the store is not paid twice');
 });
 
+// ---- third codex pass (J-1 to J-4) ----
+
+test('J-1. after a lost answer, a refusal of the repeated request does not turn the original payout into "failed"', async () => {
+  for (const status of [429, 409, 401]) {
+    const ctx = setup({}, { payoutWaitMs: 5 });
+    const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+    ctx.paypal.loseNextPayoutResponse = true;
+    await runToVerdict(ctx, order);
+    const { PayPalError } = await import('../src/paypal/client.js');
+    ctx.paypal.createPayout = async () => { throw new PayPalError({ label: 'create-payout', status, name: 'X' }); };
+    const recon = await ctx.desk.reconcile(order.id);
+    assert.equal(order.storePayable.status, 'PAYOUT_UNCONFIRMED', `${status}`);
+    assert.equal(recon.ok, false, `${status}: the store side is still unknown`);
+  }
+});
+
+test('J-2. a store payout started before the report and confirmed after it: desk funds cover the refund once', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.payoutStatus = 'PENDING';
+  ctx.clock.fastForwardDays(ctx.config.policy.storeHoldDays + 1);
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAYOUT_PENDING');
+  await runToVerdict(ctx, order);
+  ctx.paypal.setPayoutStatus('SUCCESS');
+  await ctx.desk.processDue();
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.equal(ctx.ledger.reserveAllocatedCents(), 0);
+  assert.equal(ctx.ledger.orderTotals(order.id)['desk:purchase'].netCents, 0);
+  assert.equal(ctx.db.data.ledger.filter((l) => l.kind === 'RESERVE_COVERS_REFUND').length, 1, 'covered once');
+  assert.equal(ctx.paypal.totals().payouts, 1);
+});
+
+test('J-3. a store found responsible after it was already paid keeps the record that it was paid', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ storeFulfilledAsOrdered: 'no' }) });
+  ctx.clock.fastForwardDays(ctx.config.policy.storeHoldDays + 1);
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAID');
+  const kase = await runToVerdict(ctx, order);
+  assert.equal(kase.verdict.liable, 'STORE');
+  assert.equal(order.storePayable.status, 'PAID', 'never overwritten as cancelled');
+  assert.equal(order.storePayable.storeOwesBack, true);
+  assert.equal(ctx.ledger.reserveAllocatedCents(), 0);
+  assert.equal(ctx.ledger.orderTotals(order.id)['desk:purchase'].netCents, 0);
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.ok(recon.ok, JSON.stringify(recon.rows));
+});
+
+test('J-4. a payout with no answer for about 30 days is never sent again (PayPal forgets the id after 30 days)', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.loseNextPayoutResponse = true;
+  await runToVerdict(ctx, order);
+  order.storePayable.firstSentAtMs -= 29.5 * 24 * 60 * 60 * 1000; // real time passed, not the policy clock
+  let sent = 0;
+  ctx.paypal.createPayout = async () => { sent += 1; throw new Error('should not be called'); };
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.equal(sent, 0);
+  assert.equal(order.storePayable.status, 'PAYOUT_UNCONFIRMED');
+  assert.equal(order.storePayable.needsPerson, true);
+  assert.equal(recon.ok, false);
+});
+
 test('a declined re-charge is recorded as not collected and the store is still paid', async () => {
   const ctx = setup();
   const { order } = await buy(ctx);

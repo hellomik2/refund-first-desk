@@ -96,6 +96,7 @@ const KINDS = {
   RESERVE_RELEASED: 'Set-aside released',
   RESERVE_CONSUMED: 'Set-aside used',
   RESERVE_COVERS_REFUND: 'Own funds cover a refund after the store was paid',
+  STORE_OWES_DESK: 'Store owes the desk (paid before the report)',
   AGENT_COMPANY_OWES: "Agent's operator owes the desk",
 };
 
@@ -218,19 +219,28 @@ function render(working = '') {
   $('rail').innerHTML = railHtml(cur, working);
   $('cols').hidden = !cur.mandate;
   if (!cur.mandate) return;
-  redraw('buyer', buyerColumn(cur, working));
-  redraw('desk', deskColumn(cur, working));
-  redraw('money', moneyColumn(cur));
+  const scope = cur.mandate.id; // typed text belongs to this purchase; a new case starts clean
+  redraw('buyer', buyerColumn(cur, working), scope);
+  redraw('desk', deskColumn(cur, working), scope);
+  redraw('money', moneyColumn(cur), scope);
 }
 
-/** Replace a column's content but keep every record the reader opened or closed (matched by its summary). */
-function redraw(id, html) {
+/**
+ * Replace a column's content but keep what the reader did there: every record opened or closed (matched by
+ * its summary) and any text typed into a field (the buyer's sentence, the operator's note), within one purchase.
+ */
+function redraw(id, html, scope) {
   const el = $(id);
   const keyOf = (d) => (d.querySelector('summary')?.textContent || '').replace(/\d+/g, '#'); // "latest 14" and "latest 15" are the same record
   const was = new Map([...el.querySelectorAll('details')].map((d) => [keyOf(d), d.open]));
+  const typed = el.dataset.scope === scope ? new Map([...el.querySelectorAll('textarea[id], input[id]')].map((f) => [f.id, f.value])) : new Map();
   el.innerHTML = html;
+  el.dataset.scope = scope;
   for (const d of el.querySelectorAll('details')) {
     if (was.has(keyOf(d))) d.open = was.get(keyOf(d));
+  }
+  for (const f of el.querySelectorAll('textarea[id], input[id]')) {
+    if (typed.has(f.id)) f.value = typed.get(f.id);
   }
 }
 
@@ -693,6 +703,8 @@ function afterCard(k, order) {
   }
   const sp = order.storePayable;
   if (sp.status === 'PAID' && sp.simulated) rows.push(`<li class="done"><span class="when">${time(sp.paidAt)}</span><div class="what">Store paid from ${sp.source === 'desk:reserve' ? "the desk's own funds" : 'the purchase money'} <span class="tag sim">ledger only</span></div><div class="detail">No store PayPal account is configured, so this payment is recorded but not sent.</div></li>`);
+  if (sp.storeOwesBack && k.verdict) rows.push(`<li class="halt"><div class="what">The store was paid before the report</div><div class="detail">It is responsible, so it owes ${usd(sp.cents)} back. Recorded only; the desk's own funds cover the buyer's refund.</div></li>`);
+  if (sp.needsPerson) rows.push(`<li class="halt"><div class="what">Store payout: no answer from PayPal for about 30 days</div><div class="detail">Not sent again (PayPal forgets the payout id after 30 days). A person checks the PayPal account.</div></li>`);
   if (sp.status === 'CANCELLED' && k.verdict) rows.push(`<li class="halt"><div class="what">Store is not paid for this order</div><div class="detail">The amount set aside for it is released.</div></li>`);
   if (!rows.length) return '';
   return `<div class="card stage-card"><h3>After the decision</h3><ol class="steps">${rows.join('')}</ol></div>`;
@@ -748,7 +760,7 @@ function moneyColumn({ order, kase: k }) {
         const chip = stage ? `<span class="stagechip ${stage[1]}">${stage[0]}</span>` : '';
         return l.memo
           ? `<tr><td><strong>${esc(label(KINDS, l.kind))}</strong> <span class="tag">memo</span><span class="src">${esc(l.note)}</span>${chip}</td><td class="num">${usd(l.cents)}</td></tr>`
-          : `<tr><td><strong>${esc(label(KINDS, l.kind))}</strong> ${l.simulated ? '<span class="tag sim">ledger only</span>' : '<span class="tag real">PayPal</span>'}<span class="src">${esc(ACCOUNTS[l.from] || l.from)} to ${esc(ACCOUNTS[l.to] || l.to)}${l.simulated ? '' : `, <code>${esc(l.paypal?.id || '')}</code>`}</span>${chip}</td><td class="num">${usd(l.cents)}</td></tr>`;
+          : `<tr><td><strong>${esc(label(KINDS, l.kind))}</strong> ${l.simulated ? '<span class="tag sim">ledger only</span>' : l.paypal?.id ? '<span class="tag real">PayPal</span>' : '<span class="tag">between desk accounts</span>'}<span class="src">${esc(ACCOUNTS[l.from] || l.from)} to ${esc(ACCOUNTS[l.to] || l.to)}${l.paypal?.id && !l.simulated ? `, <code>${esc(l.paypal.id)}</code>` : ''}</span>${chip}</td><td class="num">${usd(l.cents)}</td></tr>`;
       })
       .join('')}
     </tbody></table></div>`;
