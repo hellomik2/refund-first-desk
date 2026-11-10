@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "Mandate lists nothing to exclude."
+   "note": "Mandate lists no exclusions, so none can be in the order."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -32,5 +32,5 @@
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:34:02.669Z"
+ "recordedAt": "2026-11-10T00:23:02.263Z"
 }

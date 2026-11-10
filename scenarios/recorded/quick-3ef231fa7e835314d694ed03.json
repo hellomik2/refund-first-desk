@@ -1,14 +1,14 @@
 {
  "facts": {
   "itemMatchesMandate": {
-   "value": "unknown",
+   "value": "yes",
    "evidence": [
     {
      "doc": "mandate",
      "quote": "Item: bike inner tube"
     }
    ],
-   "note": "The order contains a bike inner tube (26 x 1.95, Schrader valve), but the mandate names no size or valve type, so whether this is the right tube depends on what the bike needs; a slower check is needed."
+   "note": "The order contains a 26 x 1.95 Schrader valve inner tube, which is a bike inner tube; the shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the order cannot break an exclusion."
+   "note": "The mandate lists nothing to exclude."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order has 1 x inner tube, matching the mandate quantity of 1."
+   "note": "The order has 1 x inner tube, matching quantity 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:32:02.115Z"
+ "recordedAt": "2026-11-10T00:16:32.860Z"
 }

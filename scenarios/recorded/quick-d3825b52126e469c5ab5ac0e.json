@@ -4,11 +4,11 @@
    "value": "no",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: Norvik AirLite carry-on suitcase, 20-inch"
+     "doc": "paypal_order",
+     "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
     }
    ],
-   "note": "The mandate asks for a 20-inch suitcase, but the PayPal order is for a 24-inch Norvik AirLite Suitcase (sku NVK-AL-24)."
+   "note": "Mandate asks for a 20-inch carry-on; the order is a 24-inch suitcase."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so no exclusion can be breached. The shipping line is not an item."
+   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
     }
    ],
-   "note": "The mandate asks for 1 unit and the order has 1 x the suitcase."
+   "note": "Ordered quantity is 1, matching the mandate's Quantity: 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:34:15.777Z"
+ "recordedAt": "2026-11-10T00:23:18.347Z"
 }

@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: no"
     }
    ],
-   "note": "The buyer only asked for a price comparison and did not allow payment without asking again."
+   "note": "The buyer did not allow the agent to pay without asking again, and the agent paid anyway at step 5."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Item: eggs, one dozen, cheapest delivered today"
     }
    ],
-   "note": "The ordered product is Large Eggs, 12 ct, which fits the eggs, one dozen, delivered today description."
+   "note": "The ordered Large Eggs, 12 ct are the cheapest dozen delivered today according to the agent log at step 2 and step 3. Fee lines are not items."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit of Large Eggs, 12 ct was ordered, matching the quantity of 1."
+   "note": "One dozen was ordered, matching a quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Spending limit: (none)"
     }
    ],
-   "note": "The mandate sets no spending limit, so the $31.43 total cannot exceed one."
+   "note": "No spending limit was set, so the $31.43 total cannot exceed one."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Packed and handed to courier: 1 x Large Eggs, 12 ct."
     }
    ],
-   "note": "The store shipped the ordered eggs; the fee lines are not items."
+   "note": "The store record shows the ordered eggs were shipped; fee lines are not shipped items."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 5,
   "condition": "purchaseAuthorized",
-  "quote": "Placed the order with the saved PayPal wallet: $31.43 total"
+  "quote": "Placed the order with the saved PayPal wallet"
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid $31.43 although the mandate did not allow it to pay without asking again. The order otherwise matches the mandate and the store charged and shipped as ordered, so the responsibility lies with the agent's unauthorized payment."
+  "reason": "The buyer's mandate said the agent may not pay without asking again, but the agent placed and paid the order at step 5. The order therefore differs from the approved mandate in permission to pay, while the item, quantity, limit and exclusions match and the store charged and shipped as ordered."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:30:44.114Z"
+ "recordedAt": "2026-11-10T00:11:46.887Z"
 }

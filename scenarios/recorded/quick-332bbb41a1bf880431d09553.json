@@ -4,11 +4,11 @@
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Halden Clip-On LED Desk Lamp, Black (sku HAL-CLIP-BLK) @ $34.99"
+     "doc": "mandate",
+     "quote": "Item: Halden clip-on LED desk lamp, black"
     }
    ],
-   "note": "Ordered product is the Halden clip-on LED desk lamp in black, matching the mandate Item slot."
+   "note": "The PayPal order lists Halden Clip-On LED Desk Lamp, Black, which matches the mandate item, including the black colour. The quote is taken from the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so exclusions are respected."
+   "note": "The mandate lists no exclusions, so none can be violated."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Halden Clip-On LED Desk Lamp, Black"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "Ordered quantity is 1, matching the mandate Quantity of 1."
+   "note": "The PayPal order shows 1 x the lamp, and the mandate asks for quantity 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:31:45.925Z"
+ "recordedAt": "2026-11-10T00:15:21.166Z"
 }

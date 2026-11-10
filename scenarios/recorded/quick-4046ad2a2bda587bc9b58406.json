@@ -28,9 +28,9 @@
      "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
     }
    ],
-   "note": "The mandate asks for Quantity 1 and the order has 1 unit of the tea."
+   "note": "Ordered quantity is 1, matching the mandate's Quantity: 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:33:13.045Z"
+ "recordedAt": "2026-11-10T00:20:08.226Z"
 }

@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows payment without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Kessa Stainless Steel Stockpot with Lid, 8-Quart (sku KES-SP-8Q) @ $64.99"
+     "doc": "mandate",
+     "quote": "Item: Kessa stainless steel stockpot with lid, 8-quart"
     }
    ],
-   "note": "The ordered item is the 8-quart Kessa stockpot with lid that the mandate names, and no other product is in the order."
+   "note": "The ordered product is the 8-quart Kessa stockpot with lid (sku KES-SP-8Q), which is the item the mandate names."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and the order contains one unit."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $72.94"
     }
    ],
-   "note": "The $72.94 total is under the $80.00 limit."
+   "note": "The total of $72.94 is under the $80.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $72.94; cart unchanged."
     }
    ],
-   "note": "The store charged the total of the submitted cart, with no added lines or price changes."
+   "note": "The store charged $72.94, which equals the agent's submitted cart ($64.99 plus $7.95 shipping)."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Kessa Stainless Steel Stockpot with Lid, 8-Quart."
     }
    ],
-   "note": "The store record shows the ordered item was shipped. The buyer's complaint is not evidence and was not used."
+   "note": "The store shipped the ordered item. The buyer's complaint about size is not evidence of a shipping mismatch and was disregarded."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The order matches every mandate condition: the 8-quart Kessa stockpot, quantity 1, total $72.94 under the $80 limit, no exclusions. The buyer allowed the agent to pay without asking again, and the store charged and shipped the cart as ordered. The buyer's dislike of the size is not a deviation from the mandate."
+  "reason": "The order matches every mandate condition (item, quantity, $72.94 within $80, no exclusions), the buyer allowed the agent to pay, and the store charged and shipped exactly what was ordered. The buyer's dislike of the pot's size is not a deviation from the mandate."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:34:32.496Z"
+ "recordedAt": "2026-11-10T00:24:03.502Z"
 }

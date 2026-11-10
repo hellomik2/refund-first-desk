@@ -18,17 +18,17 @@
      "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
     }
    ],
-   "note": "The mandate asks for a black umbrella; the order is for a navy one."
+   "note": "The mandate asks for a black umbrella; the order is navy."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate quantity is 1 and one unit was ordered."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $20.98, same as the cart that was submitted."
     }
    ],
-   "note": "The store charged the submitted cart total."
+   "note": "The store charged the submitted cart amount."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Compact Travel Umbrella, Red."
     }
    ],
-   "note": "The store shipped a red umbrella, not the navy one ordered."
+   "note": "The store shipped a red umbrella instead of the navy one ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent ordered a navy umbrella at step 4 although the mandate asked for black, so the final order differs from the approved mandate in item. The store also shipped a red umbrella instead of the navy one ordered, but the agent's off-mandate order is the root failure. The buyer is not liable."
+  "reason": "The agent placed an order for a navy umbrella, which differs from the approved black umbrella in the mandate. The store also shipped a red umbrella instead of the navy one, but the order itself already departed from the mandate, so the agent is responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:34:11.973Z"
+ "recordedAt": "2026-11-10T00:23:10.675Z"
 }

@@ -18,7 +18,7 @@
      "quote": "Item: bike inner tube"
     }
    ],
-   "note": "The mandate asks for a bike inner tube without naming a size or valve type, and the buyer's report alone cannot settle whether the 26 x 1.95 Schrader tube fits the wheel."
+   "note": "The mandate names only 'bike inner tube' with no size, so whether the 26 x 1.95 tube fits the buyer's wheel cannot be settled from the records. The buyer's complaint about size is not evidence."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and the PayPal order contains one inner tube."
+   "note": "The mandate asks for one unit and the agent ordered one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $11.48"
     }
    ],
-   "note": "The PayPal total of $11.48 is below the $15.00 spending limit."
+   "note": "The PayPal total of $11.48 is under the $15.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so nothing can be excluded."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $11.48, matching the cart."
     }
    ],
-   "note": "The store charged the same total as the agent's submitted cart, with no added lines."
+   "note": "The store charged the same total as the agent's submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Inner Tube 26 x 1.95, Schrader Valve."
     }
    ],
-   "note": "The store shipped the same item that the agent ordered."
+   "note": "The store shipped the ordered tube."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "Every condition except the item is confirmed. The mandate does not specify a size, so the records cannot show whether the ordered 26 x 1.95 tube matches what the buyer approved, and the buyer's fit complaint is not evidence. Responsibility cannot be settled without the correct size requirement."
+  "reason": "The mandate says only 'bike inner tube' with no size, so it cannot be determined whether the ordered 26 x 1.95 tube matches what the buyer approved. All other conditions (authorization, quantity, spending limit, exclusions, store charge and fulfilment) are met, but BUYER requires every condition to match, so responsibility cannot be settled from the records."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:32:11.310Z"
+ "recordedAt": "2026-11-10T00:16:40.874Z"
 }

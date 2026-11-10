@@ -18,7 +18,7 @@
      "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
     }
    ],
-   "note": "The ordered item is the unscented 12-pack the mandate describes. The shipped item differs, which is covered by storeFulfilledAsOrdered."
+   "note": "The ordered item is the unscented 12-pack the mandate asks for."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order is one unit, matching the mandate."
+   "note": "One unit was ordered, matching the mandate quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $22.99"
     }
    ],
-   "note": "The total is under the $25.00 limit."
+   "note": "The PayPal total of $22.99 is under the $25.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
     }
    ],
-   "note": "The order contains no scented product. The lavender product was shipped, not ordered."
+   "note": "The order contains no scented product; the scented substitution happened at fulfilment, not in the order."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $22.99, same as the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart amount."
+   "note": "The store charged the submitted cart amount with no added lines."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The order matches the mandate on item, quantity, spending limit, exclusions and payment permission. The store charged the submitted cart but shipped Lavender Scent Laundry Pods instead of the ordered unscented pods, so the store failed to ship what was ordered."
+  "reason": "The order matches the approved mandate in every condition and was charged as submitted, but the store shipped Lavender Scent Laundry Pods instead of the ordered unscented pods, so the store is responsible for the fulfilment failure."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:30:54.911Z"
+ "recordedAt": "2026-11-10T00:12:23.539Z"
 }

@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "Mandate explicitly permits the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x AeroPress Go Travel Coffee Maker (sku AP-GO) @ $39.95"
     }
    ],
-   "note": "The mandate asks for the AeroPress Go travel coffee maker, and the order is that product. The buyer's complaint is not evidence and does not change this."
+   "note": "Ordered product is the AeroPress Go travel coffee maker named in the mandate Item slot. The buyer's complaint about wanting the bigger one is not evidence and is not used here."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and the order contains one unit."
+   "note": "Ordered quantity is 1, matching the mandate."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $39.95"
     }
    ],
-   "note": "The mandate limit is $45.00 total, and the order total of $39.95 is within it."
+   "note": "Total $39.95 is within the $45.00 spending limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "Mandate lists no exclusions, so none can be violated."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $39.95, same as the submitted cart."
     }
    ],
-   "note": "The store charged $39.95, matching the cart the agent submitted."
+   "note": "Store charged $39.95, matching the agent's submitted cart with no added lines."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x AeroPress Go Travel Coffee Maker."
     }
    ],
-   "note": "The store shipped one AeroPress Go Travel Coffee Maker, matching the order."
+   "note": "Store record says the shipped item is the ordered AeroPress Go travel coffee maker, quantity 1."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The order matches every mandate condition: the item, quantity, spending limit and exclusions all match, and the buyer allowed the agent to pay without asking again. The store charged and shipped exactly what was ordered. The buyer's complaint says they wanted the bigger model, but the mandate names the AeroPress Go, so the agent did not act outside the approved mandate."
+  "reason": "The order matches every mandate condition: the right item, quantity 1, total $39.95 under the $45 limit, no exclusions, and the agent was permitted to pay. The store charged and shipped as ordered, so the buyer's complaint about wanting the larger XL model does not change the record; the buyer's own choice of the wrong model is the only mismatch, and it is not supported by the mandate, which names the AeroPress Go."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:31:02.703Z"
+ "recordedAt": "2026-11-10T00:12:37.480Z"
 }

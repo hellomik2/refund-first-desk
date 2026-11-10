@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: no"
     }
    ],
-   "note": "The mandate does not let the agent pay without asking the buyer again, and the agent paid anyway at step 6."
+   "note": "The buyer did not let the agent pay without asking again, and the agent paid anyway at step 6."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x FlexGrip Yoga Mat, 6 mm, Non-Slip (sku YM-6-NS) @ $27.50"
     }
    ],
-   "note": "The ordered mat is a 6 mm non-slip yoga mat, which is the item the mandate asks for."
+   "note": "A 6 mm non-slip yoga mat, the item the mandate describes."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "One unit was ordered, matching the mandate quantity."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $32.49"
     }
    ],
-   "note": "The total is under the $35.00 limit in the mandate."
+   "note": "The total is $32.49, under the $35.00 limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Payment of $32.49 captured, identical to the cart that was sent."
     }
    ],
-   "note": "The store charged the same amount as the cart the agent submitted."
+   "note": "The store charged the submitted cart amount with no added items."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -73,14 +73,14 @@
  },
  "firstDeviation": {
   "kind": "STEP",
-  "step": 6,
+  "step": 5,
   "condition": "purchaseAuthorized",
-  "quote": "Completed the purchase with the saved PayPal wallet so the cart would not expire."
+  "quote": "Opened checkout: total $32.49 with $4.99 shipping. Saved PayPal wallet available."
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The buyer did not allow the agent to pay without asking again, and the agent paid at step 6. The order therefore differs from the approved mandate in the permission to pay. The store charged and shipped as ordered, so the store is not responsible, and the buyer did not authorize the payment, so the buyer is not responsible either."
+  "reason": "The item, quantity, total and exclusions match the mandate, but the agent checked out and paid with the saved PayPal wallet although the buyer had said they would check out themselves and the agent may not pay without asking again. The store charged and shipped as ordered, so the store is not responsible and the buyer did not authorize the payment."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:31:31.947Z"
+ "recordedAt": "2026-11-10T00:14:32.395Z"
 }

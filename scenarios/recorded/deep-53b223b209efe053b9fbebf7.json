@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate explicitly permits the agent to pay without asking again."
+   "note": "The mandate allows payment without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,17 +18,17 @@
      "quote": "1 x Glass Food Storage Containers with Lids, Set of 4 (sku GLS-4SET) @ $22.95"
     }
    ],
-   "note": "The ordered product matches the mandate's item description."
+   "note": "The ordered product is the glass food storage containers with lids, set of 4, which is the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Glass Food Storage Containers with Lids, Set of 4 (sku GLS-4SET) @ $22.95"
     }
    ],
-   "note": "The order has one set, matching the mandate quantity of 1."
+   "note": "One unit was ordered and the mandate quantity is 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $28.45"
     }
    ],
-   "note": "The PayPal total of $28.45 is below the mandate's $30.00 spending limit."
+   "note": "The total of $28.45 is under the $30.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Order accepted and payment captured: $28.45 (the cart total as submitted)."
     }
    ],
-   "note": "The store charged the submitted cart total with no added items or price change."
+   "note": "The store charged the cart total the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,19 +68,19 @@
      "quote": "Order cancelled after payment. Nothing was shipped."
     }
    ],
-   "note": "The store cancelled the order after payment and shipped nothing."
+   "note": "The store cancelled the order after charging and shipped nothing."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 7,
   "condition": "storeFulfilledAsOrdered",
-  "quote": "Order KN-77410 was cancelled because the item is unavailable. Nothing will ship."
+  "quote": "KitchNest: Order KN-77410 was cancelled because the item is unavailable. Nothing will ship."
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The agent's order matched the mandate in every condition and the store charged the submitted cart, but the store cancelled the order after payment and shipped nothing, so the store failed to deliver what was ordered."
+  "reason": "The order matched the mandate and the store charged the submitted cart, but the store cancelled after payment and shipped nothing, so the store did not fulfil what was ordered."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:32:20.751Z"
+ "recordedAt": "2026-11-10T00:17:15.414Z"
 }

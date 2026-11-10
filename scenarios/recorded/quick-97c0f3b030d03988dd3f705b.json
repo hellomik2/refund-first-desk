@@ -8,7 +8,7 @@
      "quote": "1 x Silicone Spatula Set, 3-piece (sku SPAT-SIL-3) @ $6.99"
     }
    ],
-   "note": "The order includes a silicone spatula set, a second product the mandate does not ask for, so the order is not only the 10-inch non-stick frying pan."
+   "note": "The order includes a second product, a silicone spatula set, which the mandate does not ask for. The frying pan line matches, but the extra item makes this a no."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists no exclusions, so exclusions are respected."
   },
   "quantityMatchesMandate": {
-   "value": "no",
+   "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Non-Stick Frying Pan, 10-inch (sku FP-NS-10) @ $24.99"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "The frying pan quantity is 1, which matches the mandate, but the order has a second line item, so total units are 2 against a mandated quantity of 1."
+   "note": "The mandate asks for one unit, and the order has one frying pan. The pan is 1 x, so the frying pan quantity matches."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:33:53.040Z"
+ "recordedAt": "2026-11-10T00:22:23.671Z"
 }

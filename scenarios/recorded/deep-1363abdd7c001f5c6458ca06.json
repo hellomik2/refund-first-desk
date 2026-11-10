@@ -8,17 +8,12 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The buyer allowed the agent to pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "unknown",
-   "evidence": [
-    {
-     "doc": "mandate",
-     "quote": "Item: phone case"
-    }
-   ],
-   "note": "The mandate asks for a phone case but does not name the phone model, so the Pixel 9 case may or may not be the right product. The records do not show what the buyer's phone needs."
+   "evidence": [],
+   "note": "The mandate asks only for a phone case and does not name the phone model. The agent ordered a Slim Case for Pixel 9 without any record of the buyer's phone, so the records cannot show whether it fits the buyer's phone."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,14 +23,14 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "The mandate asks for one unit and the order has one unit."
   },
   "withinSpendingLimit": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Spending limit: $25.00 total"
+     "doc": "paypal_order",
+     "quote": "Total: $18.99"
     }
    ],
    "note": "The PayPal total of $18.99 is below the $25.00 limit."
@@ -68,19 +63,19 @@
      "quote": "Shipped: 1 x Slim Case for Pixel 9."
     }
    ],
-   "note": "The store says it shipped the ordered item."
+   "note": "The store shipped the ordered item and quantity."
   }
  },
  "firstDeviation": {
   "kind": "INSUFFICIENT",
   "step": null,
   "condition": "itemMatchesMandate",
-  "quote": "Shipped: 1 x Slim Case for Pixel 9."
+  "quote": ""
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The mandate does not name a phone model, so the records cannot show whether the Pixel 9 case is the item the buyer approved. The order meets every stated spending, quantity, exclusion and payment condition, so the verdict cannot be BUYER until fit is settled."
+  "reason": "The store charged and shipped as ordered and the spending limit, quantity and permission to pay all match the mandate. Whether the Slim Case for Pixel 9 is the phone case the buyer wanted cannot be settled, because the mandate does not name the buyer's phone and the buyer reports it does not fit. BUYER cannot be confirmed, and no record shows a breach by the agent or the store."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:31:24.655Z"
+ "recordedAt": "2026-11-10T00:13:57.494Z"
 }

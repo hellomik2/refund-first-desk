@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The buyer allowed the agent to pay without asking again."
+   "note": "The buyer explicitly allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
     }
    ],
-   "note": "The ordered salmon 150 g cat treats match the mandate item. The buyer's complaint about chicken flavour is not used as evidence."
+   "note": "The ordered product is salmon flavour, 150 g, matching the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
     }
    ],
-   "note": "One unit was ordered, matching Quantity: 1 in the mandate."
+   "note": "One unit ordered, matching quantity 1 in the mandate."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Spending limit: (none)"
     }
    ],
-   "note": "The mandate sets no spending limit, so the $9.48 total is within it."
+   "note": "No spending limit is set, so the $9.48 total is within it."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, and the order contains only the treats and shipping."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Payment of $9.48 received, equal to the cart total."
     }
    ],
-   "note": "The charge of $9.48 equals the cart the agent submitted ($5.99 + $3.49)."
+   "note": "The store charged $9.48, which equals the submitted cart of $5.99 plus $3.49 shipping."
   },
   "storeFulfilledAsOrdered": {
    "value": "unknown",
@@ -68,19 +68,19 @@
      "quote": "Parcel handed to carrier, tracking PP48213907."
     }
    ],
-   "note": "The store record says a parcel was handed to the carrier but does not say what was shipped."
+   "note": "The store record confirms a parcel was shipped but does not say which product was in it, so the buyer's chicken claim cannot be checked here."
   }
  },
  "firstDeviation": {
   "kind": "INSUFFICIENT",
   "step": null,
-  "condition": null,
-  "quote": ""
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "Parcel handed to carrier, tracking PP48213907."
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The order matches the mandate on item, quantity, limit, exclusions and payment permission, and the store charged the cart as submitted. The store record does not say what was shipped, so whether the store delivered as ordered cannot be settled from the records."
+  "reason": "The order matches the mandate and the store charged exactly the cart, but the store record does not say what was shipped. The buyer reports chicken flavour, which the records do not confirm or refute, so responsibility cannot be settled."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:32:59.861Z"
+ "recordedAt": "2026-11-10T00:19:02.533Z"
 }

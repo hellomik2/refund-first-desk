@@ -14,11 +14,11 @@
    "value": "no",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Extra Virgin Olive Oil, 750 ml (sku EVOO-750) @ $16.49"
+     "doc": "mandate",
+     "quote": "Item: extra virgin olive oil, 500 ml bottle"
     }
    ],
-   "note": "The mandate asks for a 500 ml bottle, but the order contains a 750 ml bottle."
+   "note": "The mandate asks for a 500 ml bottle; the order is a 750 ml bottle."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order contains one unit, matching the mandate."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $19.49 as per submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart amount."
+   "note": "The store charged the submitted cart total with no added lines."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent added and paid for a 750 ml bottle, but the buyer approved a 500 ml bottle, so the order differs from the mandate in its item."
+  "reason": "The agent paid for a 750 ml bottle although the mandate approved a 500 ml bottle, so the order differs from the mandate in item size. The store charged and shipped as ordered, so the buyer is not responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:31:59.903Z"
+ "recordedAt": "2026-11-10T00:16:07.289Z"
 }

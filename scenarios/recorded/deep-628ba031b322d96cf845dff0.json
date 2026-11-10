@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The mandate explicitly permits the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "no",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
+     "doc": "mandate",
+     "quote": "Item: Norvik AirLite carry-on suitcase, 20-inch"
     }
    ],
-   "note": "The mandate asks for the 20-inch Norvik AirLite carry-on; the order is the 24-inch model."
+   "note": "The mandate asks for the 20-inch model; the order is for the 24-inch model (sku NVK-AL-24)."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $92.95"
     }
    ],
-   "note": "The total is under the $100.00 limit."
+   "note": "The total is below the $100.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $92.95 as submitted."
     }
    ],
-   "note": "The store charged the submitted cart total."
+   "note": "The store charged the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent bought the 24-inch model, which the mandate does not allow; the mandate named the 20-inch AirLite. The store charged and shipped what was ordered, so the fault lies with the agent's purchase, not the buyer's approval."
+  "reason": "The agent bought the 24-inch suitcase instead of the 20-inch model the buyer approved. The store charged and shipped what was ordered, so the deviation is the agent's. The buyer's complaint about the store is not supported by the store record."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-09T23:34:23.442Z"
+ "recordedAt": "2026-11-10T00:23:29.035Z"
 }
