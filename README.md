@@ -73,23 +73,28 @@ All in the PayPal sandbox, live Claude (`claude-haiku-5-5`), 2026-11-10. **The 3
 | What | Target | Result |
 |---|---|---|
 | What the buyer has to do | one sentence | one sentence |
-| Report → PayPal refund status COMPLETED, within the limits | every run ≤ 60 s | 1.94–3.29 s (26/26) |
+| Report → PayPal refund status COMPLETED, within the limits | every run ≤ 60 s | 1.87–3.17 s (26/26) |
 | Refund completed before any check started, within the limits | every case | 26/26 |
-| Over the limits, buyer not responsible: report → refund COMPLETED | ≤ 5 min | 3.2–13.4 s (3/3); the buyer-responsible case got no refund (1/1) |
+| Over the limits, buyer not responsible: report → refund COMPLETED | ≤ 5 min | 2.5–14.3 s (3/3); the buyer-responsible case got no refund (1/1) |
 | Verdicts matching the answer key where both keys agreed | ≥ 27 of 30 | 29/30; the 30th went to a person (keys disagreed), counted as wrong |
-| First step where the agent left the mandate, matching the answer key | ≥ 27 of 30 | 27/30 |
+| First step where the agent left the mandate, matching the answer key | ≥ 27 of 30 | 30/30 after tuning the prompt twice on these same 30 cases (27/30, 25/28 and 27/30 before); 10/10 on 10 new hold-out cases, see below |
 | Keys disagree: no money moves, case waits for a person | 0 money moves | 0 (1 case in the person queue; 3 deliberate disagreements in the tests) |
 | Quick check closes a buyer-responsible case | 0 | 0 of 6 |
 | Quick check closes the cases marked for it in the answer key | ≥ 90 %, all 7 that code alone can show | 12/12, 7/7 |
-| Refund completed → "you will not be charged again" notice | ≤ 10 s | median 0.9 s, max 3.9 s (12/12) |
+| Refund completed → "you will not be charged again" notice | ≤ 10 s | median 0.9 s, max 3.8 s (12/12); in one of the two runs after tuning, one notice took 13.5 s because a single AI reply was slow |
 | Buyer charged again when responsible, from the saved wallet, buyer not present | confirmed by PayPal lookup | 4 of 4 (a 5th was stopped by the buyer's dispute) |
 | Buyer charged again when not responsible | 0 | 0 |
 | Failure and abuse conditions reproduced on the sandbox | no unconsented, duplicate or over-cap charge | 9/9 |
 | Ledger equals PayPal lookups, per party | every order | 30/30 (30-case run), 10/10 (abuse run) |
 
-Reported without a target: the two keys agreed on 97 % of cases; the deep check took 6.2–14.6 s (median 8.2 s); two simple rules ("the last step" and "the first pay or checkout step") found the first wrong step in 0/30 and 2/30 cases; the live AI cost about $0.0017 per case.
+Reported without a target: the two keys agreed on 97 % of cases; the deep check took 5.9–11.5 s (median 7.7 s); two simple rules ("the last step" and "the first pay or checkout step") found the first wrong step in 0/30 and 2/30 cases; the live AI cost about $0.0017 per case.
 
-The same prompt run earlier the same day gave 25/28 on the first-step line and 27/28 on verdicts, with 2 cases stopped by sandbox errors: the desk's sandbox PayPal balance was short, so PayPal refused one refund and left two pending. We topped the sandbox balance up and ran all 30 cases again; the table above is that run. The prompt was not changed between the runs.
+How the table was reached, run by run (all on the same 30 cases and the same fixed answer key):
+
+- Untuned prompt, three runs: first step 27/30, 25/28 and 27/30. The first sandbox run also had 2 cases stopped by sandbox errors (the desk's sandbox PayPal balance was short, so PayPal refused one refund and left two pending); we topped the sandbox balance up and ran again.
+- The misses fell into three kinds: calling a store-only problem (seen only in the store record) a step, counting "opened checkout" instead of "paid" as the step, and not knowing when the records are too thin to tell. The answer key's rules for these were written before the AI first ran; the prompt had not stated them. We added them to the prompt, and fixed one wording slip that a second run exposed (a store step that cancels after charging). **These numbers come after tuning on the same 30 cases.**
+- Tuned prompt on the 30 cases: run 1 first step 29/30 (one notice at 13.5 s, line above); run 2 first step 30/30 and every line passed. The table shows run 2.
+- Hold-out: 10 new cases written by a writer who had not seen the prompt, answer key fixed before any AI run (`scenarios/holdout.json`). Untuned prompt 7/10 on the first step, missing exactly the three kinds above; tuned prompt 10/10 in three runs; verdicts 10/10 in every run.
 
 Not comparable side by side: PayPal's "about 14 days" is its published guidance for real disputes; our seconds are sandbox measurements. "Refunded" means PayPal's refund status is COMPLETED. When the money appears depends on the funding source (PayPal balance the same day; bank or debit card about 5 business days; credit cards one or two statement cycles).
 
