@@ -6,7 +6,7 @@ Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) a
 
 ## Try the demo
 
-**https://refund-first-desk.onrender.com** (PayPal sandbox, live Claude)
+**https://refund-first-desk.onrender.com** (PayPal sandbox). To keep the demo fast and its AI bill bounded, the prepared cases replay Claude's recorded answers from our live runs, and the screen says "recorded answer replayed". Edit the buyer's sentence before pressing **Report it** and the deep check calls Claude live for that case.
 
 1. Pick a case, approve the buyer's conditions, let the agent pay, then press **Report it**. No sign-in is needed: the agent pays from a sandbox wallet saved earlier. Good cases to start with:
    - *Asked for a cart link, the agent checked out*: the quick check closes it in seconds.
@@ -64,11 +64,12 @@ The buyer can dispute during the notice period, or withdraw consent; either stop
 
 - **Does:** in the quick check, compares the mandate with the PayPal order; it can only close a case in the buyer's favour. In the deep check, reads all four records, answers seven yes/no/unknown questions (was paying allowed, right item, right quantity, within the limit, nothing excluded, store charged as ordered, store shipped as ordered), names the first step where the purchase went off the mandate, and gives its own verdict. Every yes/no and every first-step answer must quote the record it came from.
 - **Never:** decides whether to refund, moves money on its own verdict, or overrides the rules. Its verdict is one of two keys.
+- **How separate the two keys are:** the rules key runs on the same seven facts. Code computes up to four of them itself from the mandate and the PayPal order (payment permission, spending limit, store charged as ordered, and quantity when the order holds one item) and its answer replaces the AI's there. The other three (right item, nothing excluded, store shipped as ordered) come from the AI's quoted answers. So the keys are not independent: they catch a verdict that does not follow from the facts and a fact that code can compute, but not a wrong answer that the AI backs with a real quote.
 - **Guards:** a quote that is not found in the cited record turns the answer into "unknown". The buyer's own report is never accepted as proof. Totals and the payment permission are computed by code and override the AI. Any open question resolves in the buyer's favour. When the keys differ, a person decides. Text inside the records that tries to instruct the checker is treated as data (three of the prepared cases contain such text).
 
 ## Measurements
 
-All in the PayPal sandbox, live Claude (`claude-haiku-5-5`), 2026-11-10. **The 30 cases, the agents' action logs and the answer key were written by us for this demo.** The answer key was fixed before the live AI first ran on these cases (SHA-256 of `scenarios/cases.json`: `5873cb94…447d`). Targets were written down before measuring.
+All in the PayPal sandbox with live Claude calls (`claude-haiku-5-5`, no recorded answers replayed), 2026-11-10. **The 30 cases, the agents' action logs and the answer key were written by us for this demo.** The answer key was fixed before the live AI first ran on these cases (SHA-256 of `scenarios/cases.json`: `5873cb94…447d`). Targets were written down before measuring.
 
 | What | Target | Result |
 |---|---|---|
@@ -85,7 +86,7 @@ All in the PayPal sandbox, live Claude (`claude-haiku-5-5`), 2026-11-10. **The 3
 | Buyer charged again when responsible, from the saved wallet, buyer not present | confirmed by PayPal lookup | 4 of 4 (a 5th was stopped by the buyer's dispute) |
 | Buyer charged again when not responsible | 0 | 0 |
 | Failure and abuse conditions reproduced on the sandbox | no unconsented, duplicate or over-cap charge | 9/9 |
-| Ledger equals PayPal lookups, per party | every order | 30/30 (30-case run), 10/10 (abuse run) |
+| Ledger equals PayPal lookups for the buyer, the store and PayPal's fees (the desk's own two accounts are not compared) | every order | 30/30 (30-case run), 10/10 (abuse run) |
 
 Reported without a target: the two keys agreed on 97 % of cases; the deep check took 5.9–11.5 s (median 7.7 s); two simple rules ("the last step" and "the first pay or checkout step") found the first wrong step in 0/30 and 2/30 cases; the live AI cost about $0.0017 per case.
 
