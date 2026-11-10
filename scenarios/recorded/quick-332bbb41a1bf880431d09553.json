@@ -8,7 +8,7 @@
      "quote": "Item: Halden clip-on LED desk lamp, black"
     }
    ],
-   "note": "The PayPal order lists Halden Clip-On LED Desk Lamp, Black, which matches the mandate item, including the black colour. The quote is taken from the mandate."
+   "note": "PayPal order line reads Halden Clip-On LED Desk Lamp, Black, matching the mandate item and colour."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The PayPal order shows 1 x the lamp, and the mandate asks for quantity 1."
+   "note": "PayPal order shows 1 x the lamp, matching quantity 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:15:21.166Z"
+ "recordedAt": "2026-11-10T03:03:11.594Z"
 }

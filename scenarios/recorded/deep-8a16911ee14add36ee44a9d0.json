@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The mandate explicitly allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "no",
@@ -18,7 +18,7 @@
      "quote": "Item: extra virgin olive oil, 500 ml bottle"
     }
    ],
-   "note": "The mandate asks for a 500 ml bottle; the order is a 750 ml bottle."
+   "note": "The mandate asks for the 500 ml bottle; the order is the 750 ml bottle (sku EVOO-750)."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "One unit was ordered, matching the mandate quantity."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $19.49"
     }
    ],
-   "note": "The total of $19.49 is within the $20.00 limit."
+   "note": "The PayPal total of $19.49 is within the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Extra Virgin Olive Oil, 750 ml."
     }
    ],
-   "note": "The store shipped the 750 ml bottle that was ordered."
+   "note": "The store shipped the 750 ml bottle that the order specifies."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid for a 750 ml bottle although the mandate approved a 500 ml bottle, so the order differs from the mandate in item size. The store charged and shipped as ordered, so the buyer is not responsible."
+  "reason": "The agent added the 750 ml bottle at step 4, but the mandate approved only a 500 ml bottle. The order therefore differs from the approved mandate in its item, so the agent is responsible even though the store charged and shipped what was ordered."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:16:07.289Z"
+ "recordedAt": "2026-11-10T02:49:20.842Z"
 }

@@ -18,7 +18,7 @@
      "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
     }
    ],
-   "note": "The final order is the 100 g loose leaf Earl Grey tin the mandate asks for. The 250 g tin added at step 4 was removed before checkout."
+   "note": "The final order is the 100 g tin the mandate asks for. The 250 g tin was added and removed before checkout."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and the order has one unit."
+   "note": "The mandate asks for one unit and the order has one 100 g tin."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $16.45"
     }
    ],
-   "note": "The PayPal total of $16.45 is under the $18.00 limit. The $24.00 cart at step 4 was not charged."
+   "note": "The PayPal total is under the $18.00 limit. The $24.00 cart was corrected before payment."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $16.45, no difference from the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart total with no added lines or price changes."
+   "note": "The store charged the submitted cart with no added lines or price change."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Packed and shipped: 1 x Loose Leaf Earl Grey Tea, 100 g Tin."
     }
    ],
-   "note": "The store record says the 100 g tin was shipped, which matches the order."
+   "note": "The store shipped the 100 g tin that was ordered. The buyer's belief that a wrong size shipped is contradicted by this record."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The final order matches every mandate condition: the 100 g Earl Grey tin, quantity 1, $16.45 within the $18 limit, no exclusions. The buyer allowed payment without asking again, and the store charged and shipped as ordered. The step 4 250 g tin was removed before payment and does not change the final order."
+  "reason": "The final order matches every mandate condition: the 100 g tin, quantity 1, $16.45 under the $18.00 limit, no exclusions. The buyer allowed the agent to pay, and the store charged and shipped exactly what was submitted. The step 4 deviation was corrected before payment, so it does not make the agent responsible for the final order."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:20:17.148Z"
+ "recordedAt": "2026-11-10T03:03:59.407Z"
 }

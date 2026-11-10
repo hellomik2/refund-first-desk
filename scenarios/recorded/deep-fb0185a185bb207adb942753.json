@@ -24,11 +24,11 @@
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
     }
    ],
-   "note": "One unit was ordered, matching the mandate quantity of 1."
+   "note": "The mandate quantity is 1 and the order contains 1 unit of the item."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $22.99"
     }
    ],
-   "note": "The PayPal total of $22.99 is under the $25.00 limit."
+   "note": "The total of $22.99 is within the $25.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "1 x Unscented Laundry Pods, 12 ct (sku PODS-UNSC-12) @ $18.49"
     }
    ],
-   "note": "The order contains no scented product; the scented substitution happened at fulfilment, not in the order."
+   "note": "No scented product is in the order. The scented box was shipped by the store, which is covered by storeFulfilledAsOrdered."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $22.99, same as the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart amount with no added lines."
+   "note": "The store charged the same total as the submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Lavender Scent Laundry Pods, 12 ct."
     }
    ],
-   "note": "The store shipped a scented product instead of the unscented pods that were ordered."
+   "note": "The store shipped a scented product in place of the unscented pods that were ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The order matches the approved mandate in every condition and was charged as submitted, but the store shipped Lavender Scent Laundry Pods instead of the ordered unscented pods, so the store is responsible for the fulfilment failure."
+  "reason": "The agent's order matched the mandate and the store charged as submitted, but the store shipped Lavender Scent pods instead of the unscented pods that were ordered, so the store is responsible for the fulfilment failure."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:12:23.539Z"
+ "recordedAt": "2026-11-10T02:45:49.210Z"
 }

@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate explicitly permits the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm (sku BCB-M-3020) @ $16.95"
+     "doc": "mandate",
+     "quote": "Item: bamboo cutting board, medium, about 30 x 20 cm"
     }
    ],
-   "note": "The ordered product matches the mandate's medium bamboo cutting board, about 30 x 20 cm."
+   "note": "The PayPal order lists a Bamboo Cutting Board, Medium, 30 x 20 cm, which matches the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,17 +28,17 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order has one board, matching the mandate quantity."
+   "note": "The PayPal order has one unit."
   },
   "withinSpendingLimit": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "Total: $21.90"
+     "doc": "mandate",
+     "quote": "Spending limit: $25.00 total"
     }
    ],
-   "note": "The $21.90 total is within the $25.00 spending limit."
+   "note": "The PayPal total is $21.90, which is under the $25.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,39 +48,34 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
-   "value": "unknown",
+   "value": "yes",
    "evidence": [
     {
-     "doc": "store_record",
-     "quote": "the store has not provided a record"
+     "doc": "paypal_order",
+     "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm (sku BCB-M-3020) @ $16.95"
     }
    ],
-   "note": "No store record exists, so what the store charged cannot be checked against the submitted cart."
+   "note": "The PayPal charge lines match the agent's submitted cart; no store record was provided to confirm this independently."
   },
   "storeFulfilledAsOrdered": {
    "value": "unknown",
-   "evidence": [
-    {
-     "doc": "store_record",
-     "quote": "the store has not provided a record"
-    }
-   ],
-   "note": "No store record says what was shipped, and the buyer reports no board has arrived, which is not enough to conclude either way."
+   "evidence": [],
+   "note": "The store has not provided a record, and the confirmation page shows no item list or shipment; no shipping notice has arrived."
   }
  },
  "firstDeviation": {
-  "kind": "INSUFFICIENT",
+  "kind": "NONE",
   "step": null,
   "condition": null,
   "quote": ""
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "All agent-side conditions match the mandate (item, quantity, $21.90 within $25.00, no exclusions, permission to pay), but the store record is missing, so it is unknown whether the store charged and shipped as ordered. BUYER cannot be confirmed without that, and no store or agent deviation is shown."
+  "reason": "The order matches the mandate and the buyer allowed payment, but there is no store record showing what was shipped, so fulfillment as ordered cannot be confirmed and responsibility cannot be settled."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:21:53.901Z"
+ "recordedAt": "2026-11-10T02:54:42.424Z"
 }

@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives permission to pay without asking again."
+   "note": "The mandate explicitly permits the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "6 x FreshMint Toothpaste, 100 ml (sku TP-MINT-100) @ $1.99"
+     "doc": "mandate",
+     "quote": "Item: mint toothpaste"
     }
    ],
-   "note": "The ordered item is toothpaste matching the mandate's mint toothpaste item."
+   "note": "The ordered product is FreshMint Toothpaste, a mint toothpaste, and the mandate names no further attribute."
   },
   "quantityMatchesMandate": {
    "value": "no",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 3"
     }
    ],
-   "note": "The order is 6 units, but the mandate asks for 3."
+   "note": "The order contains 6 units, while the mandate asks for 3."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $14.93"
     }
    ],
-   "note": "The total of $14.93 is within the $15.00 limit."
+   "note": "The PayPal total of $14.93 is within the $15.00 spending limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be violated."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $14.93, same as submitted."
     }
    ],
-   "note": "The store charged the submitted cart."
+   "note": "The store charged the same total as the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 6 x FreshMint Toothpaste, 100 ml."
     }
    ],
-   "note": "The store shipped 6 units, matching the order."
+   "note": "The store shipped 6 units, matching the submitted and paid order."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent bought 6 tubes when the mandate approved 3. The order differs from the mandate in quantity, so the agent is responsible; the store charged and shipped what was ordered."
+  "reason": "The agent bought 6 tubes against a mandate for 3. At step 5 it added 3 more tubes to reach the multi-buy price, which the mandate did not allow. The store charged and shipped what was submitted, so the difference comes from the agent's order, not the store, and the buyer should not pay again for it."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:17:28.248Z"
+ "recordedAt": "2026-11-10T02:50:38.373Z"
 }

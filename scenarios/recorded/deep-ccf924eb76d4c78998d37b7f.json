@@ -8,27 +8,27 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The buyer's mandate explicitly allows the agent to pay without asking again."
+   "note": "The mandate explicitly allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "1 x Halden Clip-On LED Desk Lamp, Black (sku HAL-CLIP-BLK) @ $34.99"
+     "quote": "1 x Halden Clip-On LED Desk Lamp, Black"
     }
    ],
-   "note": "The ordered product is the Halden clip-on LED desk lamp in black, matching the mandate's Item slot."
+   "note": "The ordered lamp is the Halden clip-on LED desk lamp in black that the mandate names."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Halden Clip-On LED Desk Lamp, Black (sku HAL-CLIP-BLK) @ $34.99"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "Ordered quantity is 1, matching the mandate's Quantity: 1."
+   "note": "The mandate asks for one unit and one unit was ordered."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $34.99"
     }
    ],
-   "note": "$34.99 is within the $40.00 total spending limit in the mandate."
+   "note": "The $34.99 total is within the $40.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so nothing excluded can be in the order."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $34.99. No changes to the submitted cart."
     }
    ],
-   "note": "The store charged $34.99, matching the cart the agent submitted at $34.99."
+   "note": "The store charged $34.99 and made no changes to the submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Halden Clip-On LED Desk Lamp, Black."
     }
    ],
-   "note": "The store record shows the ordered lamp was shipped."
+   "note": "The store shipped the single ordered lamp."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The order matches every mandate condition (item, quantity 1, total $34.99 under $40, no exclusions), the buyer allowed the agent to pay without asking again, and the store charged and shipped exactly as ordered. The buyer's later finding of a $27 price elsewhere is not a mandate condition, so the purchase was within what the buyer approved."
+  "reason": "The order matches every mandate condition (item, quantity, spending limit, no exclusions), the buyer allowed the agent to pay without asking again, and the store charged and shipped exactly what was ordered. The buyer's $27 price claim from another shop is not a mandate condition and is not evidence here."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:15:29.185Z"
+ "recordedAt": "2026-11-10T03:03:18.310Z"
 }

@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate lets the agent pay without asking again."
+   "note": "The mandate explicitly allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "no",
@@ -18,7 +18,7 @@
      "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
     }
    ],
-   "note": "The mandate asks for a black umbrella; the order is navy."
+   "note": "The mandate asks for a black compact travel umbrella, but the order is for a navy one."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "The mandate asks for one unit and the order has one unit."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $20.98"
     }
    ],
-   "note": "The total is under the $25.00 limit."
+   "note": "The total of $20.98 is within the $25.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $20.98, same as the cart that was submitted."
     }
    ],
-   "note": "The store charged the submitted cart amount."
+   "note": "The store charged the same total as the submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Compact Travel Umbrella, Red."
     }
    ],
-   "note": "The store shipped a red umbrella instead of the navy one ordered."
+   "note": "The store shipped a red umbrella in place of the navy one that was ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent placed an order for a navy umbrella, which differs from the approved black umbrella in the mandate. The store also shipped a red umbrella instead of the navy one, but the order itself already departed from the mandate, so the agent is responsible."
+  "reason": "The agent paid for a navy umbrella although the mandate required black, and it chose navy on its own to save money (step 7). The order therefore differs from the approved item. The store also substituted a red umbrella for the navy one, but the agent's order was already outside the mandate."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:23:10.675Z"
+ "recordedAt": "2026-11-10T02:55:51.349Z"
 }

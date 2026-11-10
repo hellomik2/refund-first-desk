@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: Sorrel & Sage shampoo, 750 ml bottle"
+     "doc": "paypal_order",
+     "quote": "1 x Sorrel & Sage Shampoo, 750 ml (sku SS-SH-750) @ $18.90"
     }
    ],
-   "note": "The order is the 750 ml bottle the mandate names. The buyer's complaint about the 500 ml bottle conflicts with the mandate, and the complaint is not evidence."
+   "note": "The mandate asks for the 750 ml bottle and the order is the 750 ml bottle. The 500 ml item was removed from the cart at step 5 before payment."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "The order has one unit of the shampoo, matching the mandate quantity."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $23.10"
     }
    ],
-   "note": "The PayPal total of $23.10 is under the $25.00 limit."
+   "note": "The total of $23.10 is within the mandate limit of $25.00 total."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists no exclusions, so nothing is excluded."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $23.10, which equals the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart total with no added lines."
+   "note": "The store charged the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Sorrel & Sage Shampoo, 750 ml."
     }
    ],
-   "note": "The store says it shipped the 750 ml bottle that was ordered."
+   "note": "The store shipped the 750 ml bottle that was ordered."
   }
  },
  "firstDeviation": {
-  "kind": "NONE",
-  "step": null,
-  "condition": null,
-  "quote": ""
+  "kind": "STEP",
+  "step": 3,
+  "condition": "itemMatchesMandate",
+  "quote": "Added 1 x Sorrel & Sage Shampoo, 500 ml ($13.90)."
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "Every step stays within the mandate: the 750 ml bottle at $18.90 plus $4.20 shipping totals $23.10, under the $25 limit, with no exclusions. The buyer allowed payment without asking again, and the store charged and shipped as ordered. The buyer's belief that they asked for the 500 ml bottle conflicts with the approved mandate, which names 750 ml."
+  "reason": "The final order matches every mandate condition: the 750 ml item, quantity 1, total $23.10 under the $25 limit, no exclusions, and payment permitted. The store charged and shipped as ordered. The 500 ml item added at step 3 was removed before payment, so it does not change the final order. The buyer's belief that the 500 ml bottle was requested is not supported by the mandate, which names the 750 ml bottle."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:27:54.897Z"
+ "recordedAt": "2026-11-10T02:58:31.845Z"
 }

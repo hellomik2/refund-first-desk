@@ -18,7 +18,7 @@
      "quote": "1 x Wild Bird Seed Blend, 40 lb (sku WBS-40) @ $44.99"
     }
    ],
-   "note": "The ordered product is a 40 lb wild bird seed blend, which matches the mandate's item."
+   "note": "The ordered product is wild bird seed in a 40 lb bag, matching the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order contains one unit."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "no",
@@ -38,7 +38,7 @@
      "quote": "Total: $58.08"
     }
    ],
-   "note": "The mandate limit is $55.00 total; the order total is $58.08."
+   "note": "The PayPal total of $58.08 is above the mandate's $55.00 spending limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,17 +48,17 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be violated."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
    "evidence": [
     {
      "doc": "store_record",
-     "quote": "Matches the submitted cart line for line."
+     "quote": "Charged $58.08: item $44.99, shipping $9.49, tax $3.60. Matches the submitted cart line for line."
     }
    ],
-   "note": "The store charged the same three lines the agent submitted."
+   "note": "The store charged the same lines the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Wild Bird Seed Blend, 40 lb."
     }
    ],
-   "note": "The store shipped the ordered item."
+   "note": "The store shipped the one bag that was ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid $58.08 under a mandate capped at $55.00 total, adding heavy item shipping and tax that pushed the total over the limit. The order differs from the approved mandate in the spending limit, so the agent is responsible."
+  "reason": "The agent paid $58.08, which exceeds the mandate's $55.00 spending limit. The store charged and shipped as ordered, so the excess comes from the agent's payment decision, not from the store."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:26:35.857Z"
+ "recordedAt": "2026-11-10T02:57:58.293Z"
 }

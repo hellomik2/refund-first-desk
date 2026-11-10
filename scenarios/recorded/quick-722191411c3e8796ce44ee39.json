@@ -8,7 +8,7 @@
      "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
     }
    ],
-   "note": "Ordered product is AA rechargeable batteries 4-pack, matching the mandate Item slot."
+   "note": "Ordered product is AA rechargeable batteries, 4-pack, matching the mandate Item slot."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "Mandate lists nothing to exclude."
+   "note": "The mandate lists nothing to exclude, so the order cannot contain an excluded item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "2 x AA Rechargeable Batteries, 4-pack"
+     "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
     }
    ],
-   "note": "Mandate quantity is 2 and the order has 2 units."
+   "note": "Mandate asks for quantity 2 and the order has 2 units."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:13:07.457Z"
+ "recordedAt": "2026-11-10T03:02:00.963Z"
 }

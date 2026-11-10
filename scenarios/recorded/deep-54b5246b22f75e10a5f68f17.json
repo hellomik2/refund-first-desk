@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives the agent permission to pay without asking again."
+   "note": "The mandate gives permission to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,17 +18,17 @@
      "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
     }
    ],
-   "note": "The ordered product is medium roast compostable coffee pods, 18 count, which is the box of 18 the mandate asks for."
+   "note": "The ordered item is the 18 ct medium roast compostable pod box that the mandate describes."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
     }
    ],
-   "note": "The order contains one box, which matches the mandate quantity of 1."
+   "note": "One unit was ordered, which matches the mandate quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $17.44"
     }
    ],
-   "note": "The PayPal total of $17.44 is under the mandate's $20.00 spending limit."
+   "note": "The total of $17.44 is under the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists no exclusions, so none can be broken."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Amount charged: $17.44, equal to the cart submitted."
     }
    ],
-   "note": "The store charged the same total as the agent's submitted cart."
+   "note": "The store charged the same total as the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Medium Roast Compostable Coffee Pods, 12 ct."
     }
    ],
-   "note": "The store shipped the 12 ct box, while the order and charge were for the 18 ct box."
+   "note": "The store shipped the 12 ct box, but the order was for the 18 ct box. The picker scanned POD-MR-12."
   }
  },
  "firstDeviation": {
-  "kind": "INSUFFICIENT",
+  "kind": "STEP",
   "step": null,
-  "condition": null,
-  "quote": ""
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "Shipped: 1 x Medium Roast Compostable Coffee Pods, 12 ct."
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The store charged $17.44 for the 18 ct box as the agent submitted it, but its record shows it shipped the 12 ct box, so the store did not ship what was ordered. The agent's order matched the mandate, so the buyer is not responsible."
+  "reason": "The order was for 18 ct pods at $17.44, which matches the mandate in item, quantity, limit and payment permission. The store shipped a 12 ct box instead, so the store did not fulfil the order as placed."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:15:11.306Z"
+ "recordedAt": "2026-11-10T02:48:31.462Z"
 }

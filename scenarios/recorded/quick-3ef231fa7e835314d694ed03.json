@@ -8,7 +8,7 @@
      "quote": "Item: bike inner tube"
     }
    ],
-   "note": "The order contains a 26 x 1.95 Schrader valve inner tube, which is a bike inner tube; the shipping line is not an item."
+   "note": "The order is an Inner Tube 26 x 1.95, Schrader Valve, which is a bike inner tube; the mandate names no size or valve type, so the order's specific tube is a bike inner tube. Shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order has 1 x inner tube, matching quantity 1."
+   "note": "Order shows 1 x Inner Tube; mandate quantity is 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:16:32.860Z"
+ "recordedAt": "2026-11-10T02:49:47.012Z"
 }

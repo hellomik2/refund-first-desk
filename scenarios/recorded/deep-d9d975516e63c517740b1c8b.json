@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The mandate explicitly allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
     }
    ],
-   "note": "The ordered item is the AA rechargeable 4-pack the mandate names."
+   "note": "The ordered product is the AA rechargeable 4-pack named in the mandate Item slot."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
     }
    ],
-   "note": "The final order has 2 units, matching the mandate quantity of 2. The step 4 add of 3 was removed at step 6 before payment."
+   "note": "The final order is 2 units, matching the mandate quantity of 2. The step 4 overshoot to 3 was removed before checkout."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $25.98"
     }
    ],
-   "note": "The total of $25.98 is under the $30.00 limit."
+   "note": "The final total of $25.98 is under the $30.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be violated."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $25.98, same as the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart amount."
+   "note": "The store charged the same total as the cart the agent submitted (2 x $12.99)."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 2 x AA Rechargeable Batteries, 4-pack."
     }
    ],
-   "note": "The store shipped the two ordered packs."
+   "note": "The store shipped the two 4-packs that were ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The final order matches the mandate on item, quantity of 2, spending limit, and exclusions, and the buyer allowed payment without asking again. The store charged and shipped as ordered. The step 4 quantity deviation was corrected before payment, and the buyer's report is not evidence against the mandate."
+  "reason": "The final order matches every mandate condition: the item, quantity 2, total $25.98 under the $30 limit, no exclusions, and the agent was allowed to pay. The store charged and shipped as ordered. The step 4 overshoot was corrected before payment, so it does not make the agent liable for the final order. The buyer's belief that they wanted one pack is not supported by the mandate, which says two."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:13:16.455Z"
+ "recordedAt": "2026-11-10T03:02:09.597Z"
 }

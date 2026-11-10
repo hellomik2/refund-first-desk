@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives the agent permission to pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: insulated stainless steel water bottle, 32 oz"
+     "doc": "paypal_order",
+     "quote": "1 x Insulated Stainless Steel Water Bottle, 32 oz (sku WB-32-SS) @ $26.99"
     }
    ],
-   "note": "The ordered item is the 32 oz insulated stainless steel water bottle the mandate describes."
+   "note": "The ordered bottle is the 32 oz insulated stainless steel water bottle the mandate describes."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -34,11 +34,11 @@
    "value": "no",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Spending limit: $30.00 total"
+     "doc": "paypal_order",
+     "quote": "Total: $30.48"
     }
    ],
-   "note": "The PayPal order total is $30.48, which is above the $30.00 limit."
+   "note": "The order total of $30.48 is above the $30.00 limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be broken."
+   "note": "The mandate lists nothing to exclude."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $30.48: bottle $26.99 and standard shipping $3.49, as in the submitted cart."
     }
    ],
-   "note": "The store charged the same lines and prices the agent submitted."
+   "note": "The store charged the submitted cart lines at the submitted prices."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Insulated Stainless Steel Water Bottle, 32 oz."
     }
    ],
-   "note": "The store shipped the one bottle that was ordered; shipping is not an item."
+   "note": "The store shipped the ordered bottle."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
-  "step": 8,
+  "step": 7,
   "condition": "withinSpendingLimit",
-  "quote": "Paid $30.48 with the saved PayPal wallet."
+  "quote": "Checkout step 2 of 2 shows standard shipping $3.49 and an order total of $30.48."
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid $30.48, which exceeds the buyer's $30.00 all-in limit. The store charged and shipped as ordered, and the item, quantity and exclusions match, so the deviation is the agent's over-limit payment."
+  "reason": "The agent paid $30.48 against a mandate capped at $30.00 total, so the order breaks the spending-limit condition. The store charged and shipped as ordered, and the buyer's approval does not cover an over-limit payment."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:18:02.193Z"
+ "recordedAt": "2026-11-10T02:51:11.225Z"
 }

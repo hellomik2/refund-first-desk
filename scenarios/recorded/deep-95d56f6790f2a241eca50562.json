@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate explicitly allows the agent to pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: whole bean coffee, medium roast, 12 oz bag"
+     "doc": "paypal_order",
+     "quote": "1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly) (sku COF-MR-12-SUB) @ $14.39"
     }
    ],
-   "note": "The ordered product is medium roast whole bean coffee in a 12 oz bag. The subscription plan is a separate issue handled under exclusionsRespected."
+   "note": "The product is medium roast whole bean coffee, 12 oz, as the mandate asks. The subscription is a separate exclusion, not the item type."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered, matching the mandate quantity."
+   "note": "The mandate asks for one unit and the order has one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,17 +38,17 @@
      "quote": "Total: $18.38"
     }
    ],
-   "note": "The $18.38 total is within the $20.00 spending limit."
+   "note": "The total of $18.38 is under the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "no",
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly) (sku COF-MR-12-SUB) @ $14.39"
+     "quote": "(Subscribe & Save, monthly) (sku COF-MR-12-SUB)"
     }
    ],
-   "note": "The mandate excludes subscriptions, but the order is a monthly Subscribe & Save purchase."
+   "note": "The mandate excludes subscriptions and auto-renewing plans, and the order is a monthly subscription."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Medium Roast Whole Bean Coffee, 12 oz (Subscribe & Save, monthly)."
     }
    ],
-   "note": "The store shipped the same item that was ordered."
+   "note": "The store shipped the item that was ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent submitted a Subscribe & Save monthly subscription, which the mandate expressly excludes. The store charged and shipped what was submitted, so the order differs from the approved mandate in the exclusions condition."
+  "reason": "The agent chose the Subscribe & Save monthly option and paid, although the mandate says one-time purchase only and excludes subscriptions. The order therefore differs from the approved mandate in its exclusions, and the store charged and shipped what was ordered."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:21:16.607Z"
+ "recordedAt": "2026-11-10T02:54:08.722Z"
 }

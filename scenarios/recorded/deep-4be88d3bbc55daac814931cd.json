@@ -24,11 +24,11 @@
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Power Bank 10,000 mAh, Grey (sku PB-10K-GRY) @ $24.99"
     }
    ],
-   "note": "One power bank was ordered, matching the mandate quantity."
+   "note": "The power bank is ordered once, matching Quantity: 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $33.98"
     }
    ],
-   "note": "The PayPal total of $33.98 is under the $35.00 limit."
+   "note": "The total is under the $35.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "2-Year Protection Plan ($4.99) is pre-selected at checkout and was added to this order."
     }
    ],
-   "note": "The store charged a $4.99 protection plan that the agent did not submit in the cart."
+   "note": "The store added a line the agent did not submit, and the charge is $33.98 rather than $28.99."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Power Bank 10,000 mAh, Grey."
     }
    ],
-   "note": "The store shipped the power bank that was ordered; the protection plan is a service, not a shipped item."
+   "note": "The shipped physical item matches the ordered power bank. The store record does not mention shipping the protection plan."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The store charged a $4.99 protection plan that the agent did not submit, so the charge differs from the cart; the order also contains an add-on the mandate does not allow, so the buyer should not be charged again."
+  "reason": "The store charged $33.98 including a 2-Year Protection Plan the agent never submitted and the store pre-selected, so it did not charge what was ordered. The agent's cart of $28.99 was within the mandate, and the buyer allowed payment, so the store is responsible for the extra charge. The item check is marked no because the final order contains the add-on, but the store added it, so responsibility sits with the store."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:18:41.814Z"
+ "recordedAt": "2026-11-10T02:51:49.049Z"
 }

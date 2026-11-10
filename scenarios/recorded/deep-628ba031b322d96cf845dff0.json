@@ -8,27 +8,27 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate explicitly permits the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "no",
-   "evidence": [
-    {
-     "doc": "mandate",
-     "quote": "Item: Norvik AirLite carry-on suitcase, 20-inch"
-    }
-   ],
-   "note": "The mandate asks for the 20-inch model; the order is for the 24-inch model (sku NVK-AL-24)."
-  },
-  "quantityMatchesMandate": {
-   "value": "yes",
    "evidence": [
     {
      "doc": "paypal_order",
      "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
     }
    ],
-   "note": "One unit was ordered, matching the mandate quantity of 1."
+   "note": "The mandate asks for the 20-inch model (Item: Norvik AirLite carry-on suitcase, 20-inch), but the 24-inch model was ordered."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $92.95"
     }
    ],
-   "note": "The total is below the $100.00 limit."
+   "note": "The total of $92.95 is within the $100.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Norvik AirLite Suitcase, 24-inch."
     }
    ],
-   "note": "The store shipped the 24-inch suitcase that the order lists."
+   "note": "The store shipped the item that the order contains."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent bought the 24-inch suitcase instead of the 20-inch model the buyer approved. The store charged and shipped what was ordered, so the deviation is the agent's. The buyer's complaint about the store is not supported by the store record."
+  "reason": "The agent paid for a 24-inch suitcase with oversize shipping, but the mandate approved only the 20-inch Norvik AirLite. The order therefore differs from the approved item. The store charged and shipped what was ordered, so the store is not responsible, and the buyer did not approve this order, so the buyer is not responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:23:29.035Z"
+ "recordedAt": "2026-11-10T03:00:49.738Z"
 }

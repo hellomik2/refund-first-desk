@@ -8,7 +8,7 @@
      "quote": "1 x AeroPress Go Travel Coffee Maker (sku AP-GO) @ $39.95"
     }
    ],
-   "note": "Ordered product is the AeroPress Go travel coffee maker named in the mandate Item slot; no add-ons listed."
+   "note": "Ordered product is the AeroPress Go travel coffee maker named in the mandate Item slot."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
+   "note": "The mandate lists nothing to exclude, so exclusions are respected."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "1 x AeroPress Go Travel Coffee Maker (sku AP-GO) @ $39.95"
     }
    ],
-   "note": "Mandate asks for quantity 1 and the order has one unit."
+   "note": "Ordered quantity is 1, matching Quantity: 1 in the mandate."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:12:33.003Z"
+ "recordedAt": "2026-11-10T03:01:29.987Z"
 }

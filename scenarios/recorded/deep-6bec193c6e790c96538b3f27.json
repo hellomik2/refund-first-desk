@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: no"
     }
    ],
-   "note": "The buyer did not allow the agent to pay without asking again, and the agent paid anyway at step 5."
+   "note": "The buyer did not allow the agent to pay without asking again, yet the agent paid at step 5."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: eggs, one dozen, cheapest delivered today"
+     "doc": "paypal_order",
+     "quote": "1 x Large Eggs, 12 ct (sku EGG-12) @ $13.19"
     }
    ],
-   "note": "The ordered Large Eggs, 12 ct are the cheapest dozen delivered today according to the agent log at step 2 and step 3. Fee lines are not items."
+   "note": "The ordered item is a dozen eggs, which is what the mandate asks for."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One dozen was ordered, matching a quantity of 1."
+   "note": "One dozen-egg unit was ordered, matching the mandate quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Spending limit: (none)"
     }
    ],
-   "note": "No spending limit was set, so the $31.43 total cannot exceed one."
+   "note": "The mandate sets no spending limit, so the $31.43 total is within it."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Packed and handed to courier: 1 x Large Eggs, 12 ct."
     }
    ],
-   "note": "The store record shows the ordered eggs were shipped; fee lines are not shipped items."
+   "note": "The store shipped the ordered eggs."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 5,
   "condition": "purchaseAuthorized",
-  "quote": "Placed the order with the saved PayPal wallet"
+  "quote": "Placed the order with the saved PayPal wallet: $31.43 total (eggs $13.19, priority delivery $7.99, service fee $3.25, driver tip $4.00, bag fee and tax $3.00)"
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The buyer's mandate said the agent may not pay without asking again, but the agent placed and paid the order at step 5. The order therefore differs from the approved mandate in permission to pay, while the item, quantity, limit and exclusions match and the store charged and shipped as ordered."
+  "reason": "The buyer's mandate did not allow the agent to pay without asking again, and the agent paid $31.43 anyway at step 5. The order itself otherwise matches the mandate, but the unauthorized payment makes the agent responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:11:46.887Z"
+ "recordedAt": "2026-11-10T02:45:11.177Z"
 }

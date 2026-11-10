@@ -8,7 +8,7 @@
      "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
     }
    ],
-   "note": "Mandate asks for black; order is navy."
+   "note": "The mandate asks for a black compact travel umbrella, but the order is for a navy one."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "Mandate lists no exclusions, so none can be in the order."
+   "note": "The mandate lists nothing to exclude."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Compact Travel Umbrella, Navy (sku UMB-CMP-NVY) @ $16.99"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "Quantity 1 matches mandate quantity 1."
+   "note": "The order has one umbrella; the shipping line is not an item."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:23:02.263Z"
+ "recordedAt": "2026-11-10T02:55:41.947Z"
 }

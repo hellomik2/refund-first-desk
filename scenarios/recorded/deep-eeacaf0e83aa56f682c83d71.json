@@ -18,7 +18,7 @@
      "quote": "Item: dish soap, lemon"
     }
    ],
-   "note": "The ordered product is lemon dish soap (750 ml). The mandate names no size, so the lemon dish soap matches."
+   "note": "The ordered item is Lemon Dish Soap, 750 ml, which is lemon dish soap as the mandate asks."
   },
   "quantityMatchesMandate": {
    "value": "unknown",
@@ -28,7 +28,7 @@
      "quote": "Quantity: (not specified)"
     }
    ],
-   "note": "The mandate sets no quantity, and the agent ordered 2 units, so the records do not settle whether 2 is correct."
+   "note": "The mandate does not specify a quantity, so more than one unit is unknown; the order has 2 units."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $12.48"
     }
    ],
-   "note": "The PayPal total of $12.48 is under the $15.00 limit."
+   "note": "The total of $12.48 is within the $15.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists nothing to exclude."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 2 x Lemon Dish Soap, 750 ml."
     }
    ],
-   "note": "The store shipped the two units that were ordered."
+   "note": "The store shipped the same two items that were ordered."
   }
  },
  "firstDeviation": {
   "kind": "INSUFFICIENT",
   "step": null,
-  "condition": null,
-  "quote": ""
+  "condition": "quantityMatchesMandate",
+  "quote": "Added 2 x Lemon Dish Soap, 750 ml ($8.98)."
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The mandate does not specify a quantity, so whether two bottles matches the approval cannot be settled from the records. The buyer says only one was needed, but that report is not evidence. Every other condition is met: item, spending limit, exclusions, payment permission, and store charge and shipment all match the order."
+  "reason": "The mandate does not specify a quantity, so whether ordering two units matches the approval cannot be settled from the records. The order is otherwise within the mandate, but a clear BUYER verdict needs the quantity condition to be confirmed."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T00:24:38.966Z"
+ "recordedAt": "2026-11-10T02:57:10.361Z"
 }
