@@ -394,6 +394,8 @@ function buyerOutcome(kase) {
       ${kase.dispute ? `<p><strong>Your dispute is on file</strong> since ${time(kase.dispute.at)}.</p>` : `<div class="row" style="margin-top:10px"><button class="danger" data-act="dispute" ${off}>Dispute this decision</button></div>`}</div>`;
   }
   const r = kase.recharge || {};
+  // Once the charge happened or stopped, the notice that came first stays visible.
+  const noticeLine = kase.notice ? `<p class="sub">Notice sent at ${time(kase.notice.sentAt)}, charge not before ${day(kase.notice.chargeNotBefore)}.</p>` : '';
   if (r.status === 'SCHEDULED') {
     return `<div class="stamp wait"><div class="big">Notice: we plan to charge ${usd(kase.notice.amountCents)} again</div>
       <p>${by}${esc(kase.notice.text)}</p><p>Not before <strong>${day(kase.notice.chargeNotBefore)}</strong>. Never more than the amount fixed when you bought.</p>
@@ -403,10 +405,10 @@ function buyerOutcome(kase) {
       </div></div>`;
   }
   if (r.status === 'COMPLETED') {
-    return `<div class="stamp info"><div class="big">Charged again: ${usd(r.amountCents)}</div><p>After the notice period, from the saved wallet, with no dispute on file. PayPal capture <code>${esc(r.captureId)}</code>.</p></div>`;
+    return `<div class="stamp info"><div class="big">Charged again: ${usd(r.amountCents)}</div><p>After the notice period, from the saved wallet, with no dispute on file. PayPal capture <code>${esc(r.captureId)}</code>.</p>${noticeLine}</div>`;
   }
   if (r.status === 'HALTED') {
-    return `<div class="stamp go"><div class="big">The charge is stopped</div><p>Because ${esc(label(REASONS, r.blockedBy))}. You keep the refund; the store is still paid, from the desk's own funds.</p></div>`;
+    return `<div class="stamp go"><div class="big">The charge is stopped</div><p>Because ${esc(label(REASONS, r.blockedBy))}. You keep the refund; the store is still paid, from the desk's own funds.</p>${noticeLine}</div>`;
   }
   return '';
 }
