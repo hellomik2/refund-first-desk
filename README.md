@@ -95,6 +95,8 @@ How the table was reached, run by run (all on the same 30 cases and the same fix
 - Untuned prompt, three runs: first step 27/30, 25/28 and 27/30. The first sandbox run also had 2 cases stopped by sandbox errors (the desk's sandbox PayPal balance was short, so PayPal refused one refund and left two pending); we topped the sandbox balance up and ran again.
 - The misses fell into three kinds: calling a store-only problem (seen only in the store record) a step, counting "opened checkout" instead of "paid" as the step, and not knowing when the records are too thin to tell. The answer key's rules for these were written before the AI first ran; the prompt had not stated them. We added them to the prompt, and fixed one wording slip that a second run exposed (a store step that cancels after charging). **These numbers come after tuning on the same 30 cases.**
 - Tuned prompt on the 30 cases: run 1 first step 29/30 (one notice at 13.5 s, line above); run 2 first step 30/30 and every line passed. The table shows run 2.
+- After the store-payout and screen fixes (same prompt, same 30 cases): run 3 first step 30/30, verdicts 29/30 (S22 to a person), every line passed; refund 1.88–3.09 s (26/26), notice max 3.0 s, over the limits 3.3–13.2 s, ledger 30/30; abuse 9/9, ledger 10/10. Two earlier runs of this build did not finish: one hit a PayPal 503 on a lookup after the money had moved (S28), and in the other the desk's sandbox PayPal balance ran out, so PayPal left refunds pending (19 cases stopped). We topped the sandbox balance up before run 3.
+- The money paths (store payouts that fail, wait or lose their answer, the 30-day boundary, prepaid stores) were cross-checked by an outside reviewer (Codex) three times. Every finding was fixed with a test that failed first; the six findings of the third check are confirmed by those tests only, with no fourth review.
 - Hold-out: 10 new cases written by a writer who had not seen the prompt, answer key fixed before any AI run (`scenarios/holdout.json`). Untuned prompt 7/10 on the first step, missing exactly the three kinds above; tuned prompt 10/10 in three runs; verdicts 10/10 in every run.
 
 Not comparable side by side: PayPal's "about 14 days" is its published guidance for real disputes; our seconds are sandbox measurements. "Refunded" means PayPal's refund status is COMPLETED. When the money appears depends on the funding source (PayPal balance the same day; bank or debit card about 5 business days; credit cards one or two statement cycles).
@@ -129,7 +131,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 84 tests against an in-memory PayPal stand-in
+npm test                       # 105 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 
