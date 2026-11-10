@@ -75,6 +75,7 @@ const DOCS_IN = { mandate: 'the mandate', paypal_order: 'the PayPal order', agen
 const NOTICES = {
   REFUND_REQUESTED: { title: 'Refund requested', tone: 'info' },
   REFUND_COMPLETED: { title: 'PayPal refund completed', tone: 'go' },
+  REFUND_PENDING: { title: 'Refund still with PayPal', tone: 'wait' },
   NO_RECHARGE: { title: 'No re-charge', tone: 'go' },
   CHECKING_FIRST: { title: 'Checking first', tone: 'wait' },
   HUMAN_REVIEW: { title: 'A person is checking', tone: 'wait' },

@@ -33,7 +33,7 @@ export class DeskError extends Error {
   }
 }
 
-export function createDesk({ db, paypal, factExtractor, clock, ledger, config, pollMs = 1500 }) {
+export function createDesk({ db, paypal, factExtractor, clock, ledger, config, pollMs = 1500, refundWaitMs = 60_000 }) {
   const S = db.data;
   const policy = config.policy;
 
@@ -337,7 +337,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     let refund = readRefund(res.body);
     kase.refund = { id: refund.id, requestId, status: refund.status, amountCents: refund.amountCents ?? order.totalCents, requestedAtMs };
     // The clock stops when PayPal's refund lookup says COMPLETED, not when our POST returns.
-    const giveUpAt = Date.now() + 60_000;
+    const giveUpAt = Date.now() + refundWaitMs;
     for (;;) {
       refund = readRefund((await paypal.getRefund(kase.refund.id)).body);
       kase.refund.status = refund.status;
@@ -345,9 +345,26 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       await sleep(pollMs);
     }
     if (refund.status !== 'COMPLETED') {
+      // PayPal accepted the refund but has not finished it (in the sandbox: funded by eCheck when the
+      // desk's balance is short). Nothing is closed and no store is paid until a lookup says COMPLETED.
       event(kase, 'REFUND_PENDING', { status: refund.status });
+      if (!kase.notices.some((n) => n.type === 'REFUND_PENDING')) {
+        notify(kase, 'REFUND_PENDING', `PayPal accepted the refund and is still processing it (status ${refund.status}). Nothing is closed until PayPal reports it completed.`);
+      }
       return;
     }
+    completeRefund(kase, order, refund);
+  }
+
+  /** A refund left PENDING earlier: look it up again (no new refund is sent). */
+  async function refreshRefund(kase, order) {
+    if (!kase.refund?.id || kase.refund.completedAt) return;
+    const refund = readRefund((await paypal.getRefund(kase.refund.id)).body);
+    kase.refund.status = refund.status;
+    if (refund.status === 'COMPLETED') completeRefund(kase, order, refund);
+  }
+
+  function completeRefund(kase, order, refund) {
     const completedAtMs = Date.now();
     kase.refund.amountCents = refund.amountCents ?? kase.refund.amountCents;
     kase.refund.completedAtMs = completedAtMs;
@@ -561,6 +578,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const order = must(S.orders, kase.orderId, 'order');
     const mandate = must(S.mandates, order.mandateId, 'mandate');
     if (kase.verdict || kase.status === 'HUMAN_REVIEW') return kase;
+    if (kase.path === 'REFUND_FIRST' && !kase.refund?.completedAt) await refreshRefund(kase, order);
     if (kase.path === 'REFUND_FIRST' && !kase.refund?.completedAt) {
       // The order of operations is the product: no checking before the money is back.
       throw new DeskError('REFUND_NOT_COMPLETED', 'Investigation cannot start before the refund is completed');
@@ -666,7 +684,10 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     if (kase.path === 'VERIFY_FIRST' && liable !== 'BUYER' && !kase.refund?.completedAt) {
       // Over a limit, so the check came first. The buyer is not responsible: refund now.
       if (liable !== 'STORE') setAsideForStore(kase, order);
-      await refundNow(kase, order);
+      if (kase.refund?.id) await refreshRefund(kase, order); // sent earlier and left PENDING: never sent twice
+      else await refundNow(kase, order);
+      // Refund first is the promise: no case closes and no store is paid while the buyer has no money back.
+      if (!kase.refund?.completedAt) throw new DeskError('REFUND_PENDING', `The refund is not completed at PayPal yet (status ${kase.refund?.status || 'none'})`);
     }
 
     if (liable === 'STORE') {

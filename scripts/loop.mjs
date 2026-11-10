@@ -20,6 +20,10 @@ const ctx = createContext({ dbName: fake ? 'loop-fake' : 'loop', fresh: true, pa
 const { desk, db, clock, config, ledger } = ctx;
 const all = JSON.parse(readFileSync(join(config.root, 'scenarios', 'cases.json'), 'utf8')).cases;
 const cases = wanted.length ? all.filter((c) => wanted.includes(c.id)) : all;
+// What the buyer does after the verdict. S04 disputes during the notice period (pass line 9). The case file
+// carried this as `then: "dispute"` until the 2026-11-09 rewrite dropped it; the file is fingerprinted with
+// the answer key, so the step lives here instead of in the file.
+const AFTER_VERDICT = { S04: 'dispute' };
 
 console.log(`PayPal: ${fake ? 'in-memory stand-in (plumbing check)' : 'sandbox'} | AI provider: ${config.ai.provider} | store payout: ${config.storePayoutEmail ? 'real PayPal Payouts' : 'ledger only (no store account configured)'}`);
 const results = [];
@@ -54,7 +58,7 @@ for (const sc of cases) {
 
     if (kase.verdict) {
       await desk.settle(kase.id);
-      if (sc.then === 'dispute') await desk.fileDispute(kase.id, 'I do not agree that this was my mistake.');
+      if ((sc.then || AFTER_VERDICT[sc.id]) === 'dispute') await desk.fileDispute(kase.id, 'I do not agree that this was my mistake.');
       if (kase.verdict.liable === 'BUYER') {
         clock.fastForwardDays(8); // notice period (5 business days) passes on the policy clock only
         await desk.processDue();

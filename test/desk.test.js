@@ -13,7 +13,7 @@ import { createFakePayPal } from './fake-paypal.js';
 const STORE_LINE = 'Shipped exactly the items on the order.';
 const AGENT_LINE = 'Looked up the item and placed the order.';
 
-function setup(policyOverrides = {}) {
+function setup(policyOverrides = {}, deskOptions = {}) {
   const config = {
     policy: { ...defaultPolicy(), ...policyOverrides },
     demoWallet: { vaultId: 'VAULT-DEMO', customerId: 'CUST-DEMO', email: 'buyer@example.test' },
@@ -24,7 +24,7 @@ function setup(policyOverrides = {}) {
   const paypal = createFakePayPal();
   const clock = createClock(db);
   const ledger = createLedger(db);
-  const desk = createDesk({ db, paypal, factExtractor: createFactExtractor({ provider: 'fixture' }), clock, ledger, config, pollMs: 1 });
+  const desk = createDesk({ db, paypal, factExtractor: createFactExtractor({ provider: 'fixture' }), clock, ledger, config, pollMs: 1, refundWaitMs: 20, ...deskOptions });
   return { config, db, paypal, clock, ledger, desk };
 }
 
@@ -87,8 +87,8 @@ test('refund is completed before the investigation starts', async () => {
 test('investigation refuses to start while a refund-first refund is not completed', async () => {
   const ctx = setup();
   const { order } = await buy(ctx);
+  ctx.paypal.refundsPending = true; // PayPal itself reports the refund as still pending (the desk looks it up again)
   const { kase } = await ctx.desk.reportProblem({ orderId: order.id, statement: 'Wrong order.' });
-  kase.refund.completedAt = null; // simulate a refund that is still pending
   await assert.rejects(() => ctx.desk.investigate(kase.id), { code: 'REFUND_NOT_COMPLETED' });
 });
 
@@ -211,6 +211,44 @@ test('3b. a refund that fails inside settle clears the settling mark, is recorde
   assert.equal(kase.status, 'CLOSED_STORE_RESPONSIBLE');
   assert.equal(ctx.paypal.totals().refunds, 1);
   assert.equal(ctx.db.data.ledger.filter((l) => l.kind === 'REFUND').length, 1);
+});
+
+test('3c. over the cap, a refund PayPal leaves PENDING (eCheck) does not close the case or pay the store; it closes once PayPal completes it', async () => {
+  const ctx = setup();
+  const { order } = await buy(ctx, { cents: 8900, purchaseAuthorized: false });
+  const { kase } = await ctx.desk.reportProblem({ orderId: order.id, statement: 'I did not approve this.' });
+  assert.equal(kase.path, 'VERIFY_FIRST');
+  ctx.paypal.refundsPending = true;
+  await ctx.desk.investigate(kase.id); // the quick check closes the re-charge and sends the refund, which stays PENDING
+  assert.equal(kase.refund.status, 'PENDING');
+  await assert.rejects(() => ctx.desk.settle(kase.id), { code: 'REFUND_PENDING' });
+  assert.ok(!/^CLOSED/.test(kase.status), `not closed while the buyer has no money back (status ${kase.status})`);
+  assert.notEqual(order.storePayable.status, 'PAID', 'the store is not paid before the buyer is refunded');
+  assert.notEqual(order.storePayable.status, 'PAYOUT_FAILED', 'no payout is even attempted');
+  assert.equal(ctx.paypal.totals().payouts, 0);
+  assert.ok(!kase.notices.some((n) => n.type === 'REFUND_COMPLETED'));
+  assert.ok(kase.notices.some((n) => n.type === 'REFUND_PENDING'), 'the buyer is told the refund is still with PayPal');
+  ctx.paypal.completePendingRefunds();
+  await ctx.desk.settle(kase.id);
+  assert.ok(kase.refund.completedAt);
+  assert.equal(kase.status, 'CLOSED_AGENT_RESPONSIBLE');
+  assert.equal(ctx.paypal.totals().refunds, 1, 'one refund at PayPal');
+  assert.equal(ctx.db.data.ledger.filter((l) => l.kind === 'REFUND').length, 1);
+});
+
+test('3d. refund first, a refund PayPal leaves PENDING is looked up again before the check starts', async () => {
+  const ctx = setup();
+  const { order } = await buy(ctx, { purchaseAuthorized: false });
+  ctx.paypal.refundsPending = true;
+  const { kase } = await ctx.desk.reportProblem({ orderId: order.id, statement: 'I only asked it to compare prices.' });
+  assert.equal(kase.path, 'REFUND_FIRST');
+  assert.equal(kase.refund.status, 'PENDING');
+  assert.ok(!kase.notices.some((n) => n.type === 'REFUND_COMPLETED'));
+  await assert.rejects(() => ctx.desk.investigate(kase.id), { code: 'REFUND_NOT_COMPLETED' });
+  ctx.paypal.completePendingRefunds();
+  await ctx.desk.investigate(kase.id);
+  assert.ok(kase.refund.completedAtMs <= kase.investigation.startedAtMs);
+  assert.equal(ctx.paypal.totals().refunds, 1);
 });
 
 test('4. more instant refunds than the 30-day count allows are checked first', async () => {

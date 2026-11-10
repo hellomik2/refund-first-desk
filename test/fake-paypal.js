@@ -117,7 +117,9 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
           throw err;
         }
         cap.refundedCents += amount;
-        const refund = { id: id('REF'), status: 'COMPLETED', amountCents: amount, at: new Date().toISOString() };
+        // api.refundsPending mimics the sandbox when the merchant balance is short: PayPal accepts the
+        // refund and funds it by eCheck, so the lookup says PENDING (reason ECHECK) for a while.
+        const refund = { id: id('REF'), status: api.refundsPending ? 'PENDING' : 'COMPLETED', amountCents: amount, at: new Date().toISOString() };
         state.refunds.set(refund.id, refund);
         return refund;
       });
@@ -160,6 +162,12 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
   function refundBody(r) {
     return { id: r.id, status: r.status, amount: usd(r.amountCents), seller_payable_breakdown: { total_refunded_amount: usd(r.amountCents) }, create_time: r.at };
   }
+
+  api.refundsPending = false;
+  /** The eCheck clears: every pending refund becomes COMPLETED. */
+  api.completePendingRefunds = () => {
+    for (const r of state.refunds.values()) if (r.status === 'PENDING') r.status = 'COMPLETED';
+  };
 
   // Totals the tests assert on: what actually left and entered the buyer's wallet.
   api.totals = () => ({
