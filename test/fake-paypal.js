@@ -2,6 +2,7 @@
 // It mimics the response shapes and the PayPal-Request-Id idempotency the desk relies on.
 // The real behaviour is exercised against the sandbox by scripts/loop.mjs.
 import { fromCents } from '../src/domain/money.js';
+import { PayPalError } from '../src/paypal/client.js';
 
 export function createFakePayPal({ failNextCharge = false } = {}) {
   const state = { orders: new Map(), captures: new Map(), refunds: new Map(), payouts: new Map(), byRequestId: new Map(), deletedTokens: [], log: [] };
@@ -134,11 +135,26 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
     },
     async createPayout({ batchId, receiverEmail, amountCents, itemId }) {
       state.log.push('createPayout');
+      if (api.rejectNextPayout) {
+        api.rejectNextPayout = false;
+        throw new PayPalError({ label: 'create-payout', status: 422, name: 'UNPROCESSABLE_ENTITY', issues: [{ issue: 'INSUFFICIENT_FUNDS' }] });
+      }
+      const existing = state.byRequestId.get(batchId);
+      if (existing && api.duplicateAnswersWithLink) {
+        // PayPal refuses a reused sender_batch_id and links the original payout.
+        const err = new PayPalError({ label: 'create-payout', status: 400, name: 'USER_BUSINESS_ERROR', issues: [{ issue: 'DUPLICATE_SENDER_BATCH_ID' }] });
+        err.links = [{ href: `https://api-m.sandbox.paypal.com/v1/payments/payouts/${existing.batchId}`, rel: 'self', method: 'GET' }];
+        throw err;
+      }
       const p = idem(batchId, () => {
         const payout = { batchId: id('BATCH'), itemId: id('ITEM'), receiverEmail, amountCents, senderItemId: itemId, status: api.payoutStatus, feeCents: 25 };
         state.payouts.set(payout.batchId, payout);
         return payout;
       });
+      if (api.loseNextPayoutResponse) {
+        api.loseNextPayoutResponse = false;
+        throw new Error('socket hang up'); // PayPal took the payout; its answer never arrived
+      }
       return ok({ batch_header: { payout_batch_id: p.batchId, batch_status: 'PENDING' } }, 201);
     },
     async getPayout(batchId) {
@@ -170,6 +186,9 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
   api.refundsPending = false;
   api.payoutStatus = 'SUCCESS'; // set to FAILED, RETURNED, BLOCKED or UNCLAIMED to mimic a payout that did not reach the store
   api.failNextGetPayout = false;
+  api.rejectNextPayout = false;
+  api.loseNextPayoutResponse = false;
+  api.duplicateAnswersWithLink = false;
   /** PayPal finishes payouts that were still in flight: every existing payout item takes this status. */
   api.setPayoutStatus = (status) => {
     for (const p of state.payouts.values()) p.status = status;

@@ -526,6 +526,64 @@ test('G-6. fast-forward lists a store as paid only when PayPal says the payout s
   assert.deepEqual(done.storesPaid, []);
 });
 
+// ---- second codex pass (H-1, H-2) ----
+
+test('H-1. a payout PayPal took but whose answer was lost is not called failed; it is sent again with the same id and found', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.loseNextPayoutResponse = true;
+  await runToVerdict(ctx, order);
+  assert.equal(order.storePayable.status, 'PAYOUT_UNCONFIRMED');
+  assert.equal(ctx.ledger.reserveAllocatedCents(), order.totalCents, 'still set aside');
+  const recon = await ctx.desk.reconcile(order.id); // looks it up first: same sender_batch_id, PayPal returns the original
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.equal(ctx.paypal.totals().payouts, 1, 'one payout at PayPal');
+  assert.ok(recon.ok, JSON.stringify(recon.rows));
+});
+
+test('H-1b. when PayPal refuses the repeated id and links the original payout, the desk follows the link', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.loseNextPayoutResponse = true;
+  ctx.paypal.duplicateAnswersWithLink = true;
+  await runToVerdict(ctx, order);
+  assert.equal(order.storePayable.status, 'PAYOUT_UNCONFIRMED');
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.equal(ctx.paypal.totals().payouts, 1);
+});
+
+test('H-1c. a payout PayPal clearly refused is failed, and an unconfirmed one never reads as matching', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.paypal.rejectNextPayout = true;
+  await runToVerdict(ctx, order);
+  assert.equal(order.storePayable.status, 'PAYOUT_FAILED');
+  const other = setup({}, { payoutWaitMs: 5 });
+  const b = await buy(other, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  other.paypal.loseNextPayoutResponse = true;
+  await runToVerdict(other, b.order);
+  other.paypal.failNextGetPayout = false;
+  other.paypal.createPayout = async () => { throw new Error('still no answer'); };
+  const recon = await other.desk.reconcile(b.order.id);
+  assert.equal(b.order.storePayable.status, 'PAYOUT_UNCONFIRMED');
+  assert.equal(recon.ok, false, 'the store side is unknown, so the check cannot say it matches');
+});
+
+test('H-2. a store paid at the end of the hold window, then a report: desk funds cover the refund and the set-aside is closed', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) });
+  ctx.clock.fastForwardDays(ctx.config.policy.storeHoldDays + 1);
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAID');
+  assert.equal(order.storePayable.source, 'desk:purchase');
+  const kase = await runToVerdict(ctx, order);
+  assert.equal(kase.verdict.liable, 'AGENT');
+  assert.equal(ctx.ledger.reserveAllocatedCents(), 0, 'no set-aside left open');
+  assert.equal(ctx.ledger.orderTotals(order.id)['desk:purchase'].netCents, 0, 'purchase money is not left negative');
+  assert.equal(ctx.paypal.totals().payouts, 1, 'the store is not paid twice');
+});
+
 test('a declined re-charge is recorded as not collected and the store is still paid', async () => {
   const ctx = setup();
   const { order } = await buy(ctx);

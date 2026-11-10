@@ -9,7 +9,7 @@ import { extname, join, normalize } from 'node:path';
 import { loadConfig } from './config.js';
 import { createContext, fixtureFromCase } from './context.js';
 import { DeskError } from './desk.js';
-import { PayPalError } from './paypal/client.js';
+import { PayPalError, publicTrace } from './paypal/client.js';
 
 const config = loadConfig();
 const PUBLIC_DIR = join(config.root, 'public');
@@ -79,7 +79,7 @@ function view(id, ctx) {
       reserveAllocatedCents: ctx.ledger.reserveAllocatedCents(),
       balances: Object.fromEntries(['buyer', 'desk:purchase', 'desk:reserve', 'store', 'paypal:fees'].map((a) => [a, ctx.ledger.balanceOf(a)])),
     },
-    paypalCalls: d.paypalCalls.slice(-80),
+    paypalCalls: d.paypalCalls.slice(-80).map(publicTrace), // saved-wallet ids in paths are masked
   };
 }
 

@@ -15,6 +15,11 @@ export class PayPalError extends Error {
   }
 }
 
+/** A trace entry as the browser may see it: a saved-wallet (vault) id in the path is masked. */
+export function publicTrace(call) {
+  return { ...call, path: String(call.path || '').replace(/(\/v3\/vault\/payment-tokens\/)[^/?]+/, '$1…') };
+}
+
 export function createPayPalClient({ apiBase, clientId, clientSecret, onCall, fetchImpl = fetch, tokenStore = {} }) {
   // tokenStore can be shared by several clients (one per demo workspace) so they reuse one OAuth token.
 
@@ -72,7 +77,9 @@ export function createPayPalClient({ apiBase, clientId, clientSecret, onCall, fe
       requestId: opts.requestId || null,
     });
     if (!res.ok) {
-      throw new PayPalError({ label, status: res.status, name: body.name, message: body.message, issues: body.details, debugId });
+      const err = new PayPalError({ label, status: res.status, name: body.name, message: body.message, issues: body.details, debugId });
+      err.links = Array.isArray(body.links) ? body.links : []; // e.g. a reused sender_batch_id links the original payout
+      throw err;
     }
     return { status: res.status, body, ms, debugId };
   }

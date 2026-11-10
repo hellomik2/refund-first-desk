@@ -620,8 +620,9 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
 
   /** The store is paid once. Desk funds set aside for it stay set aside until PayPal reports the payout as SUCCESS. */
   async function payStore(order, kase, source, note) {
+    if (order.storePayable.status === 'PAID' && source === 'desk:reserve') coverPrepaidStore(order, kase, note);
     if (['PAID', 'CANCELLED', 'AWAITING_DESK_FUNDS', 'PAYOUT_FAILED'].includes(order.storePayable.status)) return;
-    if (order.storePayable.payout?.batchId) return refreshStorePayout(order, kase); // already sent: look it up, never send again
+    if (order.storePayable.payout?.batchId || order.storePayable.status === 'PAYOUT_UNCONFIRMED') return followStorePayout(order, kase); // already sent: never sent as new
     const cents = order.storePayable.cents;
     if (!config.storePayoutEmail) {
       // No store PayPal account configured: the payment is shown on the ledger only and marked as such.
@@ -630,18 +631,54 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       if (source === 'desk:reserve') ledger.settleAllocation(order.id, kase?.id || null, 'CONSUMED', note);
       return;
     }
-    const batchId = `store-${order.id}`;
-    let payout;
+    order.storePayable = { ...order.storePayable, source, note, simulated: false };
+    await sendStorePayout(order, kase, payoutWaitMs);
+  }
+
+  /**
+   * Send the store payout under one fixed sender_batch_id (store-<order id>). Sending again after an answer
+   * was lost is safe: PayPal answers with the original payout, or refuses the repeated id and links it.
+   */
+  async function sendStorePayout(order, kase, waitMs) {
+    const sp = order.storePayable;
+    let batchId;
     try {
-      payout = readPayout((await paypal.createPayout({ batchId, receiverEmail: config.storePayoutEmail, amountCents: cents, itemId: order.id, note: `Order ${order.id}: ${note}` })).body);
+      batchId = readPayout((await paypal.createPayout({ batchId: `store-${order.id}`, receiverEmail: config.storePayoutEmail, amountCents: sp.cents, itemId: order.id, note: `Order ${order.id}: ${sp.note || ''}` })).body).batchId;
     } catch (err) {
-      order.storePayable = { ...order.storePayable, status: 'PAYOUT_FAILED', source, error: err.message };
-      if (kase) event(kase, 'STORE_PAYOUT_FAILED', { error: err.message });
-      return;
+      batchId = (err.links || []).map((l) => /\/v1\/payments\/payouts\/([^/?#]+)/.exec(l.href || '')?.[1]).find(Boolean);
+      if (!batchId) {
+        // A clear refusal from PayPal (4xx) means nothing was sent. Anything else (no answer, 5xx) may have
+        // been sent: it stays unconfirmed, keeps its set-aside, and is sent again with the same id later.
+        const refused = err instanceof PayPalError && err.status >= 400 && err.status < 500;
+        sp.status = refused ? 'PAYOUT_FAILED' : 'PAYOUT_UNCONFIRMED';
+        sp.error = err.message;
+        if (kase) event(kase, refused ? 'STORE_PAYOUT_FAILED' : 'STORE_PAYOUT_UNCONFIRMED', { error: err.message });
+        return;
+      }
     }
     // PayPal has the payout: keep its id before anything else can fail, so it is only ever looked up again.
-    order.storePayable = { ...order.storePayable, status: 'PAYOUT_PENDING', source, note, simulated: false, payout: { batchId: payout.batchId, itemId: null, itemStatus: null, feeCents: 0 } };
-    await refreshStorePayout(order, kase, payoutWaitMs);
+    sp.status = 'PAYOUT_PENDING';
+    delete sp.error;
+    sp.payout = { batchId, itemId: null, itemStatus: null, feeCents: 0 };
+    await refreshStorePayout(order, kase, waitMs);
+  }
+
+  /** A payout sent earlier and not final yet: look it up, or send it again under the same id if no answer ever came. */
+  async function followStorePayout(order, kase) {
+    if (order.storePayable.status === 'PAYOUT_UNCONFIRMED') return sendStorePayout(order, kase, 0);
+    return refreshStorePayout(order, kase);
+  }
+
+  /**
+   * The store was already paid from the purchase money when its hold window ended, and the buyer reported
+   * afterwards and was refunded. Purchase money went out twice, so the desk's own funds set aside for this
+   * order cover the refund (an internal transfer; no PayPal movement) and the set-aside is closed.
+   */
+  function coverPrepaidStore(order, kase, note) {
+    const a = S.reserve.allocations[order.id];
+    if (!a || a.status !== 'HELD' || order.storePayable.source !== 'desk:purchase') return;
+    ledger.post({ orderId: order.id, caseId: kase?.id || null, kind: 'RESERVE_COVERS_REFUND', from: 'desk:reserve', to: 'desk:purchase', cents: a.cents, note: `store was paid before the report; desk funds cover the refund (${note})` });
+    ledger.settleAllocation(order.id, kase?.id || null, 'CONSUMED', 'store was paid before the report; desk funds cover the refund');
   }
 
   /** Look a sent store payout up (waiting up to waitMs for a final status) and record what PayPal says. */
@@ -848,8 +885,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     for (const order of Object.values(S.orders)) {
       if (order.storePayable.status === 'HELD' && !caseOf.has(order.id) && now >= new Date(order.storePayable.releaseAt).getTime()) {
         await payStore(order, null, 'desk:purchase', 'no problem reported during the hold window');
-      } else if (order.storePayable.status === 'PAYOUT_PENDING') {
-        await refreshStorePayout(order, caseOf.get(order.id) || null); // sent earlier and not final yet: look it up again
+      } else if (order.storePayable.status === 'PAYOUT_PENDING' || order.storePayable.status === 'PAYOUT_UNCONFIRMED') {
+        await followStorePayout(order, caseOf.get(order.id) || null); // sent earlier and not final yet: look it up again
       } else continue;
       if (order.storePayable.status === 'PAID') done.storesPaid.push(order.id);
     }
@@ -863,7 +900,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   async function reconcile(orderId) {
     const order = must(S.orders, orderId, 'order');
     const kase = Object.values(S.cases).find((c) => c.orderId === orderId) || null;
-    await refreshStorePayout(order, kase); // a payout still on its way is looked up first, so the ledger is current
+    if (['PAYOUT_PENDING', 'PAYOUT_UNCONFIRMED'].includes(order.storePayable.status)) await followStorePayout(order, kase); // a payout still on its way is looked up first, so the ledger is current
     const fromPayPal = { buyer: 0, store: 0, 'paypal:fees': 0 };
     const lookups = [];
     const cap = readCapture((await paypal.getCapture(order.paypal.captureId)).body);
@@ -895,7 +932,9 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       const ledgerCents = totals[party].netCents - totals[party].simulatedCents; // only what PayPal actually moved
       return { party, ledgerCents, paypalCents: fromPayPal[party], match: ledgerCents === fromPayPal[party] };
     });
-    return { orderId, ok: rows.every((r) => r.match), rows, simulatedStoreCents: totals.store.simulatedCents, lookups };
+    // A payout whose answer never came cannot be compared: the store side is unknown, so this never reads as a match.
+    const storeUnknown = order.storePayable.status === 'PAYOUT_UNCONFIRMED';
+    return { orderId, ok: !storeUnknown && rows.every((r) => r.match), storeUnknown, rows, simulatedStoreCents: totals.store.simulatedCents, lookups };
   }
 
   return {

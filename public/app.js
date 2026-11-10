@@ -95,6 +95,7 @@ const KINDS = {
   RESERVE_ALLOCATED: 'Own funds set aside',
   RESERVE_RELEASED: 'Set-aside released',
   RESERVE_CONSUMED: 'Set-aside used',
+  RESERVE_COVERS_REFUND: 'Own funds cover a refund after the store was paid',
   AGENT_COMPANY_OWES: "Agent's operator owes the desk",
 };
 
@@ -139,8 +140,10 @@ function watchProgress(label) {
     try {
       const res = await fetch(`/api/state?ws=${encodeURIComponent(state.workspace)}`, { cache: 'no-store' });
       const text = res.ok ? await res.text() : '';
-      if (!stopped && text && text !== last) {
-        last = text;
+      // The policy clock ticks on every read; only a real change redraws (an opened record stays open).
+      const key = text.replace(/"clock":\{[^}]*\}/, '');
+      if (!stopped && text && key !== last) {
+        last = key;
         state = JSON.parse(text);
         render(label);
       }
@@ -215,9 +218,20 @@ function render(working = '') {
   $('rail').innerHTML = railHtml(cur, working);
   $('cols').hidden = !cur.mandate;
   if (!cur.mandate) return;
-  $('buyer').innerHTML = buyerColumn(cur, working);
-  $('desk').innerHTML = deskColumn(cur, working);
-  $('money').innerHTML = moneyColumn(cur);
+  redraw('buyer', buyerColumn(cur, working));
+  redraw('desk', deskColumn(cur, working));
+  redraw('money', moneyColumn(cur));
+}
+
+/** Replace a column's content but keep every record the reader opened or closed (matched by its summary). */
+function redraw(id, html) {
+  const el = $(id);
+  const keyOf = (d) => (d.querySelector('summary')?.textContent || '').replace(/\d+/g, '#'); // "latest 14" and "latest 15" are the same record
+  const was = new Map([...el.querySelectorAll('details')].map((d) => [keyOf(d), d.open]));
+  el.innerHTML = html;
+  for (const d of el.querySelectorAll('details')) {
+    if (was.has(keyOf(d))) d.open = was.get(keyOf(d));
+  }
 }
 
 function renderCases(cur) {
@@ -673,6 +687,7 @@ function afterCard(k, order) {
     if (e.type === 'RECHARGE_COMPLETED') rows.push(`<li class="money">${at}<div class="what">Saved wallet charged again</div><div class="detail">${usd(e.amountCents)}, buyer not present, capture ${esc(e.captureId)}.</div></li>`);
     if (e.type === 'STORE_PAID') rows.push(`<li class="money">${at}<div class="what">Store paid from ${e.source === 'desk:reserve' ? "the desk's own funds" : 'the purchase money'}</div><div class="detail">PayPal payout item: ${esc(e.payoutItemStatus || 'unknown')}.</div></li>`);
     if (e.type === 'STORE_PAYOUT_FAILED') rows.push(`<li class="halt">${at}<div class="what">Store payout failed</div><div class="detail">${esc(e.error || '')}</div></li>`);
+    if (e.type === 'STORE_PAYOUT_UNCONFIRMED') rows.push(`<li class="halt">${at}<div class="what">Store payout sent, no answer from PayPal yet</div><div class="detail">${esc(e.error || '')}. Sent again under the same id on the next fast-forward or ledger check; PayPal never pays it twice.</div></li>`);
     if (e.type === 'STORE_PAYOUT_PENDING') rows.push(`<li class="halt">${at}<div class="what">Store payout sent, not confirmed yet</div><div class="detail">PayPal payout item: ${esc(e.payoutItemStatus || 'no status yet')}. Looked up again on the next fast-forward or ledger check.</div></li>`);
     if (e.type === 'RESERVE_SHORTFALL') rows.push(`<li class="halt">${at}<div class="what">The desk's own funds are short</div><div class="detail">The store payment waits for an operator.</div></li>`);
   }
@@ -749,7 +764,7 @@ function reconciliationTable(r) {
   return `<table style="margin-top:10px"><thead><tr><th>Party</th><th class="num">Ledger</th><th class="num">PayPal</th><th></th></tr></thead><tbody>
     ${r.rows.map((row) => `<tr><td>${ACCOUNTS[row.party]}</td><td class="num">${signed(row.ledgerCents)}</td><td class="num">${signed(row.paypalCents)}</td><td class="${row.match ? 'yes' : 'no'}">${row.match ? 'match' : 'differs'}</td></tr>`).join('')}
     </tbody></table>
-    <p class="sub">Looked up just now: ${r.lookups.map((l) => `${l.type.replace('_', ' ')} ${esc(l.status)}`).join(', ')}.${r.simulatedStoreCents ? ` ${usd(r.simulatedStoreCents)} to the store is ledger only and is not part of this comparison.` : ''}</p>`;
+    <p class="sub">Looked up just now: ${r.lookups.map((l) => `${l.type.replace('_', ' ')} ${esc(l.status)}`).join(', ')}.${r.simulatedStoreCents ? ` ${usd(r.simulatedStoreCents)} to the store is ledger only and is not part of this comparison.` : ''}${r.storeUnknown ? ' <strong>The store payout got no answer from PayPal yet, so this order cannot be called a match.</strong>' : ''}</p>`;
 }
 
 // ---- events -----------------------------------------------------------------------------------------------
