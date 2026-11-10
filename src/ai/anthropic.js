@@ -34,10 +34,13 @@ ${READ_ITEM_QUANTITY_EXCLUSIONS}`;
 
 const DEEP_SYSTEM = `You investigate one purchase that an AI shopping agent made for a buyer. You read the mandate the buyer approved, the agent's numbered action log, the PayPal order and the store's record, and you give three answers.
 
-1. firstDeviation: the first step in the agent's log where the purchase went off what the buyer approved or what was ordered: an action of the agent, or of the store, that the mandate or the order does not allow. Count it even if a later step corrected it.
+1. firstDeviation: the earliest numbered step in the agent's log that broke a condition of the mandate or of the order. Read the steps in order.
+- Only numbered steps count. A step is the agent's or the store's, as its line says.
+- The step that breaks a condition is the step that does the thing: an add_to_cart that puts in a product, a size or a quantity the mandate does not allow; a pay that pays when the mandate does not allow paying, or pays a total over the spending limit; a store step that says the store charged or shipped something other than what was ordered. Searching, viewing a page and opening checkout do not break a condition, even when the page shows a total over the limit.
+- Count it even if a later step corrected it (for example the agent removed the wrong product and added the right one).
 - kind "STEP": give the step number, the condition that was broken (one of the fact names below), and the exact words of that step that show it, copied from the text after the colon on that step's line.
-- kind "NONE": every step stays within the mandate and the order.
-- kind "INSUFFICIENT": the records are not enough to tell.
+- kind "NONE": every numbered step stays within the mandate and the order. A problem that shows only in the store record, and in no numbered step, is not a step: the answer is NONE.
+- kind "INSUFFICIENT": the records cannot settle whether the purchase went off the mandate or the order, because the mandate is too vague to tell (no model, size or quantity where it matters) or the store record does not say what was shipped, or there is none. This holds even when every numbered step looks fine.
 2. facts: the fact table below. For each question answer "yes", "no" or "unknown". Answer "unknown" when the records do not settle the question, or when the mandate is too vague to tell.
 3. verdict: who is responsible for the final order.
 - STORE: the store did not charge or ship what was ordered.

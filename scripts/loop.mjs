@@ -15,10 +15,12 @@ import { createFakePayPal } from '../test/fake-paypal.js';
 import { caseRow, printPassLines, summarize } from './metrics.mjs';
 
 const fake = process.argv.includes('--fake-paypal');
+// CASES_FILE=holdout.json measures the hold-out cases written after the 30; the default is the fixed 30-case file.
+const CASES_FILE = process.env.CASES_FILE || 'cases.json';
 const wanted = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const ctx = createContext({ dbName: fake ? 'loop-fake' : 'loop', fresh: true, paypal: fake ? createFakePayPal() : null });
 const { desk, db, clock, config, ledger } = ctx;
-const all = JSON.parse(readFileSync(join(config.root, 'scenarios', 'cases.json'), 'utf8')).cases;
+const all = JSON.parse(readFileSync(join(config.root, 'scenarios', CASES_FILE), 'utf8')).cases;
 const cases = wanted.length ? all.filter((c) => wanted.includes(c.id)) : all;
 // What the buyer does after the verdict. S04 disputes during the notice period (pass line 9). The case file
 // carried this as `then: "dispute"` until the 2026-11-09 rewrite dropped it; the file is fingerprinted with

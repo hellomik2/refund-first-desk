@@ -13,6 +13,8 @@ import { ALL_FACTS } from '../src/domain/verdict.js';
 import { createFakePayPal } from '../test/fake-paypal.js';
 import { caseRow, printPassLines, summarize } from './metrics.mjs';
 
+// CASES_FILE=holdout.json measures the hold-out cases written after the 30; the default is the fixed 30-case file.
+const CASES_FILE = process.env.CASES_FILE || 'cases.json';
 const wanted = process.argv.slice(2);
 const ctx = createContext({
   dbName: 'ai-eval',
@@ -21,7 +23,7 @@ const ctx = createContext({
   overrides: { POLICY_RESERVE_START_CENTS: '10000000' }, // a ledger number only: keeps every case on the same path
 });
 const { desk, config, db } = ctx;
-const all = JSON.parse(readFileSync(join(config.root, 'scenarios', 'cases.json'), 'utf8')).cases;
+const all = JSON.parse(readFileSync(join(config.root, 'scenarios', CASES_FILE), 'utf8')).cases;
 const cases = wanted.length ? all.filter((c) => wanted.includes(c.id)) : all;
 console.log(`AI provider: ${config.ai.provider}${config.ai.model ? ` (${config.ai.model}, effort ${config.ai.effort})` : ''} | ${cases.length} cases | PayPal: in-memory stand-in`);
 
