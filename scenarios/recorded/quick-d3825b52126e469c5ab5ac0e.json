@@ -8,7 +8,7 @@
      "quote": "Item: Norvik AirLite carry-on suitcase, 20-inch"
     }
    ],
-   "note": "The order contains a Norvik AirLite Suitcase, 24-inch, but the mandate asks for a 20-inch carry-on suitcase; the size attribute the buyer named does not match."
+   "note": "The order is a 24-inch Norvik AirLite Suitcase, while the mandate asks for a 20-inch carry-on suitcase. The size attribute named by the buyer differs."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the order cannot contain an excluded item."
+   "note": "The mandate lists nothing to exclude, so the exclusion condition is satisfied."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -32,5 +32,5 @@
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:00:37.599Z"
+ "recordedAt": "2026-11-10T03:57:42.350Z"
 }

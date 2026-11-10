@@ -14,11 +14,11 @@
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Washable Felt-Tip Markers, Set of 20 (sku MRK-WASH-20) @ $17.99"
+     "doc": "mandate",
+     "quote": "Item: washable felt-tip markers, set of 20"
     }
    ],
-   "note": "The ordered product is the 20-piece washable felt-tip marker set the mandate asks for."
+   "note": "The PayPal order and store record both show the same washable felt-tip markers, set of 20."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $21.98"
     }
    ],
-   "note": "The PayPal total of $21.98 is above the $20.00 limit."
+   "note": "The order total of $21.98 is over the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be broken."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "no",
@@ -58,7 +58,7 @@
      "quote": "Charged $21.98."
     }
    ],
-   "note": "The agent submitted a $14.99 item and $3.99 shipping, but the store charged $21.98 after raising the item price to $17.99."
+   "note": "The agent submitted a $14.99 item and $3.99 shipping, but the store charged $17.99 for the item, which is $3.00 more."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Washable Felt-Tip Markers, Set of 20."
     }
    ],
-   "note": "The store shipped one set of 20 washable felt-tip markers, which is what the order contains."
+   "note": "The store shipped the item that was ordered, in the ordered quantity."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 6,
   "condition": "storeChargedAsOrdered",
-  "quote": "CraftBarn: Payment captured: $21.98. Item price $17.99 (sale ended before capture), shipping $3.99."
+  "quote": "Payment captured: $21.98. Item price $17.99 (sale ended before capture), shipping $3.99."
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The agent submitted a $14.99 marker set plus $3.99 shipping, totalling $18.98, which was within the mandate. CraftBarn raised the item price to $17.99 and charged $21.98, which is not the cart the agent submitted, so the store charged something other than what was ordered. The overcharge is the store's deviation, though the buyer is still over the $20 limit and the agent should be checked for not stopping before payment."
+  "reason": "The agent approved and submitted a $18.98 checkout within the $20 limit, but the store raised the item price to $17.99 and captured $21.98, which is more than the cart the agent submitted. The store, not the agent's pay step, caused the overcharge. The buyer should not be charged the $21.98 amount."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T02:57:44.152Z"
+ "recordedAt": "2026-11-10T03:55:15.562Z"
 }

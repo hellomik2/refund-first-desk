@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Braided USB-C to USB-C Cable, 1 m (sku PL-CC-BR-1M) @ $11.99"
+    }
+   ],
+   "note": "The mandate asks for a 2 m cable; the order is for a 1 m cable."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One unit was ordered and the mandate asks for one."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $14.98"
+    }
+   ],
+   "note": "The total is under the $20.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $14.98, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Braided USB-C to USB-C Cable, 1 m."
+    }
+   ],
+   "note": "The store shipped the 1 m cable that the order lists."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 4,
+  "condition": "itemMatchesMandate",
+  "quote": "Added 1 x Braided USB-C to USB-C Cable, 1 m ($11.99) so it ships today."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent added a 1 m cable (step 4) where the mandate approved a 2 m cable, so the paid order differs from the approved item. The store charged and shipped what was ordered, so the store is not at fault and the buyer did not authorize this order."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:40:57.107Z"
+}

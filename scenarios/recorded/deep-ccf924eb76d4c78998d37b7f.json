@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate explicitly allows the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Halden Clip-On LED Desk Lamp, Black"
+     "doc": "mandate",
+     "quote": "Item: Halden clip-on LED desk lamp, black"
     }
    ],
-   "note": "The ordered lamp is the Halden clip-on LED desk lamp in black that the mandate names."
+   "note": "The order is the Halden clip-on LED desk lamp in black, which is the item the mandate names."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and one unit was ordered."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $34.99"
     }
    ],
-   "note": "The $34.99 total is within the $40.00 limit."
+   "note": "The total of $34.99 is under the $40.00 limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists nothing to exclude."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $34.99. No changes to the submitted cart."
     }
    ],
-   "note": "The store charged $34.99 and made no changes to the submitted cart."
+   "note": "The store charged the submitted cart at the submitted price."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Halden Clip-On LED Desk Lamp, Black."
     }
    ],
-   "note": "The store shipped the single ordered lamp."
+   "note": "The store shipped the ordered item and quantity."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The order matches every mandate condition (item, quantity, spending limit, no exclusions), the buyer allowed the agent to pay without asking again, and the store charged and shipped exactly what was ordered. The buyer's $27 price claim from another shop is not a mandate condition and is not evidence here."
+  "reason": "The order matches every mandate condition, the buyer allowed the agent to pay, and the store charged and shipped as ordered. The later $27 price elsewhere does not break any mandate condition."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:03:18.310Z"
+ "recordedAt": "2026-11-10T04:00:11.381Z"
 }

@@ -8,7 +8,7 @@
      "quote": "Item: dish soap, lemon"
     }
    ],
-   "note": "Order contains Lemon Dish Soap, which matches the lemon dish soap in the mandate; shipping line is not an item."
+   "note": "PayPal order item is Lemon Dish Soap, matching the mandate item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "Mandate lists nothing to exclude."
+   "note": "Mandate lists no exclusions, so none can be violated."
   },
   "quantityMatchesMandate": {
    "value": "unknown",
@@ -28,9 +28,9 @@
      "quote": "Quantity: (not specified)"
     }
    ],
-   "note": "Quantity not specified and the order has 2 units, more than one, so the slot rule makes this unknown."
+   "note": "Quantity is not specified and the order contains two units, which the mandate's rule makes unknown."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T02:57:02.687Z"
+ "recordedAt": "2026-11-10T03:54:33.560Z"
 }

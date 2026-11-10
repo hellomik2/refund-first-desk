@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Merino Wool Hiking Socks, Crew, Size L (sku RO-MWS-CR-L) @ $18.50"
+    }
+   ],
+   "note": "The ordered item is crew height, size L, matching the mandate's Item slot."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the order has one unit."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $22.50"
+    }
+   ],
+   "note": "The total of $22.50 is under the $25.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $22.50, equal to the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart total with no added items or price change."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Merino Wool Hiking Socks, Ankle, Size L."
+    }
+   ],
+   "note": "The store shipped ankle socks, but the order was for crew socks."
+  }
+ },
+ "firstDeviation": {
+  "kind": "NONE",
+  "step": null,
+  "condition": null,
+  "quote": ""
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The order matches the mandate on item, quantity, spending limit, exclusions and permission to pay, and the store charged as submitted. However, the store record says it shipped ankle socks instead of the crew socks ordered, so the store did not fulfil the order as placed. The buyer's report is not evidence, and the store record is not a numbered agent step, so no agent step is the first deviation."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:17.513Z"
+}

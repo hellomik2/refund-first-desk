@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: dish soap, lemon"
+     "doc": "paypal_order",
+     "quote": "2 x Lemon Dish Soap, 750 ml (sku DS-LEM-750) @ $4.49"
     }
    ],
-   "note": "The ordered item is Lemon Dish Soap, 750 ml, which is lemon dish soap as the mandate asks."
+   "note": "The ordered product is lemon dish soap, which is the item the mandate describes."
   },
   "quantityMatchesMandate": {
    "value": "unknown",
@@ -28,7 +28,7 @@
      "quote": "Quantity: (not specified)"
     }
    ],
-   "note": "The mandate does not specify a quantity, so more than one unit is unknown; the order has 2 units."
+   "note": "The mandate does not specify a quantity, so one unit matches but two units cannot be settled from the records."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $12.48"
     }
    ],
-   "note": "The total of $12.48 is within the $15.00 limit."
+   "note": "The total of $12.48 is under the $15.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $12.48, same as the submitted cart."
     }
    ],
-   "note": "The store charged the same total as the cart the agent submitted."
+   "note": "The store charged the same total as the submitted cart."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 2 x Lemon Dish Soap, 750 ml."
     }
    ],
-   "note": "The store shipped the same two items that were ordered."
+   "note": "The store shipped the same product and quantity that was ordered."
   }
  },
  "firstDeviation": {
   "kind": "INSUFFICIENT",
   "step": null,
   "condition": "quantityMatchesMandate",
-  "quote": "Added 2 x Lemon Dish Soap, 750 ml ($8.98)."
+  "quote": ""
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The mandate does not specify a quantity, so whether ordering two units matches the approval cannot be settled from the records. The order is otherwise within the mandate, but a clear BUYER verdict needs the quantity condition to be confirmed."
+  "reason": "The mandate states no quantity, so whether two bottles matches the buyer's approval cannot be settled from the records. The order therefore cannot be confirmed as matching every mandate condition, so BUYER cannot be assigned and responsibility is undetermined."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T02:57:10.361Z"
+ "recordedAt": "2026-11-10T03:54:40.956Z"
 }

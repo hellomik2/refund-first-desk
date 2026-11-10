@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: no"
+    }
+   ],
+   "note": "The buyer did not allow the agent to pay without asking again, and the agent completed payment at step 6."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: beeswax pillar candles, pack of 4"
+    }
+   ],
+   "note": "The ordered item is beeswax pillar candles, pack of 4, matching the mandate item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One unit was ordered, matching the mandate quantity of 1."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Spending limit: (none)"
+    }
+   ],
+   "note": "The mandate sets no spending limit, so the $29.50 total cannot exceed one."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions, so none can be violated."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $29.50 for the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart total of $29.50 with no added lines or price changes."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Beeswax Pillar Candles, Pack of 4."
+    }
+   ],
+   "note": "The store shipped the ordered item and quantity."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 6,
+  "condition": "purchaseAuthorized",
+  "quote": "Completed the purchase with the saved PayPal wallet, $29.50."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The buyer's mandate did not allow the agent to pay without asking again, but the agent completed the payment at step 6 for $29.50. The order otherwise matches the item, quantity, and store charge and shipment, so the responsibility lies with the agent for paying without permission."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:40:42.776Z"
+}

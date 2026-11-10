@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Compostable Kitchen Bags, 13 gal, 50 ct (sku GB-CKB-13-50) @ $26.99"
+    }
+   ],
+   "note": "The ordered bags match the mandate item: compostable kitchen bags, 13 gallon, 50 count."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and one unit was ordered."
+  },
+  "withinSpendingLimit": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $33.48"
+    }
+   ],
+   "note": "The mandate limit is $30.00 total and the PayPal order total is $33.48."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Captured $33.48, matching the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart total with no added items or price changes."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Compostable Kitchen Bags, 13 gal, 50 ct."
+    }
+   ],
+   "note": "The store shipped the ordered item."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 6,
+  "condition": "withinSpendingLimit",
+  "quote": "Paid $33.48 with the saved PayPal wallet."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent paid $33.48, which is over the $30.00 spending limit in the mandate, so the final order differs from the approved mandate. The store charged and shipped as ordered, so the store is not responsible, and the buyer did not authorize this amount."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:40:48.977Z"
+}

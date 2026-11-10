@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Cotton Percale Fitted Sheet, Grey, Queen (sku LL-PFS-GR-Q) @ $33.00"
+    }
+   ],
+   "note": "Ordered product is a grey queen fitted cotton-percale sheet, matching the mandate item; shipping line excluded as non-item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists nothing to exclude, so exclusions are respected."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Cotton Percale Fitted Sheet, Grey, Queen (sku LL-PFS-GR-Q) @ $33.00"
+    }
+   ],
+   "note": "Quantity 1 matches mandate Quantity: 1."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:27.646Z"
+}

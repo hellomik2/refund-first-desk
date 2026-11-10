@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x Smooth Almond Butter, Unsweetened, 12 oz (sku NP-AB-SM-U12) @ $9.25"
+    }
+   ],
+   "note": "Product is smooth unsweetened almond butter 12 oz, matching the mandate Item; shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists nothing to exclude."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x Smooth Almond Butter, Unsweetened, 12 oz (sku NP-AB-SM-U12) @ $9.25"
+    }
+   ],
+   "note": "Ordered quantity 2 matches mandate Quantity: 2."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:19.150Z"
+}

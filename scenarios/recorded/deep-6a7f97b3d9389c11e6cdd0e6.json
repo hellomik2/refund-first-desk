@@ -14,11 +14,11 @@
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Trailside Honey Crunch Granola Bars, 12 ct (sku GB-HONEY-12) @ $9.49"
+     "doc": "mandate",
+     "quote": "Item: granola bars, box of 12"
     }
    ],
-   "note": "The mandate asks for granola bars, box of 12, and the order is a 12 ct granola bar box with no other attributes specified."
+   "note": "The mandate names no brand or model, and the ordered Trailside 12 ct granola bars fit the description."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit, and the order contains one 12 ct box."
+   "note": "The order is one box of 12 bars, matching quantity 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $12.99"
     }
    ],
-   "note": "The PayPal total of $12.99 is within the $15.00 limit."
+   "note": "The total of $12.99 is under the $15.00 limit."
   },
   "exclusionsRespected": {
    "value": "no",
@@ -48,7 +48,7 @@
      "quote": "Trailside Honey Crunch Granola Bars ingredients: whole grain oats, honey, roasted peanuts, almonds, sea salt."
     }
    ],
-   "note": "The mandate excludes peanuts, and the chosen product lists roasted peanuts as an ingredient. The agent saw this at step 3 and still added the product."
+   "note": "The ordered product lists roasted peanuts as an ingredient, and the mandate says nothing with peanuts."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $12.99, the same amount as the cart."
     }
    ],
-   "note": "The store charged the same total as the cart the agent submitted."
+   "note": "The store charged $12.99, which equals the submitted cart of $9.49 plus $3.50 shipping."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Trailside Honey Crunch Granola Bars, 12 ct."
     }
    ],
-   "note": "The store shipped the ordered item and quantity."
+   "note": "The store shipped the same product that was ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The order contains a product with peanuts, which the buyer excluded in the mandate. The agent saw the peanut ingredient at step 3 and still added the product to the cart at step 5 and paid. The store charged and shipped as ordered, so the deviation came from the agent's choice."
+  "reason": "The agent added a Trailside product whose listed ingredients include roasted peanuts, which the buyer's mandate excluded, and paid for it. The store charged and shipped as ordered, so the order departs from the mandate's exclusion condition and the agent is responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T02:52:39.361Z"
+ "recordedAt": "2026-11-10T03:49:53.511Z"
 }

@@ -1,0 +1,31 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: soft dog training treats, one bag"
+    }
+   ],
+   "note": "Order is Soft Lamb Training Bites, 8 oz, which is a soft dog training treat; shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "Mandate excludes chicken, but the PayPal order shows only the product name Soft Lamb Training Bites and no ingredient list, so the absence of chicken cannot be confirmed from these two documents."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Soft Lamb Training Bites, 8 oz (sku BL-LAMB-8) @ $12.49"
+    }
+   ],
+   "note": "Quantity 1 matches mandate Quantity: 1."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:40:58.953Z"
+}

@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
+   "note": "The mandate lists nothing to exclude, so the exclusion condition is satisfied."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -32,5 +32,5 @@
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T02:53:42.202Z"
+ "recordedAt": "2026-11-10T03:51:00.543Z"
 }

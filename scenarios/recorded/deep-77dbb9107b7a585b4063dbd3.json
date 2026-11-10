@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "Mandate permits the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "2 x Smooth Almond Butter, Unsweetened, 12 oz (sku NP-AB-SM-U12) @ $9.25"
+    }
+   ],
+   "note": "Ordered product matches the mandate item (smooth almond butter, unsweetened, 12 oz jar)."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 2"
+    }
+   ],
+   "note": "Ordered quantity is 2, matching the mandate."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $24.45"
+    }
+   ],
+   "note": "Order total $24.45 is under the $30.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $24.45, same as the submitted cart."
+    }
+   ],
+   "note": "Store charged the same total as the cart the agent submitted."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Substituted at packing: 2 x Crunchy Almond Butter, Honey Roasted, 12 oz."
+    }
+   ],
+   "note": "Store shipped a different product than the ordered unsweetened smooth almond butter."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 6,
+  "condition": "storeFulfilledAsOrdered",
+  "quote": "We packed 2 x Crunchy Almond Butter, Honey Roasted, 12 oz at the same price."
+ },
+ "verdict": {
+  "liable": "STORE",
+  "reason": "The agent's order matched the mandate in item, quantity, spending limit, exclusions and payment permission, but the store substituted and shipped 2 x Crunchy Almond Butter, Honey Roasted instead of what was ordered, so the store is responsible for the fulfilment failure."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:25.878Z"
+}

@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: braided USB-C to USB-C cable, 2 m"
+    }
+   ],
+   "note": "The order is a braided USB-C to USB-C cable but 1 m long, while the mandate asks for 2 m. The length attribute the buyer named does not match."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so the order cannot contain excluded items."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Braided USB-C to USB-C Cable, 1 m (sku PL-CC-BR-1M) @ $11.99"
+    }
+   ],
+   "note": "Quantity is 1 in both the order and the mandate. Quantity matches, though the item length does not."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:40:50.773Z"
+}

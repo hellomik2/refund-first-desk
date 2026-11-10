@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Canvas Laptop Sleeve, 14 in, Charcoal (sku SS-CLS-14-CH) @ $16.50"
+    }
+   ],
+   "note": "Product is a canvas laptop sleeve, 14 inch, charcoal, matching the mandate Item slot; the shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so the order cannot contain an excluded item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Canvas Laptop Sleeve, 14 in, Charcoal (sku SS-CLS-14-CH) @ $16.50"
+    }
+   ],
+   "note": "Mandate quantity is 1 and the order has 1 unit of the sleeve."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:37.324Z"
+}

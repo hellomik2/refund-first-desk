@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Lighthouse at Dusk Jigsaw Puzzle, 500 pc (sku PH-LH-500) @ $17.95"
+    }
+   ],
+   "note": "The ordered product is a 500-piece jigsaw puzzle with a lighthouse picture, matching the mandate Item slot. Shipping is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Lighthouse at Dusk Jigsaw Puzzle, 500 pc (sku PH-LH-500) @ $17.95"
+    }
+   ],
+   "note": "Ordered quantity is 1, matching the mandate Quantity of 1."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:48.409Z"
+}

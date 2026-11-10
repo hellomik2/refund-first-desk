@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The buyer approved payment without a further request."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: soft dog training treats, one bag"
+    }
+   ],
+   "note": "The ordered product is a bag of soft dog training treats, matching the type the mandate names."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "One unit was ordered and the mandate asks for one."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $16.48"
+    }
+   ],
+   "note": "The total is under the $18.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "no",
+   "evidence": [
+    {
+     "doc": "agent_log",
+     "quote": "Ingredients: lamb, rice, chicken fat, rosemary."
+    }
+   ],
+   "note": "The ordered product lists chicken fat, and the mandate excludes chicken."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $16.48, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart total."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Soft Lamb Training Bites, 8 oz."
+    }
+   ],
+   "note": "The store shipped the ordered item and quantity."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 4,
+  "condition": "exclusionsRespected",
+  "quote": "Added 1 x Soft Lamb Training Bites, 8 oz ($12.49), the lower price per ounce."
+ },
+ "verdict": {
+  "liable": "AGENT",
+  "reason": "The agent added and paid for a product whose ingredients include chicken fat, which the buyer's mandate expressly excluded. The store charged and shipped as ordered, so the deviation lies with the agent's choice of product."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:07.694Z"
+}

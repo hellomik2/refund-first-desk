@@ -1,0 +1,86 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The buyer allowed the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Canvas Laptop Sleeve, 14 in, Charcoal (sku SS-CLS-14-CH) @ $16.50"
+    }
+   ],
+   "note": "The ordered sleeve is the canvas laptop sleeve, 14 inch, charcoal that the mandate asks for. The shipping line is not an item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Canvas Laptop Sleeve, 14 in, Charcoal (sku SS-CLS-14-CH) @ $16.50"
+    }
+   ],
+   "note": "The final order has one unit, matching the mandate. The agent briefly carried two units in the cart at step 4 but removed one at step 6 before paying."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $20.00"
+    }
+   ],
+   "note": "The $20.00 total including $3.50 shipping is within the $22.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $20.00, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged the same total as the cart the agent submitted."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x Canvas Laptop Sleeve, 14 in, Charcoal."
+    }
+   ],
+   "note": "The store says it shipped the one sleeve that was ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "STEP",
+  "step": 4,
+  "condition": "quantityMatchesMandate",
+  "quote": "Added 2 x Canvas Laptop Sleeve, 14 in, Charcoal ($33.00)."
+ },
+ "verdict": {
+  "liable": "BUYER",
+  "reason": "The final order is one charcoal 14 inch canvas sleeve for $20.00 including shipping, within the $22.00 limit, with no exclusions. The buyer allowed payment without asking again, and the store charged and shipped as ordered. The step 4 quantity error was corrected at step 6 before payment, so the final order matches the mandate. The buyer's complaint about bulk is not a mandate condition."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:46.730Z"
+}

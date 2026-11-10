@@ -1,14 +1,14 @@
 {
  "facts": {
   "itemMatchesMandate": {
-   "value": "unknown",
+   "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: black ink cartridge for printer"
+     "doc": "paypal_order",
+     "quote": "1 x Black Ink Cartridge for Printo Jet 40 Series (sku INK-PJ40-BK) @ $21.99"
     }
    ],
-   "note": "The order is a black ink cartridge for the Printo Jet 40 Series, which fits the mandate's general item description, but the mandate does not say which printer model the cartridge must fit, so the match cannot be confirmed from the two documents."
+   "note": "The mandate asks for a black ink cartridge for the buyer's printer; the order is a black ink cartridge, and the mandate names no model, so the printer-specific model is not a conflict in the documents shown."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the order cannot breach an exclusion."
+   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and the order contains one black ink cartridge."
+   "note": "The order has 1 x the cartridge, matching the mandate quantity of 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T02:59:04.111Z"
+ "recordedAt": "2026-11-10T03:56:29.050Z"
 }

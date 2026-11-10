@@ -1,0 +1,81 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate explicitly permits the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "The mandate says only 'water pitcher replacement filter' and does not name a pitcher model or size. The agent chose the Standard Pitcher Filter from Standard, Slim and Max options, and the records do not show which pitcher the buyer owns."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for one unit and the agent submitted 1 pack."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $15.98"
+    }
+   ],
+   "note": "The PayPal total of $15.98 is under the $20.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Charged $15.98, same as the submitted cart."
+    }
+   ],
+   "note": "The store charged the submitted cart total with no added lines."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Shipped: 1 x ClearDrop Standard Pitcher Filter, 1 pack."
+    }
+   ],
+   "note": "The store shipped the same product and quantity that was ordered."
+  }
+ },
+ "firstDeviation": {
+  "kind": "INSUFFICIENT",
+  "step": null,
+  "condition": null,
+  "quote": ""
+ },
+ "verdict": {
+  "liable": "UNDETERMINED",
+  "reason": "Payment was authorized, the price, quantity, limit and exclusions all match, and the store charged and shipped as ordered. Whether the Standard filter is the right item depends on a pitcher model the mandate does not state, and the buyer's complaint is not evidence. So the records cannot settle whether the order matches the mandate, which rules out BUYER and also AGENT."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:42:04.709Z"
+}

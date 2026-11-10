@@ -1,0 +1,76 @@
+{
+ "facts": {
+  "purchaseAuthorized": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "May the agent pay without asking again: yes"
+    }
+   ],
+   "note": "The mandate allows the agent to pay without asking again."
+  },
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Lighthouse at Dusk Jigsaw Puzzle, 500 pc (sku PH-LH-500) @ $17.95"
+    }
+   ],
+   "note": "The ordered item is a 500-piece lighthouse jigsaw puzzle, which matches the mandate item."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The order has one puzzle, which matches the mandate quantity."
+  },
+  "withinSpendingLimit": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "Total: $22.95"
+    }
+   ],
+   "note": "The total of $22.95 is under the $25.00 limit."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists no exclusions."
+  },
+  "storeChargedAsOrdered": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "The store has not provided a record, so what it charged cannot be checked against the cart."
+  },
+  "storeFulfilledAsOrdered": {
+   "value": "unknown",
+   "evidence": [],
+   "note": "There is no store record saying what was shipped; the buyer reports no puzzle has arrived."
+  }
+ },
+ "firstDeviation": {
+  "kind": "INSUFFICIENT",
+  "step": null,
+  "condition": null,
+  "quote": ""
+ },
+ "verdict": {
+  "liable": "UNDETERMINED",
+  "reason": "The order matches the mandate on item, quantity, price limit, exclusions and permission to pay, and no numbered agent step breaks a condition. However, there is no store record, so it cannot be confirmed that the store charged and shipped what was ordered. Buyer liability requires that confirmation, so the records do not settle responsibility."
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:54.989Z"
+}

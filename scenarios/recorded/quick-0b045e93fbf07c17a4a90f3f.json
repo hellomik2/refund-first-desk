@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Merino Wool Hiking Socks, Crew, Size L (sku RO-MWS-CR-L) @ $18.50"
+    }
+   ],
+   "note": "Product matches mandate item: merino wool hiking socks, crew height, size L. Shipping line is not an item."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "Mandate lists nothing to exclude."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "paypal_order",
+     "quote": "1 x Merino Wool Hiking Socks, Crew, Size L (sku RO-MWS-CR-L) @ $18.50"
+    }
+   ],
+   "note": "Mandate quantity is 1; order has 1 unit of the socks."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:10.209Z"
+}

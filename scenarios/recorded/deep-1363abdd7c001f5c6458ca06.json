@@ -18,7 +18,7 @@
      "quote": "Item: phone case"
     }
    ],
-   "note": "The mandate says only 'phone case' and names no phone model, so whether a Pixel 9 case is the right item cannot be settled from the records."
+   "note": "The mandate asks only for a phone case and does not name the phone model. The agent ordered a Pixel 9 case, and whether it suits the buyer's phone cannot be settled from the records."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "Ordered quantity is 1 x Slim Case, matching the mandate quantity of 1."
+   "note": "The mandate asks for one unit and the order contains one unit."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $18.99"
     }
    ],
-   "note": "$18.99 is within the $25.00 spending limit."
+   "note": "The PayPal total of $18.99 is below the $25.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists no exclusions, so nothing can be excluded."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $18.99, same as the submitted cart."
     }
    ],
-   "note": "The store charged the same $18.99 as the cart the agent submitted, with no added lines."
+   "note": "The store charged the submitted cart amount with no added lines."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Slim Case for Pixel 9."
     }
    ],
-   "note": "The store shipped the same single Slim Case for Pixel 9 that the order contains."
+   "note": "The store shipped the same single item that was ordered."
   }
  },
  "firstDeviation": {
   "kind": "INSUFFICIENT",
   "step": null,
-  "condition": "itemMatchesMandate",
-  "quote": "CaseHub sells cases for 40 phone models; the task does not name one."
+  "condition": null,
+  "quote": ""
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "Every condition except the item is settled as matching, but the mandate names only 'phone case' with no phone model, so whether the Pixel 9 case was the item the buyer approved cannot be decided from the records. Agent-side fault is not established and BUYER cannot be confirmed while the item match is unknown."
+  "reason": "The order fits the mandate's stated limits on quantity, spending, exclusions, permission to pay, and store charge and shipment. Whether the Pixel 9 case is the right item depends on a phone model the mandate never names, and the records cannot settle that, so neither BUYER nor AGENT can be established."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T03:02:43.326Z"
+ "recordedAt": "2026-11-10T03:59:39.350Z"
 }

@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The mandate gives permission to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $30.48"
     }
    ],
-   "note": "The order total of $30.48 is above the $30.00 limit in the mandate."
+   "note": "The order total of $30.48 is above the $30.00 limit, including shipping."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists no exclusions, so nothing can be excluded."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -73,14 +73,14 @@
  },
  "firstDeviation": {
   "kind": "STEP",
-  "step": 7,
+  "step": 8,
   "condition": "withinSpendingLimit",
-  "quote": "Checkout step 2 of 2 shows standard shipping $3.49 and an order total of $30.48."
+  "quote": "Paid $30.48 with the saved PayPal wallet."
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid $30.48 against a mandate capped at $30.00 total, so the order breaks the spending-limit condition. The store charged and shipped as ordered, and the buyer's approval does not cover an over-limit payment."
+  "reason": "The agent paid $30.48 for the order, which is over the mandate's $30.00 all-in spending limit, so the final order differs from the approved mandate. The store charged and shipped as ordered, so the deviation lies with the agent, not the buyer."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T02:51:11.225Z"
+ "recordedAt": "2026-11-10T03:48:21.155Z"
 }

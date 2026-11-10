@@ -1,0 +1,36 @@
+{
+ "facts": {
+  "itemMatchesMandate": {
+   "value": "unknown",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Item: water pitcher replacement filter"
+    }
+   ],
+   "note": "The order contains a ClearDrop Standard Pitcher Filter, which is a pitcher filter, but the mandate does not say which pitcher or what the filter must fit, so compatibility cannot be confirmed from these two documents."
+  },
+  "exclusionsRespected": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Must not include: (nothing listed)"
+    }
+   ],
+   "note": "The mandate lists nothing to exclude, so the order respects exclusions."
+  },
+  "quantityMatchesMandate": {
+   "value": "yes",
+   "evidence": [
+    {
+     "doc": "mandate",
+     "quote": "Quantity: 1"
+    }
+   ],
+   "note": "The mandate asks for quantity 1 and the order has 1 x ClearDrop Standard Pitcher Filter, 1 pack."
+  }
+ },
+ "model": "claude-haiku-5-5",
+ "recordedAt": "2026-11-10T03:41:57.029Z"
+}
