@@ -126,6 +126,70 @@
     "denominator": 30
    }
   },
+  "money": {
+   "unit": "USD cents, PayPal sandbox, run 4 ledger",
+   "purchased": {
+    "cases": 30,
+    "cents": 87353
+   },
+   "refundedBeforeCheck": {
+    "cases": 26,
+    "cents": 59326
+   },
+   "refundedAfterCheck": {
+    "cases": [
+     "S18",
+     "S23",
+     "S27"
+    ],
+    "cents": 20733
+   },
+   "chargedAgain": {
+    "cases": [
+     "S03",
+     "S08",
+     "S17",
+     "S28"
+    ],
+    "cents": 11449
+   },
+   "buyerResponsibleRefundStoppedByDispute": {
+    "cases": [
+     "S04"
+    ],
+    "cents": 2598,
+    "note": "the dispute is filed by scripts/loop.mjs (AFTER_VERDICT)"
+   },
+   "deskFundsToStores": {
+    "cases": 17,
+    "cents": 46849
+   },
+   "paypalFeesPaidByDesk": {
+    "cents": 6425,
+    "purchaseCapture": 4517,
+    "storePayout": 1313,
+    "rechargeCapture": 595
+   },
+   "deskFundsSpent": {
+    "cents": 53274,
+    "startCents": 200000,
+    "endCents": 146726
+   },
+   "invoicedToAgentOperator": {
+    "cases": 10,
+    "cents": 34320,
+    "note": "recorded only; the operator paying it is simulated"
+   },
+   "deskLeftWithIfInvoicePaid": {
+    "cents": 18954,
+    "perCaseCents": 632
+   },
+   "addedByRefundingFirstEstimate": {
+    "cents": 3193,
+    "perCaseCents": 106,
+    "how": "refund kept after the dispute + PayPal fees on the re-charges; assumes a check-first desk would not have refunded buyer-responsible cases"
+   }
+  },
   "cases": [
    {
     "id": "S01",
