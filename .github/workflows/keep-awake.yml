@@ -1,0 +1,18 @@
+# Keeps the hosted demo on Render's free plan from sleeping: one GET to /healthz every 5 minutes.
+# No secrets, no repository access. GitHub may delay or skip scheduled runs under load.
+name: keep-awake
+
+on:
+  schedule:
+    - cron: '2-59/5 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: GET /healthz
+        run: curl --fail --silent --show-error --max-time 60 --retry 3 --retry-delay 10 --retry-all-errors https://refund-first-desk.onrender.com/healthz
