@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The mandate lets the agent pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,17 +18,17 @@
      "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
     }
    ],
-   "note": "The ordered product is medium roast compostable coffee pods, box of 18, which is the mandate item."
+   "note": "The ordered item is the medium roast compostable pods, box of 18, which is the mandate's item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Medium Roast Compostable Coffee Pods, 18 ct (sku POD-MR-18) @ $13.49"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "The order is one box, matching the mandate quantity of 1."
+   "note": "One box was ordered, matching the mandate quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $17.44"
     }
    ],
-   "note": "The total of $17.44 is under the $20.00 limit."
+   "note": "The $17.44 total is under the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Amount charged: $17.44, equal to the cart submitted."
     }
    ],
-   "note": "The store charged the same total as the submitted cart."
+   "note": "The store charged the same total as the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "no",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Medium Roast Compostable Coffee Pods, 12 ct."
     }
    ],
-   "note": "The store shipped the 12 ct box, not the 18 ct box that was ordered."
+   "note": "The store shipped the 12 ct box, but the order was for the 18 ct box."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The agent's steps stayed within the mandate and the order, and the store charged the submitted cart. The store record shows the 12 ct box was shipped instead of the ordered 18 ct box, so the store did not ship what was ordered."
+  "reason": "The agent submitted and paid for an 18 ct box at $17.44, which matches the mandate. The store record says it shipped a 12 ct box, so the store did not ship what was ordered. The store's departure comes first in the verdict order, so responsibility rests with the store. No numbered agent step breaks a condition, so the firstDeviation is NONE."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:14:52.781Z"
+ "recordedAt": "2026-11-12T12:29:22.642Z"
 }

@@ -8,14 +8,14 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The buyer allowed the agent to pay without asking again."
+   "note": "The buyer approved payment without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: insulated stainless steel water bottle, 32 oz"
+     "doc": "paypal_order",
+     "quote": "1 x Insulated Stainless Steel Water Bottle, 32 oz (sku WB-32-SS) @ $26.99"
     }
    ],
    "note": "The ordered bottle is the 32 oz insulated stainless steel water bottle the mandate describes."
@@ -24,11 +24,11 @@
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Insulated Stainless Steel Water Bottle, 32 oz (sku WB-32-SS) @ $26.99"
     }
    ],
-   "note": "One unit was ordered and the mandate asks for one."
+   "note": "One unit was ordered and the mandate asks for quantity 1."
   },
   "withinSpendingLimit": {
    "value": "no",
@@ -38,7 +38,7 @@
      "quote": "Total: $30.48"
     }
    ],
-   "note": "The PayPal total of $30.48 is over the $30.00 total limit in the mandate."
+   "note": "The mandate limit is $30.00 total and the PayPal order total is $30.48."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be broken."
+   "note": "The mandate lists no exclusions, so none can be violated."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $30.48: bottle $26.99 and standard shipping $3.49, as in the submitted cart."
     }
    ],
-   "note": "The store charged the same two lines the agent submitted, at the same prices."
+   "note": "The store charged the submitted bottle and shipping lines at the submitted prices."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Insulated Stainless Steel Water Bottle, 32 oz."
     }
    ],
-   "note": "The store shipped the one bottle that was ordered."
+   "note": "The store shipped the ordered bottle."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid $30.48 against a mandate capped at $30.00 total, so the order breaks the spending-limit condition. The store charged and shipped as ordered, so the store is not at fault, and BUYER cannot apply because the order does not match every mandate condition."
+  "reason": "The store charged and shipped as the agent submitted, so STORE does not apply. The agent paid $30.48 on a $30.00 mandate limit, which breaks the spending limit, so the order departs from the approved mandate and the agent is responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:17:50.116Z"
+ "recordedAt": "2026-11-12T12:32:25.476Z"
 }

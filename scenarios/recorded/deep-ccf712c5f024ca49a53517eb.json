@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "unknown",
@@ -18,7 +18,7 @@
      "quote": "Item: bike inner tube"
     }
    ],
-   "note": "The mandate names no size, model or valve, and the ordered tube is 26 x 1.95 Schrader. Whether that fits the buyer's wheel is not settled by the records."
+   "note": "The mandate names only a bike inner tube with no size, and the ordered tube is 26 x 1.95. The records do not say which size fits the buyer's wheel."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One tube was ordered and the mandate asks for one."
+   "note": "One tube was ordered, matching the mandate quantity."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $11.48"
     }
    ],
-   "note": "The total is under the $15.00 limit."
+   "note": "The PayPal total of $11.48 is under the $15.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so nothing excluded can be in the order."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $11.48, matching the cart."
     }
    ],
-   "note": "The store charged the same total as the agent's submitted cart."
+   "note": "The store charged the same total as the submitted cart, with no added lines."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Inner Tube 26 x 1.95, Schrader Valve."
     }
    ],
-   "note": "The shipped item matches the ordered item."
+   "note": "The store shipped the same tube that was ordered."
   }
  },
  "firstDeviation": {
   "kind": "INSUFFICIENT",
   "step": null,
   "condition": null,
-  "quote": "Item: bike inner tube"
+  "quote": ""
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "Every condition except the item is met, but the mandate says only bike inner tube with no size or model. The records cannot show whether the 26 x 1.95 Schrader tube is the right item, so responsibility cannot be fixed from them. The buyer's complaint about the wrong size is not evidence."
+  "reason": "Every condition except item fit holds, but the mandate gives no tube size, so whether the 26 x 1.95 tube matches the buyer's wheel cannot be settled from the records."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:16:30.575Z"
+ "recordedAt": "2026-11-12T12:30:57.107Z"
 }

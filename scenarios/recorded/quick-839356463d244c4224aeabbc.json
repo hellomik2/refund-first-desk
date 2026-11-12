@@ -8,12 +8,12 @@
      "quote": "Item: granola bars, box of 12"
     }
    ],
-   "note": "PayPal order line is Trailside Honey Crunch Granola Bars, 12 ct, matching granola bars box of 12; shipping line is not an item."
+   "note": "Order contains 1 x Trailside Honey Crunch Granola Bars, 12 ct; the shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "unknown",
    "evidence": [],
-   "note": "Mandate excludes peanuts, but the PayPal order shows only product name and SKU with no ingredient list, so peanut absence cannot be confirmed from these two documents."
+   "note": "The mandate excludes peanuts, but the PayPal order shows only the product name and SKU and does not list ingredients, so peanut content cannot be confirmed either way."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -23,9 +23,9 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "PayPal order shows 1 x the granola bar box of 12, matching quantity 1."
+   "note": "Order has 1 x the granola bar box, matching the mandate quantity of 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:19:04.878Z"
+ "recordedAt": "2026-11-12T12:33:52.702Z"
 }

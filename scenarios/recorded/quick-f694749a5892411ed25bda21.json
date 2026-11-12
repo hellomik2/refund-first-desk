@@ -8,7 +8,7 @@
      "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm (sku BCB-M-3020) @ $16.95"
     }
    ],
-   "note": "Product matches the mandate item: bamboo cutting board, medium, about 30 x 20 cm. Shipping line is not an item."
+   "note": "Ordered product is a medium bamboo cutting board of 30 x 20 cm, matching the mandate Item slot; the shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm (sku BCB-M-3020) @ $16.95"
     }
    ],
-   "note": "Ordered quantity is 1, matching the mandate Quantity of 1."
+   "note": "Mandate Quantity is 1 and the order has 1 unit of the cutting board."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:21:01.154Z"
+ "recordedAt": "2026-11-12T12:36:07.882Z"
 }

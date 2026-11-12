@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the exclusion condition is met."
+   "note": "Mandate lists no exclusions, so nothing excluded can be in the order."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "1 x Glass Food Storage Containers with Lids, Set of 4 (sku GLS-4SET) @ $22.95"
     }
    ],
-   "note": "Mandate quantity is 1 and the order has 1 unit of the item."
+   "note": "Mandate quantity is 1 and the order has 1 unit of the product."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:16:56.242Z"
+ "recordedAt": "2026-11-12T12:31:23.758Z"
 }

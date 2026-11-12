@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate permits payment without asking again."
+   "note": "The mandate explicitly permits the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: granola bars, box of 12"
+     "doc": "paypal_order",
+     "quote": "1 x Trailside Honey Crunch Granola Bars, 12 ct (sku GB-HONEY-12) @ $9.49"
     }
    ],
-   "note": "The ordered product is a 12 ct box of granola bars, which matches the item slot. The mandate names no other attribute."
+   "note": "The ordered product is a box of 12 granola bars, matching the mandate item. Peanuts are handled under exclusionsRespected."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered, matching the quantity slot."
+   "note": "The mandate asks for one unit and the order contains one unit of the 12-count box."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,17 +38,17 @@
      "quote": "Total: $12.99"
     }
    ],
-   "note": "The PayPal total of $12.99 is under the $15.00 limit."
+   "note": "The PayPal total of $12.99 is below the $15.00 limit."
   },
   "exclusionsRespected": {
    "value": "no",
    "evidence": [
     {
      "doc": "agent_log",
-     "quote": "Trailside Honey Crunch Granola Bars ingredients: whole grain oats, honey, roasted peanuts, almonds, sea salt."
+     "quote": "ingredients: whole grain oats, honey, roasted peanuts, almonds, sea salt."
     }
    ],
-   "note": "The ordered product lists roasted peanuts as an ingredient, and the mandate excludes peanuts."
+   "note": "The ordered product contains roasted peanuts, which the mandate says must not be included."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $12.99, the same amount as the cart."
     }
    ],
-   "note": "The store charged the same amount as the submitted cart."
+   "note": "The store charged the same total as the submitted cart, which is $9.49 plus $3.50 shipping."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Trailside Honey Crunch Granola Bars, 12 ct."
     }
    ],
-   "note": "The store shipped the ordered product."
+   "note": "The store shipped the same product and quantity that was ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent added a product whose ingredients include roasted peanuts, which the buyer's mandate excluded, so the final order differs from the approved mandate. The store charged and shipped as ordered, so the store is not responsible, and the buyer is not responsible because the order does not match every mandate condition."
+  "reason": "The store charged and shipped exactly what the agent submitted, so STORE does not apply. The agent submitted and paid for a product containing peanuts, which the mandate excludes, so the order differs from the approved mandate and the agent is responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:19:12.806Z"
+ "recordedAt": "2026-11-12T12:34:01.776Z"
 }

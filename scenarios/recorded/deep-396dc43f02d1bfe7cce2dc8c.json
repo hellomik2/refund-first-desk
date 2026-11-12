@@ -18,7 +18,7 @@
      "quote": "1 x Bamboo Cutting Board, Medium, 30 x 20 cm (sku BCB-M-3020) @ $16.95"
     }
    ],
-   "note": "The ordered product is the medium 30 x 20 cm bamboo cutting board the mandate describes."
+   "note": "The ordered product is the medium bamboo board, 30 x 20 cm, that the mandate asks for."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $21.90"
     }
    ],
-   "note": "The PayPal total of $21.90 is under the $25.00 limit."
+   "note": "The $21.90 total is under the $25.00 limit in the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,29 +48,29 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists nothing to exclude."
   },
   "storeChargedAsOrdered": {
    "value": "unknown",
    "evidence": [],
-   "note": "No store record was provided, so what the store actually charged cannot be checked against the submitted cart."
+   "note": "The store has not provided a record, so what the store actually charged cannot be checked against the submitted cart. The PayPal order shows the payment, not the store's charge."
   },
   "storeFulfilledAsOrdered": {
    "value": "unknown",
    "evidence": [],
-   "note": "No store record or shipping notice was provided, so what was shipped is not known."
+   "note": "The store record is missing and the confirmation page shows no item list, so what was shipped cannot be determined."
   }
  },
  "firstDeviation": {
   "kind": "INSUFFICIENT",
   "step": null,
   "condition": null,
-  "quote": "(the store has not provided a record)"
+  "quote": ""
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The order matches the mandate on item, quantity, spending limit and exclusions, and the buyer allowed payment. However, the store has provided no record, so it is not established that the store charged and shipped what was ordered. The buyer reports that no board has arrived, so the outcome cannot be settled from these records."
+  "reason": "The agent's submitted order matches every mandate condition, so AGENT does not hold. The store's charge and shipment cannot be checked because no store record exists, so STORE and BUYER cannot be confirmed either."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:21:08.666Z"
+ "recordedAt": "2026-11-12T12:36:15.474Z"
 }

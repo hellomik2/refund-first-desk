@@ -8,7 +8,7 @@
      "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
     }
    ],
-   "note": "The ordered product is loose leaf Earl Grey tea in a 100 g tin, matching the mandate's Item slot. The shipping line is not an item."
+   "note": "The ordered product is loose leaf Earl Grey tea in a 100 g tin, matching the mandate item. The shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists nothing to exclude, so the order cannot contain an excluded item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
     }
    ],
-   "note": "Mandate quantity is 1 and the order has 1 unit of the tea."
+   "note": "Mandate asks for quantity 1 and the order has 1 unit of the tea."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:29:43.448Z"
+ "recordedAt": "2026-11-12T12:34:29.922Z"
 }

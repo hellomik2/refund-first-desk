@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate explicitly permits the agent to pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,14 +18,14 @@
      "quote": "1 x Halden Clip-On LED Desk Lamp, Black (sku HAL-CLIP-BLK) @ $34.99"
     }
    ],
-   "note": "The ordered item is the Halden clip-on LED desk lamp in black, matching the mandate's Item slot."
+   "note": "The ordered product is the Halden clip-on LED desk lamp in black, which is the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "1 x Halden Clip-On LED Desk Lamp, Black (sku HAL-CLIP-BLK) @ $34.99"
+     "quote": "1 x Halden Clip-On LED Desk Lamp, Black"
     }
    ],
    "note": "Quantity 1 matches the mandate quantity of 1."
@@ -38,7 +38,7 @@
      "quote": "Total: $34.99"
     }
    ],
-   "note": "The total of $34.99 is under the $40.00 spending limit."
+   "note": "The total is under the $40.00 spending limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $34.99. No changes to the submitted cart."
     }
    ],
-   "note": "The store charged $34.99 and the record states no changes to the submitted cart."
+   "note": "The store charged the submitted cart at the submitted price."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Halden Clip-On LED Desk Lamp, Black."
     }
    ],
-   "note": "The store shipped one Halden clip-on LED desk lamp in black, as ordered."
+   "note": "The store shipped the ordered item and quantity."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The order matches every mandate condition: the correct item, quantity 1, total $34.99 under the $40 limit, no exclusions, and payment was permitted. The store charged and shipped as ordered. The buyer's later finding of a $27 price elsewhere does not make the purchase a deviation from the mandate."
+  "reason": "Every numbered step stays within the mandate, the order matches the mandate on item, quantity, spending limit and exclusions, the buyer allowed the agent to pay, and the store charged and shipped as ordered. The buyer's report of a lower price elsewhere is not a breach of any mandate condition."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:29:17.122Z"
+ "recordedAt": "2026-11-12T12:29:39.844Z"
 }

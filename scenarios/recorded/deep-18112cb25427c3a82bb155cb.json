@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: no"
     }
    ],
-   "note": "The mandate does not allow the agent to pay without asking again, and the agent paid at step 6 without asking."
+   "note": "The buyer did not let the agent pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x FlexGrip Yoga Mat, 6 mm, Non-Slip (sku YM-6-NS) @ $27.50"
     }
    ],
-   "note": "The mandate asks for a 6 mm non-slip yoga mat, and the order is a 6 mm non-slip FlexGrip yoga mat."
+   "note": "A 6 mm non-slip yoga mat matches the mandate item; no added product."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order has 1 mat and the mandate asks for quantity 1."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $32.49"
     }
    ],
-   "note": "The PayPal total of $32.49 is under the $35.00 spending limit."
+   "note": "The total is under the $35.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Payment of $32.49 captured, identical to the cart that was sent."
     }
    ],
-   "note": "The store charged the same cart the agent submitted."
+   "note": "The store charged the submitted cart exactly."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Dispatched: 1 x FlexGrip Yoga Mat, 6 mm, Non-Slip."
     }
    ],
-   "note": "The store says it dispatched the ordered mat."
+   "note": "The store dispatched the ordered mat."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid without permission, which the mandate does not allow (\"May the agent pay without asking again: no\"). The order otherwise matches the mandate, but because the agent paid without authorization the buyer is not responsible for this order."
+  "reason": "The store charged and shipped exactly what the agent submitted, so the store is not responsible. The agent paid with the saved PayPal wallet although the buyer's mandate said the agent may not pay without asking again, so the order departs from the mandate on permission to pay. The buyer's report that they never checked out is not evidence and the records show a completed checkout by the agent."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:14:16.229Z"
+ "recordedAt": "2026-11-12T12:28:43.053Z"
 }

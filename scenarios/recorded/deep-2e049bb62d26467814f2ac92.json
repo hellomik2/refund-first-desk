@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate permits the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Item: AeroPress Go travel coffee maker"
     }
    ],
-   "note": "The order is the AeroPress Go Travel Coffee Maker (sku AP-GO), which is the item the mandate names. The buyer's report says they wanted the bigger model, but the mandate is what was approved, so the report is not used as evidence."
+   "note": "The agent submitted and paid for the AeroPress Go Travel Coffee Maker (sku AP-GO), which is the mandate item."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered, matching the mandate."
+   "note": "One unit was ordered and the mandate allows one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $39.95"
     }
    ],
-   "note": "The total is under the $45.00 limit in the mandate."
+   "note": "The total of $39.95 is under the $45.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be breached."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $39.95, same as the submitted cart."
     }
    ],
-   "note": "The store charged the same amount as the cart the agent submitted."
+   "note": "The store charged the submitted cart at the submitted price."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "Every numbered step stays within the mandate. The order matches the mandate on item, quantity, spending limit and exclusions, the buyer allowed the agent to pay, and the store charged and shipped exactly what was ordered. The buyer's complaint describes a different product from the one the mandate approved, so it does not change the result."
+  "reason": "The order matches every mandate condition: the item, quantity, $39.95 total under the $45 limit, and no exclusions. The buyer allowed payment without re-asking, and the store charged and shipped as ordered. The buyer's complaint is not evidence and does not show a mandate breach; the mandate says AeroPress Go, not the XL."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:27:42.493Z"
+ "recordedAt": "2026-11-12T12:26:59.372Z"
 }

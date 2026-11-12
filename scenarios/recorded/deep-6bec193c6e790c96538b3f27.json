@@ -8,27 +8,27 @@
      "quote": "May the agent pay without asking again: no"
     }
    ],
-   "note": "The buyer only asked for a price comparison and did not allow payment without asking again, but the agent paid at step 5."
+   "note": "The buyer approved a search and price report only, and did not allow the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Large Eggs, 12 ct (sku EGG-12) @ $13.19"
+     "doc": "mandate",
+     "quote": "Item: eggs, one dozen, cheapest delivered today"
     }
    ],
-   "note": "The mandate asks for a dozen eggs delivered today at the cheapest price; the ordered item is a dozen large eggs, the cheapest same-day option the agent viewed."
+   "note": "The ordered Large Eggs, 12 ct match a dozen eggs; the mandate names no size or brand, and the agent's log shows this was the cheapest same-day option."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "1 x Large Eggs, 12 ct"
+     "doc": "mandate",
+     "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate quantity is 1 dozen, and the order contains one 12-count carton."
+   "note": "One unit of the 12 ct eggs was ordered, matching the quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Spending limit: (none)"
     }
    ],
-   "note": "No spending limit is set, so the $31.43 total cannot exceed one."
+   "note": "The mandate sets no spending limit, so the $31.43 total is within it."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be violated."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $31.43, same as the submitted cart."
     }
    ],
-   "note": "The store charged the same total as the cart the agent submitted."
+   "note": "The store reports charging the same total as the cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Packed and handed to courier: 1 x Large Eggs, 12 ct."
     }
    ],
-   "note": "The store shipped the ordered carton of large eggs."
+   "note": "The store says it shipped one Large Eggs 12 ct pack, which is what was ordered."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 5,
   "condition": "purchaseAuthorized",
-  "quote": "Placed the order with the saved PayPal wallet: $31.43 total (eggs $13.19, priority delivery $7.99, service fee $3.25, driver tip $4.00, bag fee and tax $3.00)."
+  "quote": "Placed the order with the saved PayPal wallet"
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid at step 5 although the buyer's mandate did not allow payment without asking again. The store charged and shipped as ordered, so the order is the agent's responsibility, not the buyer's."
+  "reason": "The store charged and shipped as submitted, so STORE does not apply. The agent paid although the mandate said it may not pay without asking again, so the order differs from the mandate in permission to pay."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:11:32.663Z"
+ "recordedAt": "2026-11-12T12:26:10.715Z"
 }

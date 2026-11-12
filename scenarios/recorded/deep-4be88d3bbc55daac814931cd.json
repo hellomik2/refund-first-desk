@@ -15,10 +15,10 @@
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "1 x 2-Year Protection Plan (sku ADDON-PROTECT) @ $4.99"
+     "quote": "2-Year Protection Plan (sku ADDON-PROTECT) @ $4.99"
     }
    ],
-   "note": "The order includes an add-on the mandate does not ask for. The store added it; the agent's cart did not include it."
+   "note": "The order includes an add-on protection plan that the mandate does not ask for."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One power bank was ordered and the mandate asks for one."
+   "note": "The mandate asks for one unit and the order has one power bank."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $33.98"
     }
    ],
-   "note": "The total is under the $35.00 limit."
+   "note": "The PayPal total of $33.98 is within the $35.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists nothing to exclude."
   },
   "storeChargedAsOrdered": {
    "value": "no",
@@ -58,7 +58,7 @@
      "quote": "2-Year Protection Plan ($4.99) is pre-selected at checkout and was added to this order."
     }
    ],
-   "note": "The store charged a $4.99 plan that the agent's submitted cart did not include."
+   "note": "The store charged a protection plan line the agent did not submit, and the total is $33.98 rather than the $28.99 approved."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Power Bank 10,000 mAh, Grey."
     }
    ],
-   "note": "The store shipped the power bank that was ordered; the plan is a service and was not shipped."
+   "note": "The store shipped the power bank that was ordered; the protection plan is not a shipped item."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 7,
   "condition": "storeChargedAsOrdered",
-  "quote": "ChargeYard receipt: Power Bank 10,000 mAh, Grey $24.99; 2-Year Protection Plan $4.99; shipping $4.00; total charged $33.98."
+  "quote": "2-Year Protection Plan $4.99; shipping $4.00; total charged $33.98."
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The store added and charged a $4.99 Protection Plan that the agent did not submit, so the store charged more than the cart that was ordered. The power bank was within the mandate's item, quantity, limit and exclusions, and the total of $33.98 is under the $35.00 limit."
+  "reason": "The store charged a 2-Year Protection Plan line ($4.99) that the agent did not submit, so the buyer was charged $33.98 rather than the agreed cart total. Store responsibility takes precedence over the add-on the agent left in the cart, and the agent's own submitted order was $28.99 and within the mandate."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:18:26.328Z"
+ "recordedAt": "2026-11-12T12:33:03.654Z"
 }

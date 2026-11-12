@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives explicit permission for the agent to pay without asking again."
+   "note": "The mandate lets the agent pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "1 x Loose Leaf Earl Grey Tea, 100 g Tin (sku EG-LL-100) @ $12.50"
     }
    ],
-   "note": "The final order is the 100 g tin the mandate asks for. The 250 g tin from step 4 was removed before payment."
+   "note": "The final paid order is the 100 g tin the mandate asks for. The 250 g tin added at step 4 was removed at step 6."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The final order has one unit, matching the mandate."
+   "note": "The final order has 1 unit of the tea, matching the mandate."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $16.45"
     }
    ],
-   "note": "The PayPal total is $16.45, under the $18.00 limit. The $24.00 cart in step 4 was corrected before payment."
+   "note": "The PayPal total of $16.45 is under the $18.00 limit. The $24.00 cart at step 4 was never paid."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions, so none can be violated."
+   "note": "The mandate lists no exclusions."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Packed and shipped: 1 x Loose Leaf Earl Grey Tea, 100 g Tin."
     }
    ],
-   "note": "The store shipped the 100 g tin that was ordered. The buyer's view that the tin is too small does not match the mandate or the order."
+   "note": "The store shipped the 100 g tin that was ordered. The buyer's complaint about a tiny tin is the ordered size, not a wrong shipment."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The final order matches every mandate condition: a 100 g tin, quantity 1, total $16.45 under the $18.00 limit, no exclusions, and the buyer allowed payment without asking again. The store charged and shipped exactly what was ordered. The step 4 deviation (250 g tin) was removed before payment, so it does not make the agent responsible for the final order."
+  "reason": "The paid order matches the mandate on item, quantity, spending limit and exclusions. The buyer allowed payment without asking again. The store charged and shipped exactly the 100 g tin submitted. The step 4 deviation was corrected before payment, so it does not make the agent responsible for the final order."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:29:51.871Z"
+ "recordedAt": "2026-11-12T12:34:38.233Z"
 }

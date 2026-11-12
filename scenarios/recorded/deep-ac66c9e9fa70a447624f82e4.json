@@ -8,27 +8,27 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate allows the agent to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "no",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: non-stick frying pan, 10-inch"
+     "doc": "agent_log",
+     "quote": "Added 1 x Silicone Spatula Set, 3-piece ($6.99)."
     }
    ],
-   "note": "The order includes a Silicone Spatula Set, which the mandate does not ask for. The mandate names only the frying pan."
+   "note": "The mandate asks only for a non-stick frying pan. The spatula set is an add-on the agent added at step 6 and paid for."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Non-Stick Frying Pan, 10-inch (sku FP-NS-10) @ $24.99"
     }
    ],
-   "note": "The frying pan quantity is 1, matching the mandate. The extra spatula is counted under itemMatchesMandate."
+   "note": "The mandate quantity is 1 and the ordered pan quantity is 1. The order has a second line, the spatula set, which is covered under itemMatchesMandate."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $31.98"
     }
    ],
-   "note": "$31.98 is within the $35.00 spending limit."
+   "note": "The total of $31.98 is under the $35.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Non-Stick Frying Pan, 10-inch; 1 x Silicone Spatula Set, 3-piece."
     }
    ],
-   "note": "The store shipped the same two items that the order contains."
+   "note": "The store shipped the same two items the agent ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "At step 6 the agent added a Silicone Spatula Set that the mandate does not allow. The mandate asked only for a 10-inch non-stick frying pan. The agent then paid $31.98 for the order including the spatula. The store charged and shipped what was ordered, so the fault lies with the agent's order, not the store or the buyer."
+  "reason": "The store charged and shipped exactly the cart the agent submitted, so STORE does not apply. The agent added and paid for a spatula set the mandate did not ask for (itemMatchesMandate is no), so the order departs from the approved mandate and the agent is responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:21:41.813Z"
+ "recordedAt": "2026-11-12T12:36:54.849Z"
 }

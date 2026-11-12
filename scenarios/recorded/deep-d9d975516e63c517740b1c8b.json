@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate gives permission to pay without asking again."
+   "note": "The buyer allowed the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -18,17 +18,17 @@
      "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
     }
    ],
-   "note": "The ordered product is the 4-pack AA rechargeable batteries the mandate names."
+   "note": "The ordered product is the AA rechargeable 4-pack the mandate describes."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "paypal_order",
-     "quote": "2 x AA Rechargeable Batteries, 4-pack (sku AA-RC-4) @ $12.99"
+     "doc": "mandate",
+     "quote": "Quantity: 2"
     }
    ],
-   "note": "The final order is 2 units, matching the mandate. The agent briefly added 3 at step 4 but removed one at step 6 before payment."
+   "note": "The final order is 2 units, matching the mandate. The agent's step 4 added 3, but step 6 removed one before payment."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $25.98"
     }
    ],
-   "note": "The PayPal total of $25.98 is under the $30.00 limit."
+   "note": "The total is under the $30.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists nothing to exclude."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $25.98, same as the submitted cart."
     }
    ],
-   "note": "The store charged the submitted cart of 2 x $12.99, which equals $25.98."
+   "note": "The store charged the submitted cart amount."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 2 x AA Rechargeable Batteries, 4-pack."
     }
    ],
-   "note": "The store shipped the two ordered 4-packs."
+   "note": "The shipped items match the ordered items."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "BUYER",
-  "reason": "The final order matches every mandate condition: the right item, 2 units, $25.98 under the $30 limit, no exclusions, and permission to pay. The store charged and shipped as ordered. The step 4 over-add was corrected before payment, so the buyer, who approved two packs, is responsible. The buyer's report is not evidence and does not change this."
+  "reason": "The submitted and paid order (2 x 4-pack, $25.98) matches every mandate condition, the buyer allowed payment without asking again, and the store charged and shipped as ordered. The step 4 over-add was corrected in step 6 before payment, so the final order is within the mandate. The buyer's complaint conflicts with the mandate's quantity of 2."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:28:15.417Z"
+ "recordedAt": "2026-11-12T12:27:36.635Z"
 }

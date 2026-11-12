@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate lets the agent pay without asking again."
+   "note": "The mandate allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "One unit was ordered, matching the mandate quantity."
+   "note": "The order has one set, matching the mandate quantity."
   },
   "withinSpendingLimit": {
    "value": "no",
@@ -38,7 +38,7 @@
      "quote": "Total: $21.98"
     }
    ],
-   "note": "The order total is $21.98, above the $20.00 limit."
+   "note": "The PayPal total of $21.98 is above the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,17 +48,17 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be breached."
   },
   "storeChargedAsOrdered": {
    "value": "no",
    "evidence": [
     {
      "doc": "store_record",
-     "quote": "Item price changed from $14.99 to $17.99 on this order."
+     "quote": "Charged $21.98."
     }
    ],
-   "note": "The agent submitted the item at $14.99, but the store charged $17.99 for it."
+   "note": "The store charged $21.98, while the agent submitted $14.99 plus $3.99 shipping, a total of $18.98; the item price was raised to $17.99."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Washable Felt-Tip Markers, Set of 20."
     }
    ],
-   "note": "The store shipped the ordered item and quantity."
+   "note": "The store shipped the same item and quantity that the order contained."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 6,
   "condition": "storeChargedAsOrdered",
-  "quote": "CraftBarn: Payment captured: $21.98. Item price $17.99 (sale ended before capture), shipping $3.99."
+  "quote": "Payment captured: $21.98. Item price $17.99 (sale ended before capture), shipping $3.99."
  },
  "verdict": {
   "liable": "STORE",
-  "reason": "The agent submitted a $14.99 item within the mandate and paid $18.98, which was within limit. The store then raised the item price to $17.99 and captured $21.98, so the store charged more than the cart the agent submitted. The overage above $20 comes from the store's price change, not from an agent choice. The buyer should not be treated as liable."
+  "reason": "The store charged $21.98 with an item price of $17.99, which the agent did not submit (it submitted $14.99), so the store's price change is what the buyer was finally charged. The store's departure takes precedence over the agent's payment, which was within the limit at $18.98."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:24:04.858Z"
+ "recordedAt": "2026-11-12T12:39:21.916Z"
 }

@@ -8,7 +8,7 @@
      "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
     }
    ],
-   "note": "Mandate asks for a 20-inch carry-on; the order is a 24-inch suitcase, a different size attribute the buyer named."
+   "note": "Mandate asks for a 20-inch Norvik AirLite carry-on; the order is a 24-inch suitcase, which is a different size."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
+   "note": "The mandate lists nothing to exclude, so exclusions are respected."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "1 x Norvik AirLite Suitcase, 24-inch (sku NVK-AL-24) @ $84.00"
     }
    ],
-   "note": "Quantity is 1 in both the mandate and the order."
+   "note": "Ordered quantity is 1, matching the mandate's Quantity of 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:26:48.515Z"
+ "recordedAt": "2026-11-12T12:37:36.332Z"
 }

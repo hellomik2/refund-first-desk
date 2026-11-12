@@ -18,7 +18,7 @@
      "quote": "6 x FreshMint Toothpaste, 100 ml (sku TP-MINT-100) @ $1.99"
     }
    ],
-   "note": "The mandate asks for mint toothpaste, and the ordered item is FreshMint Toothpaste, a mint toothpaste."
+   "note": "The ordered product is mint toothpaste, matching the mandate's item, with no unrequested attributes named by the buyer."
   },
   "quantityMatchesMandate": {
    "value": "no",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 3"
     }
    ],
-   "note": "The mandate asks for 3 units, but the order contains 6."
+   "note": "The mandate asks for 3 units but the order contains 6."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -48,7 +48,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be violated."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $14.93, same as submitted."
     }
    ],
-   "note": "The store charged the same total as the cart the agent submitted."
+   "note": "The store charged the same total as the agent submitted, with no added lines or price changes."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 6 x FreshMint Toothpaste, 100 ml."
     }
    ],
-   "note": "The store shipped the 6 units that were ordered."
+   "note": "The store shipped 6 units of the ordered product, matching the order as placed."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent added 6 tubes at step 5 although the mandate allowed 3. The store charged and shipped what was ordered, but the order differs from the mandate's quantity, so the agent is responsible and the buyer is not."
+  "reason": "The store charged and shipped exactly what the agent submitted, so STORE does not apply. The submitted order has 6 tubes against the mandate's quantity of 3, which breaks the mandate's quantity condition, so the agent is responsible (step 5 added the extra 3)."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:17:18.462Z"
+ "recordedAt": "2026-11-12T12:31:48.252Z"
 }

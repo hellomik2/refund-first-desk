@@ -18,7 +18,7 @@
      "quote": "1 x Crunchy Cat Treats, Salmon, 150 g (sku CT-SALM-150) @ $5.99"
     }
    ],
-   "note": "The ordered product is salmon cat treats in a 150 g bag, which matches the mandate's item slot."
+   "note": "The ordered product is salmon cat treats in a 150 g bag, matching the mandate Item slot. The buyer's report about chicken flavour is not evidence here, and the store record does not state what was shipped."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The order has one unit, matching the mandate quantity."
+   "note": "The mandate asks for one unit and the order has one unit."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Spending limit: (none)"
     }
    ],
-   "note": "The mandate sets no spending limit, so the $9.48 total cannot exceed it."
+   "note": "The mandate sets no spending limit, so the $9.48 total is within it."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,12 +58,17 @@
      "quote": "Payment of $9.48 received, equal to the cart total."
     }
    ],
-   "note": "The store charged $9.48, which equals the cart the agent submitted ($5.99 item plus $3.49 shipping)."
+   "note": "The store charged $9.48, equal to the cart the agent submitted (salmon treats $5.99 plus shipping $3.49)."
   },
   "storeFulfilledAsOrdered": {
    "value": "unknown",
-   "evidence": [],
-   "note": "The store record says a parcel was handed to the carrier but does not say what was shipped. The buyer's report of chicken flavour is not evidence, so this cannot be settled."
+   "evidence": [
+    {
+     "doc": "store_record",
+     "quote": "Parcel handed to carrier, tracking PP48213907."
+    }
+   ],
+   "note": "The store record says a parcel was handed to the carrier but does not say what was in it, so whether the salmon item was shipped cannot be confirmed."
   }
  },
  "firstDeviation": {
@@ -74,8 +79,8 @@
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The order matches the mandate and the store charged as ordered, but the store record does not say what was shipped, so it cannot be confirmed that the store delivered the salmon treats the buyer ordered."
+  "reason": "The order the agent submitted matches every mandate condition, but the store record does not say what was shipped, so storeFulfilledAsOrdered is unknown. That leaves STORE and BUYER both unsettled, and the buyer's chicken-flavour report cannot be used as evidence."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:18:40.377Z"
+ "recordedAt": "2026-11-12T12:33:23.841Z"
 }

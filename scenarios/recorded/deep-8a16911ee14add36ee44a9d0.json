@@ -8,7 +8,7 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The mandate lets the agent pay without asking again."
+   "note": "The mandate explicitly permits the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "no",
@@ -18,7 +18,7 @@
      "quote": "Item: extra virgin olive oil, 500 ml bottle"
     }
    ],
-   "note": "The mandate asks for a 500 ml bottle, but the agent ordered a 750 ml bottle (step 4, PayPal order, store record)."
+   "note": "The mandate asks for a 500 ml bottle; the agent ordered a 750 ml bottle (step 4, and the agent's log at step 7 admits it picked the larger size)."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and the order contains one unit."
+   "note": "One unit was ordered and the mandate asks for one."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -38,7 +38,7 @@
      "quote": "Total: $19.49"
     }
    ],
-   "note": "The total of $19.49 is within the $20.00 limit."
+   "note": "The PayPal total of $19.49 is under the $20.00 limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $19.49 as per submitted cart."
     }
    ],
-   "note": "The store charged the cart the agent submitted."
+   "note": "The store charged the cart the agent submitted, with no added lines or price changes."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 1 x Extra Virgin Olive Oil, 750 ml."
     }
    ],
-   "note": "The store shipped the 750 ml bottle that the order contains, so it matches the order even though the order itself departs from the mandate."
+   "note": "The store shipped the 750 ml bottle that the agent ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "At step 4 the agent added a 750 ml bottle, but the buyer's mandate asks for a 500 ml bottle. The store charged and shipped the 750 ml bottle as ordered, so the deviation comes from the agent's item choice, and the buyer did not approve that item."
+  "reason": "The store charged and shipped exactly what the agent submitted, so STORE does not apply. The agent submitted a 750 ml bottle at step 4 where the mandate asks for a 500 ml bottle, so the order departs from the approved item and the agent is responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:15:57.694Z"
+ "recordedAt": "2026-11-12T12:30:20.761Z"
 }

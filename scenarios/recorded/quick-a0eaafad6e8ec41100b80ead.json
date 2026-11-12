@@ -8,7 +8,7 @@
      "quote": "Item: cat treats, salmon flavour, 150 g bag"
     }
    ],
-   "note": "PayPal order line reads Crunchy Cat Treats, Salmon, 150 g, which matches the mandate item; the shipping line is not an item."
+   "note": "Ordered item is Crunchy Cat Treats, Salmon, 150 g, matching the mandate's salmon flavour 150 g bag; the shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "PayPal order shows 1 x the treats, matching quantity 1."
+   "note": "Ordered quantity is 1 x the treats, matching the mandate quantity of 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:18:33.382Z"
+ "recordedAt": "2026-11-12T12:33:14.372Z"
 }

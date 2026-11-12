@@ -8,7 +8,7 @@
      "quote": "Item: phone case"
     }
    ],
-   "note": "Mandate asks for a phone case; order is a case for Pixel 9. The mandate does not say which phone the case must fit, so whether this is the right product depends on information the mandate does not give."
+   "note": "The order is a phone case, but the mandate does not say which phone it must fit; the order is for a Pixel 9 case, so fit cannot be confirmed from the mandate."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,7 +18,7 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "Mandate lists nothing to exclude, so exclusions are respected."
+   "note": "The mandate lists nothing to exclude, so the order cannot violate an exclusion."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,9 +28,9 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "Ordered quantity is 1 x Slim Case, matching the mandate quantity of 1."
+   "note": "The order has 1 x Slim Case, which matches the mandate quantity of 1."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:28:40.496Z"
+ "recordedAt": "2026-11-12T12:28:03.332Z"
 }

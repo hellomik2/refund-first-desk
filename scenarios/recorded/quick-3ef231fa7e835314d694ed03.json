@@ -1,14 +1,14 @@
 {
  "facts": {
   "itemMatchesMandate": {
-   "value": "unknown",
+   "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: bike inner tube"
+     "doc": "paypal_order",
+     "quote": "1 x Inner Tube 26 x 1.95, Schrader Valve (sku TUBE-26-195-SV) @ $7.49"
     }
    ],
-   "note": "The order contains a bike inner tube (26 x 1.95, Schrader valve), but the mandate does not specify size or valve type, so whether this is the right product depends on what the bike needs and cannot be confirmed from the two documents."
+   "note": "The mandate asks for a bike inner tube with no size or valve specified; the order is a bike inner tube, and the shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude, so the exclusion condition is met."
+   "note": "The mandate lists nothing to exclude, so exclusions are respected."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Quantity: 1"
+     "doc": "paypal_order",
+     "quote": "1 x Inner Tube 26 x 1.95, Schrader Valve (sku TUBE-26-195-SV) @ $7.49"
     }
    ],
-   "note": "The mandate asks for 1 and the order has 1 x inner tube; the shipping line is not an item."
+   "note": "Mandate quantity is 1 and the order has 1 inner tube."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:16:23.160Z"
+ "recordedAt": "2026-11-12T12:30:49.552Z"
 }

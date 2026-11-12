@@ -8,7 +8,7 @@
      "quote": "1 x LED Bulb 9 W Warm White 2700K, 4-pack (sku LED-9W-27K-4) @ $10.99"
     }
    ],
-   "note": "Product matches the mandate item: 9 W, warm white 2700K, 4-pack. Shipping line is not an item."
+   "note": "The ordered product is a 9 W warm white 2700K 4-pack LED bulb, matching the mandate's item slot. The shipping line is not an item."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -18,19 +18,19 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists nothing to exclude."
+   "note": "The mandate lists nothing to exclude, so the exclusion condition holds."
   },
   "quantityMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
      "doc": "paypal_order",
-     "quote": "1 x LED Bulb 9 W Warm White 2700K, 4-pack (sku LED-9W-27K-4) @ $10.99"
+     "quote": "1 x LED Bulb 9 W Warm White 2700K, 4-pack"
     }
    ],
-   "note": "Mandate Quantity is 1 and the order has 1 unit of the item."
+   "note": "Mandate quantity is 1 and the order contains one unit of the 4-pack product."
   }
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:25:54.428Z"
+ "recordedAt": "2026-11-12T12:41:03.620Z"
 }

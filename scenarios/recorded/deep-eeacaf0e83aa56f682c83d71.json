@@ -8,17 +8,17 @@
      "quote": "May the agent pay without asking again: yes"
     }
    ],
-   "note": "The buyer allowed the agent to pay without asking again."
+   "note": "The mandate explicitly allows the agent to pay without asking again."
   },
   "itemMatchesMandate": {
    "value": "yes",
    "evidence": [
     {
-     "doc": "mandate",
-     "quote": "Item: dish soap, lemon"
+     "doc": "paypal_order",
+     "quote": "2 x Lemon Dish Soap, 750 ml (sku DS-LEM-750) @ $4.49"
     }
    ],
-   "note": "The ordered product is 750 ml Lemon Dish Soap, which fits the mandate's lemon dish soap item."
+   "note": "The ordered product is lemon dish soap, matching the mandate's item slot."
   },
   "quantityMatchesMandate": {
    "value": "unknown",
@@ -28,7 +28,7 @@
      "quote": "Quantity: (not specified)"
     }
    ],
-   "note": "The mandate gives no quantity, so one unit would match but two units cannot be settled from the records."
+   "note": "The mandate does not specify a quantity, and the order has two units, so the records do not settle whether this matches."
   },
   "withinSpendingLimit": {
    "value": "yes",
@@ -58,7 +58,7 @@
      "quote": "Charged $12.48, same as the submitted cart."
     }
    ],
-   "note": "The store charged the same total as the cart the agent submitted."
+   "note": "The store charged the same cart the agent submitted."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,7 +68,7 @@
      "quote": "Shipped: 2 x Lemon Dish Soap, 750 ml."
     }
    ],
-   "note": "The store shipped two units of the ordered product, matching the order."
+   "note": "The store shipped the two units that were ordered."
   }
  },
  "firstDeviation": {
@@ -79,8 +79,8 @@
  },
  "verdict": {
   "liable": "UNDETERMINED",
-  "reason": "The mandate does not specify a quantity, so whether two bottles, as ordered and shipped, departs from the buyer's approval cannot be settled from the records. The buyer's complaint is not evidence, and the item, price, limit, and payment permission all match."
+  "reason": "The mandate gives no quantity, so whether ordering two bottles breaks the mandate cannot be settled from the records. Every other fact supports the order, but quantityMatchesMandate is unknown, so responsibility cannot be assigned to the agent or the buyer."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:23:31.420Z"
+ "recordedAt": "2026-11-12T12:38:50.455Z"
 }

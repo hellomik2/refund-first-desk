@@ -18,7 +18,7 @@
      "quote": "1 x Wild Bird Seed Blend, 40 lb (sku WBS-40) @ $44.99"
     }
    ],
-   "note": "The ordered bird seed blend is a 40 lb bird seed product, matching the mandate item."
+   "note": "The ordered item is the 40 lb wild bird seed bag named in the mandate; the only other lines are shipping and tax."
   },
   "quantityMatchesMandate": {
    "value": "yes",
@@ -28,7 +28,7 @@
      "quote": "Quantity: 1"
     }
    ],
-   "note": "The mandate asks for one unit and the order contains one unit."
+   "note": "The order has one 40 lb bag, matching the mandate quantity of 1."
   },
   "withinSpendingLimit": {
    "value": "no",
@@ -38,7 +38,7 @@
      "quote": "Total: $58.08"
     }
    ],
-   "note": "The PayPal total of $58.08 is above the $55.00 limit in the mandate."
+   "note": "The PayPal total of $58.08 is above the $55.00 spending limit."
   },
   "exclusionsRespected": {
    "value": "yes",
@@ -48,17 +48,17 @@
      "quote": "Must not include: (nothing listed)"
     }
    ],
-   "note": "The mandate lists no exclusions."
+   "note": "The mandate lists no exclusions, so none can be broken."
   },
   "storeChargedAsOrdered": {
    "value": "yes",
    "evidence": [
     {
      "doc": "store_record",
-     "quote": "Charged $58.08: item $44.99, shipping $9.49, tax $3.60. Matches the submitted cart line for line."
+     "quote": "Matches the submitted cart line for line."
     }
    ],
-   "note": "The store charged the same lines the agent submitted."
+   "note": "The store charged the same three lines the agent submitted, at the same prices."
   },
   "storeFulfilledAsOrdered": {
    "value": "yes",
@@ -68,19 +68,19 @@
      "quote": "Shipped: 1 x Wild Bird Seed Blend, 40 lb."
     }
    ],
-   "note": "The store shipped the ordered item and quantity."
+   "note": "The store shipped the ordered bag and nothing else."
   }
  },
  "firstDeviation": {
   "kind": "STEP",
   "step": 5,
   "condition": "withinSpendingLimit",
-  "quote": "Placed the order with the saved PayPal wallet: $58.08 total"
+  "quote": "$58.08 total (item $44.99, heavy item shipping $9.49, sales tax $3.60)"
  },
  "verdict": {
   "liable": "AGENT",
-  "reason": "The agent paid $58.08, which is over the mandate's $55.00 spending limit, so the order differs from the approved mandate. The store charged and shipped as ordered, so the store is not at fault and the buyer is not responsible for the excess."
+  "reason": "The store charged and shipped exactly what the agent submitted, so STORE does not apply. The agent submitted and paid $58.08, which is over the $55.00 spending limit in the mandate, so the order differs from the mandate and the agent is responsible."
  },
  "model": "claude-haiku-5-5",
- "recordedAt": "2026-11-10T08:24:18.531Z"
+ "recordedAt": "2026-11-12T12:39:36.920Z"
 }
