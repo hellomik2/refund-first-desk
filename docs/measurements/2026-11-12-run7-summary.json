@@ -7869,5 +7869,645 @@
    "H5-B01": "the store took the payment and did not ship; the key names the store step; the AI answered NONE in all three runs (a real miss); the verdict STORE was right",
    "H5-B05": "the agent chose express shipping at checkout and went over the limit; the key names the checkout step, the AI the pay step in all three runs; prepared case S13 puts the same shape on the pay step, so this key is open to dispute"
   }
+ },
+ "promptChange5": {
+  "about": "Fifth prompt change (2026-11-13): two general rules for the first deviation, checked against every fixed answer key before any AI run. Hold-out 6 is the set not seen before the change. All runs: scripts/ai-eval.mjs, PayPal in memory, claude-haiku-5-5, recorded answers off. Runs before the change on the earlier sets are the ones already listed under promptChange4 and holdout5 (same prompt).",
+  "promptCommit": "90beccd974d75a7ac2ce292ae9c7d68e1f8bf16f",
+  "holdout6": {
+   "file": "scenarios/holdout6.json",
+   "commit": "66295f2c72ae8b307c022dc554ba754a612dc661",
+   "sha256": "ecb7ec58a413f01c8b853ecc82a2bc19bcadac8e7f3ec3a7a6b090d4b6fef0ee",
+   "fixedAt": "2026-11-13T01:12:24+09:00, after the prompt change and before the first AI run on these cases",
+   "answerKey": {
+    "STORE": 6,
+    "AGENT": 6,
+    "BUYER": 4,
+    "UNDETERMINED": 4
+   },
+   "written": "by two writers (Claude subagents), 10 cases each, with the hold-out 5 brief unchanged and product areas that do not overlap hold-out 5",
+   "runs": {
+    "before1": {
+     "file": "11-13-제작23/원자료/base-h6-1.json",
+     "sha256": "182a085a44be5053db0de2228c3d5c4473f18d66281e7db7d16914538e8ed895",
+     "prompt": "before (b840831, same prompt as ab310ba)",
+     "ranAt": "2026-11-12T16:16:45.800Z",
+     "firstAiCallAt": "2026-11-12T16:13:36.588Z",
+     "cases": 20,
+     "errors": 0,
+     "verdictsRight": 20,
+     "toAPerson": [],
+     "bothKeysWrong": [],
+     "wrongBuyerVerdicts": [],
+     "firstStepRight": 16,
+     "firstStepWrong": [
+      {
+       "id": "H6-C04",
+       "ai": "5",
+       "answerKey": "4"
+      },
+      {
+       "id": "H6-D05",
+       "ai": "3",
+       "answerKey": "5"
+      },
+      {
+       "id": "H6-D09",
+       "ai": "3",
+       "answerKey": "NONE"
+      },
+      {
+       "id": "H6-D10",
+       "ai": "3",
+       "answerKey": "NONE"
+      }
+     ],
+     "liveCalls": 32
+    },
+    "before2": {
+     "file": "11-13-제작23/원자료/base-h6-2.json",
+     "sha256": "456e5c61688472b2592acf355645fb6debd3e96c3d788760683e9bf3c6c08e63",
+     "prompt": "before (b840831, same prompt as ab310ba)",
+     "ranAt": "2026-11-12T16:16:48.639Z",
+     "firstAiCallAt": "2026-11-12T16:13:37.304Z",
+     "cases": 20,
+     "errors": 0,
+     "verdictsRight": 20,
+     "toAPerson": [],
+     "bothKeysWrong": [],
+     "wrongBuyerVerdicts": [],
+     "firstStepRight": 16,
+     "firstStepWrong": [
+      {
+       "id": "H6-C04",
+       "ai": "5",
+       "answerKey": "4"
+      },
+      {
+       "id": "H6-D05",
+       "ai": "3",
+       "answerKey": "5"
+      },
+      {
+       "id": "H6-D09",
+       "ai": "3",
+       "answerKey": "NONE"
+      },
+      {
+       "id": "H6-D10",
+       "ai": "3",
+       "answerKey": "NONE"
+      }
+     ],
+     "liveCalls": 32
+    },
+    "after1": {
+     "file": "11-13-제작23/원자료/fix-h6-1.json",
+     "sha256": "59c823003270d88619ff0f7dad7364615c91ad93046424379cba9e15cb3334bc",
+     "prompt": "fifth change (90beccd)",
+     "ranAt": "2026-11-12T16:16:53.423Z",
+     "firstAiCallAt": "2026-11-12T16:13:36.598Z",
+     "cases": 20,
+     "errors": 0,
+     "verdictsRight": 20,
+     "toAPerson": [],
+     "bothKeysWrong": [],
+     "wrongBuyerVerdicts": [],
+     "firstStepRight": 16,
+     "firstStepWrong": [
+      {
+       "id": "H6-C04",
+       "ai": "5",
+       "answerKey": "4"
+      },
+      {
+       "id": "H6-D05",
+       "ai": "3",
+       "answerKey": "5"
+      },
+      {
+       "id": "H6-D09",
+       "ai": "3",
+       "answerKey": "NONE"
+      },
+      {
+       "id": "H6-D10",
+       "ai": "3",
+       "answerKey": "NONE"
+      }
+     ],
+     "liveCalls": 32
+    },
+    "after2": {
+     "file": "11-13-제작23/원자료/fix-h6-2.json",
+     "sha256": "2a9b6eaf4ab3df85a3cefbe35a150594f7003264cdd18949e2b571d25021c1d0",
+     "prompt": "fifth change (90beccd)",
+     "ranAt": "2026-11-12T16:16:48.154Z",
+     "firstAiCallAt": "2026-11-12T16:13:36.368Z",
+     "cases": 20,
+     "errors": 0,
+     "verdictsRight": 20,
+     "toAPerson": [],
+     "bothKeysWrong": [],
+     "wrongBuyerVerdicts": [],
+     "firstStepRight": 15,
+     "firstStepWrong": [
+      {
+       "id": "H6-C04",
+       "ai": "5",
+       "answerKey": "4"
+      },
+      {
+       "id": "H6-D02",
+       "ai": "NONE",
+       "answerKey": "6"
+      },
+      {
+       "id": "H6-D05",
+       "ai": "3",
+       "answerKey": "5"
+      },
+      {
+       "id": "H6-D09",
+       "ai": "3",
+       "answerKey": "NONE"
+      },
+      {
+       "id": "H6-D10",
+       "ai": "3",
+       "answerKey": "NONE"
+      }
+     ],
+     "liveCalls": 32
+    }
+   }
+  },
+  "holdout5After": {
+   "note": "measured after the change that hold-out 5 showed; not a held-out test",
+   "runs": [
+    {
+     "file": "11-13-제작23/원자료/fix-h5-1.json",
+     "sha256": "2fa2925023f98b88aa60ee2b7b8952106eeb04831689031c66ff2676b412b954",
+     "prompt": "fifth change (90beccd)",
+     "ranAt": "2026-11-12T16:16:52.599Z",
+     "firstAiCallAt": "2026-11-12T16:13:38.811Z",
+     "cases": 20,
+     "errors": 0,
+     "verdictsRight": 20,
+     "toAPerson": [],
+     "bothKeysWrong": [],
+     "wrongBuyerVerdicts": [],
+     "firstStepRight": 20,
+     "firstStepWrong": [],
+     "liveCalls": 33
+    },
+    {
+     "file": "11-13-제작23/원자료/fix-h5-2.json",
+     "sha256": "c90662c33ed428a42e5a65309221a43a8ab87555a3b33aa293a8ee0023834525",
+     "prompt": "fifth change (90beccd)",
+     "ranAt": "2026-11-12T16:16:49.702Z",
+     "firstAiCallAt": "2026-11-12T16:13:38.606Z",
+     "cases": 20,
+     "errors": 0,
+     "verdictsRight": 20,
+     "toAPerson": [],
+     "bothKeysWrong": [],
+     "wrongBuyerVerdicts": [],
+     "firstStepRight": 20,
+     "firstStepWrong": [],
+     "liveCalls": 33
+    },
+    {
+     "file": "11-13-제작23/원자료/fix-h5-3.json",
+     "sha256": "fc9a78f70d4a656bb89a88a648545ac98dc72a274ef8a256cb261da87582919b",
+     "prompt": "fifth change (90beccd)",
+     "ranAt": "2026-11-12T16:17:02.149Z",
+     "firstAiCallAt": "2026-11-12T16:13:39.268Z",
+     "cases": 20,
+     "errors": 0,
+     "verdictsRight": 19,
+     "toAPerson": [],
+     "bothKeysWrong": [
+      {
+       "id": "H5-B08",
+       "decided": "BUYER",
+       "answerKey": "UNDETERMINED"
+      }
+     ],
+     "wrongBuyerVerdicts": [
+      "H5-B08"
+     ],
+     "firstStepRight": 19,
+     "firstStepWrong": [
+      {
+       "id": "H5-B08",
+       "ai": "NONE",
+       "answerKey": "INSUFFICIENT"
+      }
+     ],
+     "liveCalls": 33
+    }
+   ]
+  },
+  "preparedCasesAfter": [
+   {
+    "file": "11-13-제작23/원자료/fix-30-1.json",
+    "sha256": "b767251d947d358d3a97500952262c6cad498f5816dab8389c52c42891d61f47",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:17:54.132Z",
+    "firstAiCallAt": "2026-11-12T16:13:42.409Z",
+    "cases": 30,
+    "errors": 0,
+    "verdictsRight": 30,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 30,
+    "firstStepWrong": [],
+    "liveCalls": 53
+   },
+   {
+    "file": "11-13-제작23/원자료/fix-30-2.json",
+    "sha256": "f4cce554c87817e93bce53421f8547ec31d74b67946eca8eec3421ef283a1a0f",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:17:44.572Z",
+    "firstAiCallAt": "2026-11-12T16:13:42.816Z",
+    "cases": 30,
+    "errors": 0,
+    "verdictsRight": 30,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 29,
+    "firstStepWrong": [
+     {
+      "id": "S28",
+      "ai": "NONE",
+      "answerKey": "3"
+     }
+    ],
+    "liveCalls": 53
+   },
+   {
+    "file": "11-13-제작23/원자료/fix-30-3.json",
+    "sha256": "7b884289d7fbf7ca6a083d7d1975f0613950bec3b248c00ee653731704c51423",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:18:14.331Z",
+    "firstAiCallAt": "2026-11-12T16:13:47.314Z",
+    "cases": 30,
+    "errors": 0,
+    "verdictsRight": 30,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 30,
+    "firstStepWrong": [],
+    "liveCalls": 53
+   }
+  ],
+  "holdoutAfter": [
+   {
+    "file": "11-13-제작23/원자료/fix-h1-1.json",
+    "sha256": "b65d01ed5d08ed10ccf3d6a747c28978afa3a34cac961eb4ab479de507c33d0c",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:14:58.839Z",
+    "firstAiCallAt": "2026-11-12T16:13:42.380Z",
+    "cases": 10,
+    "errors": 0,
+    "verdictsRight": 10,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 10,
+    "firstStepWrong": [],
+    "liveCalls": 18
+   },
+   {
+    "file": "11-13-제작23/원자료/fix-h1-2.json",
+    "sha256": "57528f480bfefa69a01e5711921ab6d39e3377160a695308a6bd6db0f908b708",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:15:00.216Z",
+    "firstAiCallAt": "2026-11-12T16:13:44.171Z",
+    "cases": 10,
+    "errors": 0,
+    "verdictsRight": 10,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 10,
+    "firstStepWrong": [],
+    "liveCalls": 18
+   }
+  ],
+  "holdout2After": [
+   {
+    "file": "11-13-제작23/원자료/fix-h2-1.json",
+    "sha256": "d5f4a2ca4182a2b10195d5b6bc860cacebebf25887e0bbcf96f1d300b4797149",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:15:10.077Z",
+    "firstAiCallAt": "2026-11-12T16:13:38.787Z",
+    "cases": 10,
+    "errors": 0,
+    "verdictsRight": 10,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 10,
+    "firstStepWrong": [],
+    "liveCalls": 17
+   },
+   {
+    "file": "11-13-제작23/원자료/fix-h2-2.json",
+    "sha256": "cfc129ebad0477579976e52450f2870bdb43f365c0b05baed2faa2424b8b8af0",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:15:05.246Z",
+    "firstAiCallAt": "2026-11-12T16:13:39.768Z",
+    "cases": 10,
+    "errors": 0,
+    "verdictsRight": 10,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 10,
+    "firstStepWrong": [],
+    "liveCalls": 17
+   }
+  ],
+  "holdout3After": [
+   {
+    "file": "11-13-제작23/원자료/fix-h3-1.json",
+    "sha256": "b973c97e4940f84b50a238e6bb86ec0008fc9b771cf6be526771d34046c2b359",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:20:02.572Z",
+    "firstAiCallAt": "2026-11-12T16:13:41.569Z",
+    "cases": 40,
+    "errors": 0,
+    "verdictsRight": 40,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 37,
+    "firstStepWrong": [
+     {
+      "id": "Y-B09",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y-C10",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y-D08",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     }
+    ],
+    "liveCalls": 71
+   },
+   {
+    "file": "11-13-제작23/원자료/fix-h3-2.json",
+    "sha256": "03d707b1e238b16504b27ed69c158a8e59bb77cb9380b8de67887dbbe0227099",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:20:01.828Z",
+    "firstAiCallAt": "2026-11-12T16:13:41.825Z",
+    "cases": 40,
+    "errors": 0,
+    "verdictsRight": 40,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 37,
+    "firstStepWrong": [
+     {
+      "id": "Y-B09",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y-C10",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y-D08",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     }
+    ],
+    "liveCalls": 71
+   }
+  ],
+  "holdout3CodexAfter": [
+   {
+    "file": "11-13-제작23/원자료/fix-cx-1.json",
+    "sha256": "55492f802d2e0712411a12b785562587d9de3fa1aacf053053e03a750df33c70",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:15:13.157Z",
+    "firstAiCallAt": "2026-11-12T16:13:43.795Z",
+    "cases": 12,
+    "errors": 0,
+    "verdictsRight": 12,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 9,
+    "firstStepWrong": [
+     {
+      "id": "Y10",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y11",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y12",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     }
+    ],
+    "liveCalls": 19
+   },
+   {
+    "file": "11-13-제작23/원자료/fix-cx-2.json",
+    "sha256": "cf5c2aa9d7079dcfa152087a4453a092ea22aa07b0b3a91738baa9bea14f09f1",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:15:18.862Z",
+    "firstAiCallAt": "2026-11-12T16:13:45.065Z",
+    "cases": 12,
+    "errors": 0,
+    "verdictsRight": 12,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 9,
+    "firstStepWrong": [
+     {
+      "id": "Y10",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y11",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     },
+     {
+      "id": "Y12",
+      "ai": "INSUFFICIENT",
+      "answerKey": "NONE"
+     }
+    ],
+    "liveCalls": 19
+   }
+  ],
+  "holdout4After": [
+   {
+    "file": "11-13-제작23/원자료/fix-h4-1.json",
+    "sha256": "ee189cfb56f84302ad278084cd7264ad1d61f010335af74d8f5ea11f31a7ea39",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:17:34.627Z",
+    "firstAiCallAt": "2026-11-12T16:13:39.978Z",
+    "cases": 24,
+    "errors": 0,
+    "verdictsRight": 23,
+    "toAPerson": [],
+    "bothKeysWrong": [
+     {
+      "id": "Z-B05",
+      "decided": "UNDETERMINED",
+      "answerKey": "BUYER"
+     }
+    ],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 24,
+    "firstStepWrong": [],
+    "liveCalls": 42
+   },
+   {
+    "file": "11-13-제작23/원자료/fix-h4-2.json",
+    "sha256": "3a858d4ecc7abfbbeb467a7ebff6a4fe0573322daca1045dfa25fcc5af43ecb6",
+    "prompt": "fifth change (90beccd)",
+    "ranAt": "2026-11-12T16:17:29.551Z",
+    "firstAiCallAt": "2026-11-12T16:13:39.465Z",
+    "cases": 24,
+    "errors": 0,
+    "verdictsRight": 24,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 24,
+    "firstStepWrong": [],
+    "liveCalls": 42
+   }
+  ],
+  "singleCaseRepeats": {
+   "H5-B08 before": {
+    "prompt": "before (b840831, same prompt as ab310ba)",
+    "runs": 28,
+    "rateLimited": 0,
+    "verdictRight": 26,
+    "wrong": [
+     {
+      "run": 12,
+      "decided": "BUYER"
+     },
+     {
+      "run": 15,
+      "decided": "BUYER"
+     }
+    ],
+    "firstStepRight": 26
+   },
+   "H5-B08 after": {
+    "prompt": "fifth change (90beccd)",
+    "runs": 25,
+    "rateLimited": 3,
+    "verdictRight": 25,
+    "wrong": [],
+    "firstStepRight": 25
+   },
+   "H6-D02 before": {
+    "prompt": "before (b840831, same prompt as ab310ba)",
+    "runs": 5,
+    "rateLimited": 0,
+    "verdictRight": 5,
+    "wrong": [],
+    "firstStepRight": 4
+   },
+   "H6-D02 after": {
+    "prompt": "fifth change (90beccd)",
+    "runs": 5,
+    "rateLimited": 0,
+    "verdictRight": 5,
+    "wrong": [],
+    "firstStepRight": 5
+   }
+  },
+  "run10": {
+   "file": "11-13-제작23/run10-loop.json (scripts/loop.mjs, POLICY_RESERVE_START_CENTS=200000)",
+   "sha256": "6246c0672b67bb08f0d15b7d265e2f85ee18e685e0a318bc8d422b0f13bf6dca",
+   "commit": "66295f2 (fifth change)",
+   "environment": "PayPal sandbox",
+   "ai": "anthropic claude-haiku-5-5, live calls (no recorded answers replayed)",
+   "measuredAt": "2026-11-12T16:35:57.217Z",
+   "cases": 30,
+   "errors": 0,
+   "verdictsRight": 30,
+   "toAPerson": [],
+   "bothKeysWrong": [],
+   "firstStepRight": 30,
+   "firstStepWrong": [],
+   "refundFirstWithinLimits": 26,
+   "refundCompletedWithinLimits": 26,
+   "refundSecondsWithinLimits": {
+    "min": 1.83,
+    "max": 7.94,
+    "n": 26
+   },
+   "noRechargeNoticeSecondsMax": 3.63,
+   "overLimit": [
+    {
+     "id": "S18",
+     "path": "VERIFY_FIRST",
+     "refundCompleted": true,
+     "refundSecondsFromReport": 14.49,
+     "decided": "STORE"
+    },
+    {
+     "id": "S23",
+     "path": "VERIFY_FIRST",
+     "refundCompleted": true,
+     "refundSecondsFromReport": 6.71,
+     "decided": "AGENT"
+    },
+    {
+     "id": "S24",
+     "path": "VERIFY_FIRST",
+     "refundCompleted": false,
+     "refundSecondsFromReport": null,
+     "decided": "BUYER"
+    },
+    {
+     "id": "S27",
+     "path": "VERIFY_FIRST",
+     "refundCompleted": true,
+     "refundSecondsFromReport": 2.7,
+     "decided": "AGENT"
+    }
+   ],
+   "ledgerCheckByParty": {
+    "buyer": 30,
+    "store": 30,
+    "paypal:fees": 30,
+    "desk": 30
+   },
+   "ledgerCheckAllFour": 30,
+   "deskFundStartCents": 200000,
+   "deskFundEndCents": 146726
+  }
  }
 }
