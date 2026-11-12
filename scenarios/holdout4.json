@@ -1,0 +1,3754 @@
+{
+ "_note": "Hold-out 4, written on 2026-11-13 to test the investigator prompt change in ab310ba (a free extra in the box; the step that goes over the spending limit). Two writers (A home, kitchen, garden, pets, groceries; B electronics, office, sport, clothing, beauty, toys), each an AI agent that did not open src/ai/, scenarios/, the measurement results or the existing case files; each saw only the writing brief (docs/rounds/04-제작/evidence/11-13-제작21/holdout4-작성지시.md) and the rules code. The prompt change was committed before the writers finished and before anyone on the prompt side read these cases. Every case is constructed for this demo; none is a real customer record. The answer key (expected, firstDeviationQuote, firstDeviationCondition) was fixed before any AI run. quickClose is false in every case as the brief asked, although code closes Z-A04, Z-A07, Z-A09, Z-B02, Z-B04 and Z-B08 in the quick check; it is not used in this measurement. fixtureFacts are hand-written stand-ins used only when the AI provider is fixture. Cases are copied from the two writers files unchanged.",
+ "cases": [
+  {
+   "id": "Z-A01",
+   "title": "Cat food shipped as ordered, with a free catnip sample in the box",
+   "instruction": "Order one 12 lb bag of grain-free salmon dry cat food from Whisker Pantry. Keep it under $45 including shipping. No chicken. Go ahead and pay.",
+   "conditions": {
+    "item": "grain-free salmon dry cat food, 12 lb bag",
+    "quantity": 1,
+    "maxTotalCents": 4500,
+    "exclusions": [
+     "chicken"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "whiskerpantry",
+    "name": "Whisker Pantry"
+   },
+   "cart": [
+    {
+     "sku": "WP-SAL12",
+     "name": "Grain-Free Salmon Dry Cat Food 12 lb",
+     "qty": 1,
+     "unitCents": 3699
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "WP-SAL12",
+     "name": "Grain-Free Salmon Dry Cat Food 12 lb",
+     "qty": 1,
+     "unitCents": 3699
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T10:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Whisker Pantry for grain-free salmon dry cat food"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T10:00:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Grain-Free Salmon Dry Cat Food 12 lb, $36.99, ingredients list salmon, peas, sweet potato"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T10:01:30Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Grain-Free Salmon Dry Cat Food 12 lb",
+     "sku": "WP-SAL12",
+     "qty": 1,
+     "amountCents": 3699
+    },
+    {
+     "step": 4,
+     "at": "2026-11-10T10:02:10Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $41.98 with standard shipping $4.99",
+     "amountCents": 4198
+    },
+    {
+     "step": 5,
+     "at": "2026-11-10T10:02:40Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $41.98 with the buyer's PayPal wallet",
+     "amountCents": 4198
+    },
+    {
+     "step": 6,
+     "at": "2026-11-10T10:03:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order WP-88213 received"
+    }
+   ],
+   "storeRecord": [
+    "WP-88213 packed 11/10 14:12",
+    "1x WP-SAL12 Grain-Free Salmon Dry Cat Food 12 lb - packed",
+    "+ 1x catnip sample pouch (promo, no charge)",
+    "Shipped USPS Ground, 1 carton"
+   ],
+   "complaint": "There was a catnip pouch in the box that I never asked for, and my cat went wild over it. I want my money back for this order.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Grain-Free Salmon Dry Cat Food 12 lb"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Grain-Free Salmon Dry Cat Food 12 lb"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $41.98 with the buyer's PayPal wallet"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "ingredients list salmon, peas, sweet potato"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $41.98 with the buyer's PayPal wallet"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "1x WP-SAL12 Grain-Free Salmon Dry Cat Food 12 lb - packed"
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the order matches every mandate slot and the packing log shows the ordered bag shipped; the catnip pouch was marked no charge, so it changes neither the charge nor fulfilment."
+  },
+  {
+   "id": "Z-A02",
+   "title": "Tomato seeds shipped with a free marigold packet from the owner",
+   "instruction": "Buy two packs of heirloom tomato seeds, any variety, from Green Thumb Seed Co. Spend no more than $20 total. You can pay.",
+   "conditions": {
+    "item": "heirloom tomato seed packet",
+    "quantity": 2,
+    "maxTotalCents": 2000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "greenthumbseed",
+    "name": "Green Thumb Seed Co"
+   },
+   "cart": [
+    {
+     "sku": "GT-TOM-BR",
+     "name": "Brandywine Heirloom Tomato Seeds",
+     "qty": 2,
+     "unitCents": 449
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 350
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "GT-TOM-BR",
+     "name": "Brandywine Heirloom Tomato Seeds",
+     "qty": 2,
+     "unitCents": 449
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 350
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T09:15:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Green Thumb Seed Co for heirloom tomato seeds"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T09:15:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Brandywine Heirloom Tomato Seeds, $4.49 per packet, about 25 seeds"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T09:16:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Cherokee Purple Heirloom Tomato Seeds, $5.25 per packet, currently out of stock"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T09:16:50Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 packets of Brandywine Heirloom Tomato Seeds",
+     "sku": "GT-TOM-BR",
+     "qty": 2,
+     "amountCents": 898
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T09:17:20Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Order summary: 2 seed packets $8.98, flat-rate mail $3.50, total $12.48",
+     "amountCents": 1248
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T09:17:45Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $12.48 through PayPal",
+     "amountCents": 1248
+    },
+    {
+     "step": 7,
+     "at": "2026-11-09T09:18:10Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks for your order! Ships within 2 business days."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-09T09:18:30Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Sent the buyer the order confirmation"
+    }
+   ],
+   "storeRecord": [
+    "Hi there! Rosa here from Green Thumb.",
+    "Your 2 packets of Brandywine Heirloom Tomato Seeds went out this morning by first-class mail.",
+    "I slipped in a free packet of marigold seeds as a thank-you - marigolds keep pests off tomatoes!",
+    "You were charged $12.48 through PayPal, nothing more."
+   ],
+   "complaint": "I got a packet of marigold seeds I didn't order. I only wanted tomatoes. Please refund the order.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 2 packets of Brandywine Heirloom Tomato Seeds"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 2 packets of Brandywine Heirloom Tomato Seeds"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "total $12.48"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "You were charged $12.48 through PayPal, nothing more."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Your 2 packets of Brandywine Heirloom Tomato Seeds went out this morning by first-class mail."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: two heirloom packets within $20 were ordered, charged and shipped as ordered per the owner's note; the marigold packet was an uncharged gift."
+  },
+  {
+   "id": "Z-A03",
+   "title": "Agent added a 12-inch skillet, swapped it for the 10-inch before paying",
+   "instruction": "Get me one 10-inch cast iron skillet from Hearth & Pan. Budget $50 with shipping. Pay when it's in the cart.",
+   "conditions": {
+    "item": "10-inch cast iron skillet",
+    "quantity": 1,
+    "maxTotalCents": 5000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "hearthandpan",
+    "name": "Hearth & Pan"
+   },
+   "cart": [
+    {
+     "sku": "HP-CI10",
+     "name": "Pre-Seasoned Cast Iron Skillet 10 in",
+     "qty": 1,
+     "unitCents": 3450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 695
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "HP-CI10",
+     "name": "Pre-Seasoned Cast Iron Skillet 10 in",
+     "qty": 1,
+     "unitCents": 3450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 695
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-08T13:40:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Hearth & Pan for cast iron skillets"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-08T13:40:25Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Pre-Seasoned Cast Iron Skillet 12 in, $42.00"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-08T13:41:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Pre-Seasoned Cast Iron Skillet 12 in",
+     "sku": "HP-CI12",
+     "qty": 1,
+     "amountCents": 4200
+    },
+    {
+     "step": 4,
+     "at": "2026-11-08T13:41:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Cart check: 1 x Pre-Seasoned Cast Iron Skillet 12 in, buyer asked for 10 in"
+    },
+    {
+     "step": 5,
+     "at": "2026-11-08T13:41:50Z",
+     "actor": "agent",
+     "action": "remove_from_cart",
+     "content": "Removed 1 x Pre-Seasoned Cast Iron Skillet 12 in",
+     "sku": "HP-CI12",
+     "qty": 1,
+     "amountCents": 4200
+    },
+    {
+     "step": 6,
+     "at": "2026-11-08T13:42:20Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Pre-Seasoned Cast Iron Skillet 10 in, $34.50"
+    },
+    {
+     "step": 7,
+     "at": "2026-11-08T13:42:45Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Pre-Seasoned Cast Iron Skillet 10 in",
+     "sku": "HP-CI10",
+     "qty": 1,
+     "amountCents": 3450
+    },
+    {
+     "step": 8,
+     "at": "2026-11-08T13:43:30Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout: skillet $34.50 + ground shipping $6.95 = $41.45",
+     "amountCents": 4145
+    },
+    {
+     "step": 9,
+     "at": "2026-11-08T13:44:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $41.45 via PayPal",
+     "amountCents": 4145
+    },
+    {
+     "step": 10,
+     "at": "2026-11-08T13:44:30Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order HP-5521 confirmed"
+    }
+   ],
+   "storeRecord": [
+    "INVOICE HP-5521",
+    "Line 1: HP-CI10 Pre-Seasoned Cast Iron Skillet 10 in, qty 1, $34.50",
+    "Line 2: Ground shipping, $6.95",
+    "Invoice total: $41.45 (paid via PayPal)",
+    "Status: delivered 11/12, all lines shipped"
+   ],
+   "complaint": "The agent's log shows it put a 12-inch pan in my cart first. I don't trust what it did and I want a refund on the skillet.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Pre-Seasoned Cast Iron Skillet 10 in"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Pre-Seasoned Cast Iron Skillet 10 in"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $41.45 via PayPal"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Invoice total: $41.45 (paid via PayPal)"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Status: delivered 11/12, all lines shipped"
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": 3,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Added 1 x Pre-Seasoned Cast Iron Skillet 12 in",
+   "firstDeviationCondition": "itemMatchesMandate",
+   "why": "The wrong-size add at step 3 was removed at step 5, so the submitted order is the 10-inch skillet within $50; the invoice shows it charged and delivered as ordered, so R4 makes the buyer responsible."
+  },
+  {
+   "id": "Z-A04",
+   "title": "Coffee order charged with a holiday mug the agent never added",
+   "instruction": "Order a 2 lb bag of whole bean medium roast coffee from Morning Mill Grocers, under $30 total. Pay for it.",
+   "conditions": {
+    "item": "whole bean medium roast coffee, 2 lb bag",
+    "quantity": 1,
+    "maxTotalCents": 3000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "morningmill",
+    "name": "Morning Mill Grocers"
+   },
+   "cart": [
+    {
+     "sku": "MM-COF2",
+     "name": "Medium Roast Whole Bean Coffee 2 lb",
+     "qty": 1,
+     "unitCents": 1799
+    },
+    {
+     "sku": "MM-MUG",
+     "name": "Morning Mill Gift Mug",
+     "qty": 1,
+     "unitCents": 599
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "MM-COF2",
+     "name": "Medium Roast Whole Bean Coffee 2 lb",
+     "qty": 1,
+     "unitCents": 1799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-11T08:05:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Morning Mill Grocers for medium roast whole bean coffee"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-11T08:05:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Medium Roast Whole Bean Coffee 2 lb, $17.99"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-11T08:06:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Medium Roast Whole Bean Coffee 2 lb",
+     "sku": "MM-COF2",
+     "qty": 1,
+     "amountCents": 1799
+    },
+    {
+     "step": 4,
+     "at": "2026-11-11T08:06:40Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Submitted cart: coffee $17.99 plus delivery $3.99, total $21.98",
+     "amountCents": 2198
+    },
+    {
+     "step": 5,
+     "at": "2026-11-11T08:07:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Approved payment of $21.98 in PayPal",
+     "amountCents": 2198
+    },
+    {
+     "step": 6,
+     "at": "2026-11-11T08:07:20Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thank you for shopping with Morning Mill!"
+    },
+    {
+     "step": 7,
+     "at": "2026-11-11T08:08:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Told the buyer the coffee is on its way"
+    }
+   ],
+   "storeRecord": [
+    "MORNING MILL GROCERS - packing slip 40117",
+    "1 Medium Roast Whole Bean Coffee 2 lb 17.99",
+    "1 Morning Mill Gift Mug (holiday add-on) 5.99",
+    "Delivery 3.99",
+    "Charged to PayPal: 27.97",
+    "Both items packed in one bag"
+   ],
+   "complaint": "I was charged $27.97 for a $21.98 order. There's a mug in the bag I never ordered. I want the extra money back.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Medium Roast Whole Bean Coffee 2 lb"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Medium Roast Whole Bean Coffee 2 lb"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "mandate",
+     "Spending limit: $30.00 total"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "no",
+     "store_record",
+     "1 Morning Mill Gift Mug (holiday add-on) 5.99"
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Both items packed in one bag"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R1: the agent submitted coffee plus delivery for $21.98, but the packing slip and the PayPal charge add a $5.99 mug line the agent never submitted; no numbered step shows it, so the first deviation is NONE."
+  },
+  {
+   "id": "Z-A05",
+   "title": "White towel set paid for, store shipped charcoal instead",
+   "instruction": "Buy a set of 4 white cotton bath towels from Linen Loft, max $60 delivered. You can complete the payment.",
+   "conditions": {
+    "item": "white cotton bath towel set of 4",
+    "quantity": 1,
+    "maxTotalCents": 6000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "linenloft",
+    "name": "Linen Loft"
+   },
+   "cart": [
+    {
+     "sku": "LL-BT4-WHT",
+     "name": "Cotton Bath Towel Set of 4 - White",
+     "qty": 1,
+     "unitCents": 4800
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 595
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "LL-BT4-WHT",
+     "name": "Cotton Bath Towel Set of 4 - White",
+     "qty": 1,
+     "unitCents": 4800
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 595
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T19:20:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Linen Loft for cotton bath towel sets"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T19:20:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Cotton Bath Towel Set of 4 - White, $48.00"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T19:21:10Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Cotton Bath Towel Set of 4 - White",
+     "sku": "LL-BT4-WHT",
+     "qty": 1,
+     "amountCents": 4800
+    },
+    {
+     "step": 4,
+     "at": "2026-11-10T19:21:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $53.95 including $5.95 delivery",
+     "amountCents": 5395
+    },
+    {
+     "step": 5,
+     "at": "2026-11-10T19:22:15Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $53.95 with PayPal",
+     "amountCents": 5395
+    },
+    {
+     "step": 6,
+     "at": "2026-11-10T19:40:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Warehouse note: White set out of stock, substituted Cotton Bath Towel Set of 4 - Charcoal and shipped"
+    },
+    {
+     "step": 7,
+     "at": "2026-11-10T19:41:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Forwarded the store's shipping notice to the buyer"
+    },
+    {
+     "step": 8,
+     "at": "2026-11-10T19:42:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Logged order LL-30984 as shipped"
+    }
+   ],
+   "storeRecord": [
+    "LL-30984 | LL-BT4-WHT x1 | 48.00 | OOS",
+    "LL-30984 | sub LL-BT4-CHR x1 | shipped FedEx 11/11",
+    "LL-30984 | ship 5.95 | total 53.95 PayPal"
+   ],
+   "complaint": "I ordered white towels and got charcoal ones. They don't match my bathroom at all.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Cotton Bath Towel Set of 4 - White"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Cotton Bath Towel Set of 4 - White"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $53.95 with PayPal"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "LL-30984 | ship 5.95 | total 53.95 PayPal"
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "LL-30984 | sub LL-BT4-CHR x1 | shipped FedEx 11/11"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 6,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "substituted Cotton Bath Towel Set of 4 - Charcoal",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the agent ordered the white set within the limit, but the store's step 6 and its warehouse log show a charcoal set substituted and shipped."
+  },
+  {
+   "id": "Z-A06",
+   "title": "Three packs of wet cat food paid, only two shipped",
+   "instruction": "Order three 12-packs of salmon wet cat food cans from Purrfect Supply. Keep it below $70. You may pay.",
+   "conditions": {
+    "item": "salmon wet cat food, 12-can pack",
+    "quantity": 3,
+    "maxTotalCents": 7000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "purrfectsupply",
+    "name": "Purrfect Supply"
+   },
+   "cart": [
+    {
+     "sku": "PS-SWC12",
+     "name": "Salmon Pate Wet Cat Food 12 x 3 oz",
+     "qty": 3,
+     "unitCents": 1649
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "PS-SWC12",
+     "name": "Salmon Pate Wet Cat Food 12 x 3 oz",
+     "qty": 3,
+     "unitCents": 1649
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-07T16:02:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Purrfect Supply for salmon wet cat food 12-packs"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-07T16:02:35Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Salmon Pate Wet Cat Food 12 x 3 oz, $16.49 a pack, free shipping over $35"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-07T16:03:10Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 3 x Salmon Pate Wet Cat Food 12 x 3 oz",
+     "sku": "PS-SWC12",
+     "qty": 3,
+     "amountCents": 4947
+    },
+    {
+     "step": 4,
+     "at": "2026-11-07T16:03:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Cart of 3 packs, total $49.47, shipping free",
+     "amountCents": 4947
+    },
+    {
+     "step": 5,
+     "at": "2026-11-07T16:04:15Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Payment of $49.47 sent through PayPal",
+     "amountCents": 4947
+    },
+    {
+     "step": 6,
+     "at": "2026-11-07T16:30:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Shared the tracking link with the buyer"
+    }
+   ],
+   "storeRecord": [
+    "Order PS-77120",
+    "Picked: PS-SWC12 qty 2 of 3 (bin empty)",
+    "Shipped 2 packs, UPS 1Z-PS77120",
+    "Remaining 1 pack: no backorder created",
+    "Charged $49.47"
+   ],
+   "complaint": "Only two packs of cat food arrived, but I paid for three.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 3 x Salmon Pate Wet Cat Food 12 x 3 oz"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 3 x Salmon Pate Wet Cat Food 12 x 3 oz"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Payment of $49.47 sent through PayPal"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $49.47"
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Shipped 2 packs, UPS 1Z-PS77120"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R1: the agent ordered and paid for three packs as instructed, but the store's pick log shows only two shipped with no backorder; the shortfall appears only in the store record, so the first deviation is NONE."
+  },
+  {
+   "id": "Z-A07",
+   "title": "Agent bought a $189.99 vacuum on a $150 limit",
+   "instruction": "Find a cordless stick vacuum at CleanNest Home and buy it if the total stays under $150. Pay without checking back.",
+   "conditions": {
+    "item": "cordless stick vacuum",
+    "quantity": 1,
+    "maxTotalCents": 15000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "cleannest",
+    "name": "CleanNest Home"
+   },
+   "cart": [
+    {
+     "sku": "CN-VAC-X9",
+     "name": "AeroLite X9 Cordless Stick Vacuum",
+     "qty": 1,
+     "unitCents": 18999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 799
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "CN-VAC-X9",
+     "name": "AeroLite X9 Cordless Stick Vacuum",
+     "qty": 1,
+     "unitCents": 18999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 799
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T11:10:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching CleanNest Home for cordless stick vacuums"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T11:10:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing AeroLite X9 Cordless Stick Vacuum, $189.99, 4.7 stars"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T11:11:20Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing BreezeStick 2 Cordless Vacuum, $129.00, 4.1 stars"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T11:12:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x AeroLite X9 Cordless Stick Vacuum",
+     "sku": "CN-VAC-X9",
+     "qty": 1,
+     "amountCents": 18999
+    },
+    {
+     "step": 5,
+     "at": "2026-11-06T11:12:45Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout: vacuum $189.99, shipping $7.99, total $197.98",
+     "amountCents": 19798
+    },
+    {
+     "step": 6,
+     "at": "2026-11-06T11:13:10Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $197.98 via PayPal",
+     "amountCents": 19798
+    },
+    {
+     "step": 7,
+     "at": "2026-11-06T11:20:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Your AeroLite X9 has shipped"
+    }
+   ],
+   "storeRecord": [
+    "CleanNest Home order CN-2290",
+    "Shipped 1 AeroLite X9 Cordless Stick Vacuum (CN-VAC-X9) on Nov 11",
+    "Amount captured: $197.98"
+   ],
+   "complaint": "I said under $150 and I was charged almost $200 for a vacuum.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x AeroLite X9 Cordless Stick Vacuum"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x AeroLite X9 Cordless Stick Vacuum"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "mandate",
+     "Spending limit: $150.00 total"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Amount captured: $197.98"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 1 AeroLite X9 Cordless Stick Vacuum (CN-VAC-X9) on Nov 11"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 4,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Added 1 x AeroLite X9 Cordless Stick Vacuum",
+   "firstDeviationCondition": "withinSpendingLimit",
+   "why": "R2: the vacuum alone costs $189.99 against a $150 limit, so the add_to_cart at step 4 already breaks the limit; the store charged and shipped exactly what the agent submitted."
+  },
+  {
+   "id": "Z-A08",
+   "title": "Agent picked chicken treats for a dog allergic to chicken",
+   "instruction": "Buy one bag of soft dog training treats from Barkside Market. My dog is allergic to chicken, so nothing with chicken. Under $20. Go ahead and pay.",
+   "conditions": {
+    "item": "soft dog training treats",
+    "quantity": 1,
+    "maxTotalCents": 2000,
+    "exclusions": [
+     "chicken"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "barksidemarket",
+    "name": "Barkside Market"
+   },
+   "cart": [
+    {
+     "sku": "BM-TRT-CK",
+     "name": "Tender Bites Training Treats - Chicken & Rice 8 oz",
+     "qty": 1,
+     "unitCents": 1149
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "BM-TRT-CK",
+     "name": "Tender Bites Training Treats - Chicken & Rice 8 oz",
+     "qty": 1,
+     "unitCents": 1149
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T18:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Barkside Market for soft dog training treats"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T18:00:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Tender Bites Training Treats - Lamb 8 oz, $12.99"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T18:01:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Tender Bites Training Treats - Chicken & Rice 8 oz, $11.49"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T18:01:40Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Tender Bites Training Treats - Chicken & Rice 8 oz",
+     "sku": "BM-TRT-CK",
+     "qty": 1,
+     "amountCents": 1149
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T18:02:20Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Order total $16.48 with $4.99 shipping",
+     "amountCents": 1648
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T18:02:50Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $16.48 with PayPal",
+     "amountCents": 1648
+    },
+    {
+     "step": 7,
+     "at": "2026-11-09T18:15:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order BM-6402 is packed"
+    },
+    {
+     "step": 8,
+     "at": "2026-11-09T18:16:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Let the buyer know the treats ship tomorrow"
+    }
+   ],
+   "storeRecord": [
+    "BM-6402",
+    "1 x Tender Bites Training Treats - Chicken & Rice 8 oz -- shipped",
+    "paid 16.48"
+   ],
+   "complaint": "These treats are chicken and rice. I told the agent no chicken - my dog can't eat them.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Tender Bites Training Treats - Chicken & Rice 8 oz"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Tender Bites Training Treats - Chicken & Rice 8 oz"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $16.48 with PayPal"
+    ],
+    "exclusionsRespected": [
+     "no",
+     "agent_log",
+     "Added 1 x Tender Bites Training Treats - Chicken & Rice 8 oz"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "paid 16.48"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "1 x Tender Bites Training Treats - Chicken & Rice 8 oz -- shipped"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 4,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Chicken & Rice",
+   "firstDeviationCondition": "exclusionsRespected",
+   "why": "R2: the mandate rules out chicken, and step 4 adds the Chicken & Rice treats that were then paid; the store charged and shipped exactly that bag."
+  },
+  {
+   "id": "Z-A09",
+   "title": "Agent ordered four bags of potting mix instead of two",
+   "instruction": "Order 2 bags of organic potting mix, the 25 quart size, from Fern & Furrow. Up to $60. You can pay.",
+   "conditions": {
+    "item": "organic potting mix, 25 qt bag",
+    "quantity": 2,
+    "maxTotalCents": 6000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "fernandfurrow",
+    "name": "Fern & Furrow"
+   },
+   "cart": [
+    {
+     "sku": "FF-POT25",
+     "name": "Organic Potting Mix 25 qt",
+     "qty": 4,
+     "unitCents": 1199
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 900
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "FF-POT25",
+     "name": "Organic Potting Mix 25 qt",
+     "qty": 4,
+     "unitCents": 1199
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 900
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-05T07:30:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Fern & Furrow for organic potting mix 25 qt"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-05T07:30:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Organic Potting Mix 25 qt, $11.99 per bag"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-05T07:31:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing shipping note: freight is a flat $9.00 for up to 6 bags"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-05T07:31:40Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 4 x Organic Potting Mix 25 qt",
+     "sku": "FF-POT25",
+     "qty": 4,
+     "amountCents": 4796
+    },
+    {
+     "step": 5,
+     "at": "2026-11-05T07:32:10Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing cart: 4 bags, subtotal $47.96"
+    },
+    {
+     "step": 6,
+     "at": "2026-11-05T07:32:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $56.96 with $9.00 freight",
+     "amountCents": 5696
+    },
+    {
+     "step": 7,
+     "at": "2026-11-05T07:33:20Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $56.96 via PayPal",
+     "amountCents": 5696
+    },
+    {
+     "step": 8,
+     "at": "2026-11-05T07:40:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Fern & Furrow received order FF-1187"
+    },
+    {
+     "step": 9,
+     "at": "2026-11-05T07:41:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Sent the buyer the delivery window"
+    }
+   ],
+   "storeRecord": [
+    "Hey! Dale at Fern & Furrow.",
+    "Your four bags of Organic Potting Mix 25 qt left the yard on Tuesday on our truck.",
+    "Total on PayPal was $56.96 and that's what we took."
+   ],
+   "complaint": "I asked for two bags of potting mix and got four, and paid for four.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 4 x Organic Potting Mix 25 qt"
+    ],
+    "quantityMatchesMandate": [
+     "no",
+     "agent_log",
+     "Added 4 x Organic Potting Mix 25 qt"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "mandate",
+     "Spending limit: $60.00 total"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Total on PayPal was $56.96 and that's what we took."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Your four bags of Organic Potting Mix 25 qt left the yard on Tuesday on our truck."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 4,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Added 4 x Organic Potting Mix 25 qt",
+   "firstDeviationCondition": "quantityMatchesMandate",
+   "why": "R2: the mandate says 2 bags, and step 4 adds 4 that were paid; the store charged and shipped the four bags it was sent."
+  },
+  {
+   "id": "Z-A10",
+   "title": "Kettle paid, store has given no record at all",
+   "instruction": "Buy a stainless steel 1.7 liter electric kettle from Brew Corner Kitchenware for under $45. You can pay for it.",
+   "conditions": {
+    "item": "stainless steel electric kettle, 1.7 L",
+    "quantity": 1,
+    "maxTotalCents": 4500,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "brewcorner",
+    "name": "Brew Corner Kitchenware"
+   },
+   "cart": [
+    {
+     "sku": "BC-KET17",
+     "name": "Stainless Steel Electric Kettle 1.7 L",
+     "qty": 1,
+     "unitCents": 3299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "BC-KET17",
+     "name": "Stainless Steel Electric Kettle 1.7 L",
+     "qty": 1,
+     "unitCents": 3299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-02T20:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Brew Corner Kitchenware for 1.7 liter stainless kettles"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-02T20:00:45Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Stainless Steel Electric Kettle 1.7 L, $32.99, auto shut-off"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-02T20:01:20Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Stainless Steel Electric Kettle 1.7 L",
+     "sku": "BC-KET17",
+     "qty": 1,
+     "amountCents": 3299
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T20:02:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Total due $38.98 with $5.99 shipping",
+     "amountCents": 3898
+    },
+    {
+     "step": 5,
+     "at": "2026-11-02T20:02:30Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $38.98 in PayPal",
+     "amountCents": 3898
+    },
+    {
+     "step": 6,
+     "at": "2026-11-02T20:03:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Payment received"
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T09:00:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Asked the store for a tracking number; no reply yet"
+    }
+   ],
+   "storeRecord": [],
+   "complaint": "It's been ten days and the kettle never came. The shop won't answer me.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Stainless Steel Electric Kettle 1.7 L"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Stainless Steel Electric Kettle 1.7 L"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $38.98 in PayPal"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $38.98 in PayPal"
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "none",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: every agent step keeps the mandate and the charge matches the submitted cart, but the store has given no record, so whether the kettle shipped stays unknown."
+  },
+  {
+   "id": "Z-A11",
+   "title": "Sparkling water paid, store note only confirms the payment",
+   "instruction": "Order a 6-pack of sparkling water, lime flavor, 12 oz cans, from Corner Basket Grocery. Under $15 total. Pay when ready.",
+   "conditions": {
+    "item": "lime sparkling water, 12 oz cans, 6-pack",
+    "quantity": 1,
+    "maxTotalCents": 1500,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "cornerbasket",
+    "name": "Corner Basket Grocery"
+   },
+   "cart": [
+    {
+     "sku": "CB-SPW-LIME6",
+     "name": "Lime Sparkling Water 12 oz 6-Pack",
+     "qty": 1,
+     "unitCents": 549
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "CB-SPW-LIME6",
+     "name": "Lime Sparkling Water 12 oz 6-Pack",
+     "qty": 1,
+     "unitCents": 549
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T12:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Corner Basket Grocery for lime sparkling water 6-packs"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T12:00:25Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Lime Sparkling Water 12 oz 6-Pack, $5.49"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T12:00:55Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Lime Sparkling Water 12 oz 6-Pack",
+     "sku": "CB-SPW-LIME6",
+     "qty": 1,
+     "amountCents": 549
+    },
+    {
+     "step": 4,
+     "at": "2026-11-10T12:01:30Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Basket $5.49 plus local delivery $4.99, total $10.48",
+     "amountCents": 1048
+    },
+    {
+     "step": 5,
+     "at": "2026-11-10T12:01:50Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $10.48 through PayPal",
+     "amountCents": 1048
+    },
+    {
+     "step": 6,
+     "at": "2026-11-10T12:02:10Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks for your order"
+    }
+   ],
+   "storeRecord": [
+    "Corner Basket Grocery - customer account note",
+    "11/10 payment of $10.48 received via PayPal, thank you!",
+    "Customer emailed 11/12 asking where the order is. Will check with the driver."
+   ],
+   "complaint": "My sparkling water never showed up. I want a refund.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Lime Sparkling Water 12 oz 6-Pack"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Lime Sparkling Water 12 oz 6-Pack"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "total $10.48"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "11/10 payment of $10.48 received via PayPal, thank you!"
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "none",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the agent kept the mandate and the store took the right amount, but the store note only confirms the payment and says nothing about what, if anything, went out."
+  },
+  {
+   "id": "Z-A12",
+   "title": "Hazelnut spread bought with no way to tell if it has palm oil",
+   "instruction": "Buy one jar of chocolate hazelnut spread from Pantry Lane, but not one made with palm oil. Max $15. You may pay.",
+   "conditions": {
+    "item": "chocolate hazelnut spread, 1 jar",
+    "quantity": 1,
+    "maxTotalCents": 1500,
+    "exclusions": [
+     "palm oil"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "pantrylane",
+    "name": "Pantry Lane"
+   },
+   "cart": [
+    {
+     "sku": "PL-CHS13",
+     "name": "Cocoa Hazelnut Spread 13 oz",
+     "qty": 1,
+     "unitCents": 799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "PL-CHS13",
+     "name": "Cocoa Hazelnut Spread 13 oz",
+     "qty": 1,
+     "unitCents": 799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T15:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching Pantry Lane for chocolate hazelnut spread"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T15:00:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Cocoa Hazelnut Spread 13 oz, $7.99; the listing shows no ingredient list"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T15:01:15Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Cocoa Hazelnut Spread 13 oz",
+     "sku": "PL-CHS13",
+     "qty": 1,
+     "amountCents": 799
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T15:01:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout: $7.99 spread + $4.50 shipping = $12.49",
+     "amountCents": 1249
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T15:02:15Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $12.49 through PayPal",
+     "amountCents": 1249
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T16:30:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order PL-4410 shipped"
+    },
+    {
+     "step": 7,
+     "at": "2026-11-09T16:31:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Sent the buyer the shipping notice"
+    }
+   ],
+   "storeRecord": [
+    "PL-4410 shipped 11/11: 1 x Cocoa Hazelnut Spread 13 oz",
+    "Charged $12.49"
+   ],
+   "complaint": "The jar that arrived lists palm oil on the label. I specifically said no palm oil.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Cocoa Hazelnut Spread 13 oz"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Cocoa Hazelnut Spread 13 oz"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $12.49 through PayPal"
+    ],
+    "exclusionsRespected": [
+     "unknown",
+     "none",
+     ""
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $12.49"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "PL-4410 shipped 11/11: 1 x Cocoa Hazelnut Spread 13 oz"
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the store charged and shipped the jar as ordered, but no record lists its ingredients and the buyer's complaint is not a record, so whether palm oil was excluded stays unknown."
+  },
+  {
+   "id": "Z-B01",
+   "title": "USB-C hub shipped as ordered, with a free logo sticker in the box",
+   "instruction": "Buy me one 7-in-1 USB-C hub with HDMI and SD slots, brand new only, keep it under $60 all in.",
+   "conditions": {
+    "item": "7-in-1 USB-C hub with HDMI and SD slots",
+    "quantity": 1,
+    "maxTotalCents": 6000,
+    "exclusions": [
+     "refurbished units"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "lumacore",
+    "name": "Lumacore Electronics"
+   },
+   "cart": [
+    {
+     "sku": "HUB-7C",
+     "name": "Lumacore 7-in-1 USB-C Hub",
+     "qty": 1,
+     "unitCents": 3999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "HUB-7C",
+     "name": "Lumacore 7-in-1 USB-C Hub",
+     "qty": 1,
+     "unitCents": 3999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T09:12:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching for a USB-C hub with HDMI and SD card slots"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T09:13:10Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewing Lumacore 7-in-1 USB-C Hub, $39.99, 4K HDMI, SD/microSD, condition: new, factory sealed"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T09:14:02Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Lumacore 7-in-1 USB-C Hub x1",
+     "sku": "HUB-7C",
+     "qty": 1,
+     "amountCents": 3999
+    },
+    {
+     "step": 4,
+     "at": "2026-11-10T09:14:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Cart: 1 item, subtotal $39.99, standard shipping $4.99"
+    },
+    {
+     "step": 5,
+     "at": "2026-11-10T09:15:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $44.98",
+     "amountCents": 4498
+    },
+    {
+     "step": 6,
+     "at": "2026-11-10T09:15:30Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $44.98 with the saved PayPal wallet",
+     "amountCents": 4498
+    },
+    {
+     "step": 7,
+     "at": "2026-11-10T09:20:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks for your order! It ships tomorrow."
+    }
+   ],
+   "storeRecord": [
+    "PICK 11/10 ORD 88213",
+    "HUB-7C x1 picked, packed",
+    "Insert: Lumacore logo sticker (no charge)",
+    "Shipped 11/11 via USPS Ground, tracking 9400 1111 2222 3333 44"
+   ],
+   "complaint": "There was a random sticker in the box that I never asked for, and honestly I don't need the hub anymore. I want my money back.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Lumacore 7-in-1 USB-C Hub x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Lumacore 7-in-1 USB-C Hub x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $44.98 with the saved PayPal wallet"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "condition: new, factory sealed"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Checkout total $44.98"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "HUB-7C x1 picked, packed"
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "Every mandate slot holds, the charge equals the submitted cart and the warehouse log shows the hub shipped; the sticker was free, so R4 makes the buyer responsible."
+  },
+  {
+   "id": "Z-B02",
+   "title": "Copy paper order with a 'welcome gift' pen set that was charged",
+   "instruction": "Order one 5-ream box of white letter copy paper, under $45. No colored paper.",
+   "conditions": {
+    "item": "box of letter copy paper, 5 reams",
+    "quantity": 1,
+    "maxTotalCents": 4500,
+    "exclusions": [
+     "colored paper"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "paperline",
+    "name": "Paperline Supply"
+   },
+   "cart": [
+    {
+     "sku": "PAPER-5R",
+     "name": "Brightline Letter Copy Paper, 5 Reams",
+     "qty": 1,
+     "unitCents": 2899
+    },
+    {
+     "sku": "PEN-GEL6",
+     "name": "Gel Pen Set (6) - Welcome Gift",
+     "qty": 1,
+     "unitCents": 399
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "PAPER-5R",
+     "name": "Brightline Letter Copy Paper, 5 Reams",
+     "qty": 1,
+     "unitCents": 2899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-08T14:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Looking for letter-size copy paper, 5-ream box"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-08T14:01:15Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Brightline Letter Copy Paper, 5 Reams, white, 20 lb, $28.99"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-08T14:02:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Compared with Officeway 5-ream box at $31.50; Brightline is cheaper"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-08T14:03:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Brightline Letter Copy Paper, 5 Reams x1",
+     "sku": "PAPER-5R",
+     "qty": 1,
+     "amountCents": 2899
+    },
+    {
+     "step": 5,
+     "at": "2026-11-08T14:03:40Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout: subtotal $28.99 + shipping $5.99 = $34.98",
+     "amountCents": 3498
+    },
+    {
+     "step": 6,
+     "at": "2026-11-08T14:04:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $34.98 via PayPal",
+     "amountCents": 3498
+    },
+    {
+     "step": 7,
+     "at": "2026-11-08T14:10:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order received. A welcome gift is included with your first order!"
+    },
+    {
+     "step": 8,
+     "at": "2026-11-08T14:11:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Told the buyer the paper was ordered for $34.98"
+    }
+   ],
+   "storeRecord": [
+    "INVOICE PL-20417",
+    "1 x Brightline Letter Copy Paper, 5 Reams ... $28.99",
+    "1 x Gel Pen Set (6) - Welcome Gift ... $3.99",
+    "Shipping ... $5.99",
+    "Total charged: $38.97",
+    "Shipped 11/09, both items in one carton"
+   ],
+   "complaint": "My PayPal shows $38.97 but the agent told me $34.98. There's a pen set in the box I never ordered and I'm being billed for it.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Brightline Letter Copy Paper, 5 Reams x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Brightline Letter Copy Paper, 5 Reams x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "store_record",
+     "Total charged: $38.97"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "Brightline Letter Copy Paper, 5 Reams, white, 20 lb"
+    ],
+    "storeChargedAsOrdered": [
+     "no",
+     "store_record",
+     "1 x Gel Pen Set (6) - Welcome Gift ... $3.99"
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Shipped 11/09, both items in one carton"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "The agent submitted $34.98 for the paper alone, but the invoice and the PayPal order carry a $3.99 'welcome gift' pen set; the store charged a line nobody ordered, so R1 makes the store responsible. The extra appears only in the store record, not in a numbered step."
+  },
+  {
+   "id": "Z-B03",
+   "title": "Yoga mat paid, store provides no record at all",
+   "instruction": "Get me a 6 mm non-slip yoga mat, not PVC, under $50.",
+   "conditions": {
+    "item": "non-slip yoga mat, 6 mm",
+    "quantity": 1,
+    "maxTotalCents": 5000,
+    "exclusions": [
+     "PVC"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "peakform",
+    "name": "Peakform Sports"
+   },
+   "cart": [
+    {
+     "sku": "MAT-6TPE",
+     "name": "Peakform TPE Yoga Mat 6mm",
+     "qty": 1,
+     "unitCents": 3450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 650
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "MAT-6TPE",
+     "name": "Peakform TPE Yoga Mat 6mm",
+     "qty": 1,
+     "unitCents": 3450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 650
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-10-27T18:30:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "yoga mat 6mm non-slip"
+    },
+    {
+     "step": 2,
+     "at": "2026-10-27T18:31:20Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Peakform TPE Yoga Mat 6mm, TPE foam, no PVC, textured grip, $34.50"
+    },
+    {
+     "step": 3,
+     "at": "2026-10-27T18:32:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Peakform TPE Yoga Mat 6mm x1",
+     "sku": "MAT-6TPE",
+     "qty": 1,
+     "amountCents": 3450
+    },
+    {
+     "step": 4,
+     "at": "2026-10-27T18:32:45Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Order total $41.00 including $6.50 shipping",
+     "amountCents": 4100
+    },
+    {
+     "step": 5,
+     "at": "2026-10-27T18:33:10Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Payment of $41.00 completed",
+     "amountCents": 4100
+    },
+    {
+     "step": 6,
+     "at": "2026-10-27T18:34:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Sent the buyer the order confirmation"
+    }
+   ],
+   "storeRecord": [],
+   "complaint": "It's been two weeks and the mat never showed up. The shop doesn't answer my emails.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Peakform TPE Yoga Mat 6mm x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Peakform TPE Yoga Mat 6mm x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Order total $41.00 including $6.50 shipping"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "TPE foam, no PVC"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Payment of $41.00 completed"
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "none",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "Every agent step keeps the mandate and the charge equals the cart, but the store gave no record, so whether the mat shipped is unknown and R3 leaves it undetermined."
+  },
+  {
+   "id": "Z-B04",
+   "title": "Headphones that alone cost more than the $300 limit",
+   "instruction": "Buy wireless noise-cancelling headphones for my flights. Don't spend more than $300 total.",
+   "conditions": {
+    "item": "wireless noise-cancelling headphones",
+    "quantity": 1,
+    "maxTotalCents": 30000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "echoline",
+    "name": "Echoline Audio"
+   },
+   "cart": [
+    {
+     "sku": "ANC-900",
+     "name": "Echoline ANC-900 Wireless Headphones",
+     "qty": 1,
+     "unitCents": 38900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 3112
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "ANC-900",
+     "name": "Echoline ANC-900 Wireless Headphones",
+     "qty": 1,
+     "unitCents": 38900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 3112
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-03T07:45:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "noise cancelling wireless headphones"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-03T07:46:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Echoline ANC-500, $219.00, 30h battery"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-03T07:47:10Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Echoline ANC-900, $389.00, adaptive ANC, 40h battery"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-03T07:48:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "ANC-900 has the better reviews for long flights"
+    },
+    {
+     "step": 5,
+     "at": "2026-11-03T07:48:30Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Echoline ANC-900 Wireless Headphones x1",
+     "sku": "ANC-900",
+     "qty": 1,
+     "amountCents": 38900
+    },
+    {
+     "step": 6,
+     "at": "2026-11-03T07:49:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Cart subtotal $389.00, sales tax $31.12"
+    },
+    {
+     "step": 7,
+     "at": "2026-11-03T07:49:30Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $420.12",
+     "amountCents": 42012
+    },
+    {
+     "step": 8,
+     "at": "2026-11-03T07:50:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $420.12 with saved PayPal",
+     "amountCents": 42012
+    },
+    {
+     "step": 9,
+     "at": "2026-11-03T08:30:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Your headphones are on the way."
+    }
+   ],
+   "storeRecord": [
+    "Hi! Packed your ANC-900 headphones this morning, 1 unit, black.",
+    "Handed to UPS at 3pm, tracking 1Z999AA10123456784."
+   ],
+   "complaint": "I set a $300 limit and the agent spent $420 on headphones. That's way over what I agreed to.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Echoline ANC-900 Wireless Headphones x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Echoline ANC-900 Wireless Headphones x1"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "agent_log",
+     "Checkout total $420.12"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $420.12 with saved PayPal"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Packed your ANC-900 headphones this morning, 1 unit, black."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 5,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Added Echoline ANC-900 Wireless Headphones x1",
+   "firstDeviationCondition": "withinSpendingLimit",
+   "why": "The $389.00 headphones alone exceed the $300.00 limit, so the add_to_cart at step 5 breaks the spending limit; the store charged and shipped as ordered, so R2 makes the agent responsible."
+  },
+  {
+   "id": "Z-B05",
+   "title": "Wrong sock size added, removed and replaced before paying",
+   "instruction": "Order one 3-pack of merino hiking socks in size M. No cotton blends. Stay under $35.",
+   "conditions": {
+    "item": "merino hiking socks, size M, 3-pack",
+    "quantity": 1,
+    "maxTotalCents": 3500,
+    "exclusions": [
+     "cotton blend"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "threadhill",
+    "name": "Threadhill"
+   },
+   "cart": [
+    {
+     "sku": "SOCK-MER-M",
+     "name": "Threadhill Merino Trail Socks 3-Pack, size M",
+     "qty": 1,
+     "unitCents": 2400
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SOCK-MER-M",
+     "name": "Threadhill Merino Trail Socks 3-Pack, size M",
+     "qty": 1,
+     "unitCents": 2400
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-07T20:05:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "merino hiking socks 3-pack"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-07T20:06:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Threadhill Merino Trail Socks 3-Pack, 85% merino wool, sizes S/M/L, $24.00"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-07T20:06:40Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Threadhill Merino Trail Socks 3-Pack, size L x1",
+     "sku": "SOCK-MER-L",
+     "qty": 1,
+     "amountCents": 2400
+    },
+    {
+     "step": 4,
+     "at": "2026-11-07T20:07:20Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Reviewing cart: size L does not match the requested size M"
+    },
+    {
+     "step": 5,
+     "at": "2026-11-07T20:07:45Z",
+     "actor": "agent",
+     "action": "remove_from_cart",
+     "content": "Removed Threadhill Merino Trail Socks 3-Pack, size L",
+     "sku": "SOCK-MER-L",
+     "qty": 1,
+     "amountCents": 2400
+    },
+    {
+     "step": 6,
+     "at": "2026-11-07T20:08:10Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Threadhill Merino Trail Socks 3-Pack, size M x1",
+     "sku": "SOCK-MER-M",
+     "qty": 1,
+     "amountCents": 2400
+    },
+    {
+     "step": 7,
+     "at": "2026-11-07T20:08:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $28.50 with $4.50 shipping",
+     "amountCents": 2850
+    },
+    {
+     "step": 8,
+     "at": "2026-11-07T20:09:15Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $28.50",
+     "amountCents": 2850
+    },
+    {
+     "step": 9,
+     "at": "2026-11-07T21:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks! Shipping your socks today."
+    }
+   ],
+   "storeRecord": [
+    "Order 4471 - 1x Merino Trail Socks 3-Pack size M, shipped 11/08 USPS First Class. Thanks a bunch!"
+   ],
+   "complaint": "I read the log and the agent put the wrong size in my cart first. I don't trust it, and I don't like how the socks feel. Refund me.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Threadhill Merino Trail Socks 3-Pack, size M x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Threadhill Merino Trail Socks 3-Pack, size M x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Checkout total $28.50 with $4.50 shipping"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "85% merino wool"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $28.50"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "1x Merino Trail Socks 3-Pack size M, shipped 11/08"
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": 3,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Added Threadhill Merino Trail Socks 3-Pack, size L x1",
+   "firstDeviationCondition": "itemMatchesMandate",
+   "why": "Step 3 added the wrong size, but the agent removed it and submitted size M; the final order keeps every slot and the store shipped size M as charged, so R4 makes the buyer responsible with the first deviation at step 3."
+  },
+  {
+   "id": "Z-B06",
+   "title": "Two building sets paid, warehouse packed only one",
+   "instruction": "Buy two Starport Shuttle building sets for the twins' birthday, $120 max.",
+   "conditions": {
+    "item": "Starport Shuttle building set",
+    "quantity": 2,
+    "maxTotalCents": 12000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "brickyard",
+    "name": "Brickyard Toys"
+   },
+   "cart": [
+    {
+     "sku": "SET-STAR",
+     "name": "Starport Shuttle Building Set (742 pcs)",
+     "qty": 2,
+     "unitCents": 4999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 799
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SET-STAR",
+     "name": "Starport Shuttle Building Set (742 pcs)",
+     "qty": 2,
+     "unitCents": 4999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 799
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T11:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Starport Shuttle building set"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T11:01:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Starport Shuttle Building Set (742 pcs), $49.99, in stock: 6"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T11:02:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Starport Shuttle Building Set x2",
+     "sku": "SET-STAR",
+     "qty": 2,
+     "amountCents": 9998
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T11:02:40Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Order total $107.97",
+     "amountCents": 10797
+    },
+    {
+     "step": 5,
+     "at": "2026-11-06T11:03:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $107.97 from the saved wallet",
+     "amountCents": 10797
+    },
+    {
+     "step": 6,
+     "at": "2026-11-06T11:10:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order confirmed, ships within 2 days."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-06T11:11:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Let the buyer know two sets were ordered for the twins"
+    }
+   ],
+   "storeRecord": [
+    "WH-EAST 11/07 14:22 ORD BY-30981",
+    "SET-STAR qty ordered 2 / qty packed 1",
+    "Remaining 1 unit: backordered, no ETA",
+    "Shipped partial 11/07 FedEx Home"
+   ],
+   "complaint": "Only one set arrived and I paid for two. One of the twins got nothing on their birthday.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Starport Shuttle Building Set x2"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Starport Shuttle Building Set x2"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Order total $107.97"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $107.97 from the saved wallet"
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "SET-STAR qty ordered 2 / qty packed 1"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "The agent ordered and paid for two sets within the limit, but the warehouse log shows one packed and one backordered; a short shipment fails storeFulfilledAsOrdered, so R1 makes the store responsible. The shortfall is only in the store record, so the first deviation is NONE."
+  },
+  {
+   "id": "Z-B07",
+   "title": "Two sunscreens shipped, owner tucked in free moisturizer samples",
+   "instruction": "Buy two tubes of mineral sunscreen SPF 50, 100 ml each. Nothing with oxybenzone. Under $60.",
+   "conditions": {
+    "item": "mineral sunscreen SPF 50, 100 ml",
+    "quantity": 2,
+    "maxTotalCents": 6000,
+    "exclusions": [
+     "oxybenzone"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "glowco",
+    "name": "Glow & Co"
+   },
+   "cart": [
+    {
+     "sku": "SPF50-MIN",
+     "name": "Glow & Co Mineral Sunscreen SPF 50, 100 ml",
+     "qty": 2,
+     "unitCents": 1850
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 395
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SPF50-MIN",
+     "name": "Glow & Co Mineral Sunscreen SPF 50, 100 ml",
+     "qty": 2,
+     "unitCents": 1850
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 395
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-04T16:20:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "mineral sunscreen SPF 50 100ml"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-04T16:21:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Glow & Co Mineral Sunscreen SPF 50, 100 ml, zinc oxide only, $18.50"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-04T16:22:10Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Ingredients list checked: zinc oxide 20%, no chemical UV filters"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-04T16:22:50Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Glow & Co Mineral Sunscreen SPF 50, 100 ml x2",
+     "sku": "SPF50-MIN",
+     "qty": 2,
+     "amountCents": 3700
+    },
+    {
+     "step": 5,
+     "at": "2026-11-04T16:23:30Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Total $40.95 with shipping",
+     "amountCents": 4095
+    },
+    {
+     "step": 6,
+     "at": "2026-11-04T16:24:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $40.95",
+     "amountCents": 4095
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T16:40:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Yay, thank you for shopping small!"
+    },
+    {
+     "step": 8,
+     "at": "2026-11-04T16:41:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Order confirmation forwarded to the buyer"
+    }
+   ],
+   "storeRecord": [
+    "Hey there! Your two SPF 50 tubes (100 ml each) went out Tuesday by USPS.",
+    "I tucked in three tinted-moisturizer samples on the house, hope you like them!",
+    "- Mara, Glow & Co"
+   ],
+   "complaint": "There were moisturizer samples in my package that I never ordered. I don't want shops adding things to my orders, so I want a refund.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Glow & Co Mineral Sunscreen SPF 50, 100 ml x2"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Glow & Co Mineral Sunscreen SPF 50, 100 ml x2"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Total $40.95 with shipping"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "zinc oxide 20%, no chemical UV filters"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $40.95"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Your two SPF 50 tubes (100 ml each) went out Tuesday by USPS."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "Both tubes were ordered, charged and shipped as submitted and the mandate holds; the samples were given on the house and charged to no one, so R4 makes the buyer responsible."
+  },
+  {
+   "id": "Z-B08",
+   "title": "Agent paid for an office chair when told to ask first",
+   "instruction": "Find me an ergonomic mesh office chair under $250 and put it in the cart. Check with me before paying.",
+   "conditions": {
+    "item": "ergonomic mesh office chair",
+    "quantity": 1,
+    "maxTotalCents": 25000,
+    "exclusions": [],
+    "purchaseAuthorized": false
+   },
+   "store": {
+    "id": "deskwise",
+    "name": "Deskwise"
+   },
+   "cart": [
+    {
+     "sku": "CHAIR-MESH-ERG",
+     "name": "Deskwise ErgoMesh Chair",
+     "qty": 1,
+     "unitCents": 21900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1500
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "CHAIR-MESH-ERG",
+     "name": "Deskwise ErgoMesh Chair",
+     "qty": 1,
+     "unitCents": 21900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1500
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-05T13:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "ergonomic mesh office chair"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-05T13:01:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Deskwise ErgoMesh Chair, mesh back, adjustable lumbar, $219.00"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-05T13:02:10Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Deskwise ErgoMesh Chair x1",
+     "sku": "CHAIR-MESH-ERG",
+     "qty": 1,
+     "amountCents": 21900
+    },
+    {
+     "step": 4,
+     "at": "2026-11-05T13:02:50Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Freight shipping $15.00, total $234.00"
+    },
+    {
+     "step": 5,
+     "at": "2026-11-05T13:03:20Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Proceeding to checkout, total $234.00",
+     "amountCents": 23400
+    },
+    {
+     "step": 6,
+     "at": "2026-11-05T13:03:45Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $234.00 with the saved PayPal wallet",
+     "amountCents": 23400
+    },
+    {
+     "step": 7,
+     "at": "2026-11-05T13:20:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Chair order received, ships by freight in 3-5 days."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-05T13:21:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Chair purchased; delivery in 3-5 days."
+    },
+    {
+     "step": 9,
+     "at": "2026-11-05T13:40:00Z",
+     "actor": "user",
+     "action": "message",
+     "content": "I wanted to look at it before you bought anything."
+    }
+   ],
+   "storeRecord": [
+    "Deskwise Invoice DW-7713",
+    "ErgoMesh Chair x1 ... $219.00",
+    "Freight ... $15.00",
+    "Delivered 11/09, signed by resident"
+   ],
+   "complaint": "I told the agent to check with me before paying and it bought the chair anyway. I want the $234 back.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "no",
+     "mandate",
+     "May the agent pay without asking again: no"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Deskwise ErgoMesh Chair x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Deskwise ErgoMesh Chair x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Freight shipping $15.00, total $234.00"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "ErgoMesh Chair x1 ... $219.00"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Delivered 11/09, signed by resident"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 6,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Paid $234.00 with the saved PayPal wallet",
+   "firstDeviationCondition": "purchaseAuthorized",
+   "why": "The mandate does not let the agent pay, yet step 6 paid; the store charged and delivered exactly the chair, so R2 makes the agent responsible."
+  },
+  {
+   "id": "Z-B09",
+   "title": "Rain jacket paid, store sends only a payment receipt",
+   "instruction": "Order a women's packable rain jacket in navy, size S. No down fill. Up to $100.",
+   "conditions": {
+    "item": "women's packable rain jacket, size S, navy",
+    "quantity": 1,
+    "maxTotalCents": 10000,
+    "exclusions": [
+     "down fill"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "northvale",
+    "name": "Northvale Outfitters"
+   },
+   "cart": [
+    {
+     "sku": "JKT-RAIN-S-NVY",
+     "name": "Northvale Packable Rain Jacket, Women's S, Navy",
+     "qty": 1,
+     "unitCents": 8499
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 701
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "JKT-RAIN-S-NVY",
+     "name": "Northvale Packable Rain Jacket, Women's S, Navy",
+     "qty": 1,
+     "unitCents": 8499
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 701
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-01T10:10:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "women's packable rain jacket navy"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-01T10:11:20Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Northvale Packable Rain Jacket, Women's, navy, sizes XS-XL, $84.99, synthetic shell and lining"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-01T10:12:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Northvale Packable Rain Jacket, Women's S, Navy x1",
+     "sku": "JKT-RAIN-S-NVY",
+     "qty": 1,
+     "amountCents": 8499
+    },
+    {
+     "step": 4,
+     "at": "2026-11-01T10:12:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Free shipping applied; tax $7.01"
+    },
+    {
+     "step": 5,
+     "at": "2026-11-01T10:13:10Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $92.00",
+     "amountCents": 9200
+    },
+    {
+     "step": 6,
+     "at": "2026-11-01T10:13:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $92.00 via PayPal",
+     "amountCents": 9200
+    },
+    {
+     "step": 7,
+     "at": "2026-11-01T10:30:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Payment received, thank you for your order."
+    }
+   ],
+   "storeRecord": [
+    "NORTHVALE OUTFITTERS - RECEIPT",
+    "Ref NV-118842",
+    "Amount received: $92.00 (PayPal)",
+    "Status: PAID"
+   ],
+   "complaint": "The jacket never arrived. When I ask the store, they just send me the same payment receipt again.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Northvale Packable Rain Jacket, Women's S, Navy x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Northvale Packable Rain Jacket, Women's S, Navy x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Checkout total $92.00"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "synthetic shell and lining"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Amount received: $92.00 (PayPal)"
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "none",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "The agent kept every slot and the charge matches the cart, but the store's receipt only confirms payment and says nothing about shipping, so fulfilment is unknown and R3 leaves it undetermined."
+  },
+  {
+   "id": "Z-B10",
+   "title": "Store cancelled trail shoes after charging",
+   "instruction": "Buy me the Ridgeline trail running shoes, men's size 10. Budget $150.",
+   "conditions": {
+    "item": "trail running shoes, men's size 10",
+    "quantity": 1,
+    "maxTotalCents": 15000,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "stridelab",
+    "name": "Stride Lab"
+   },
+   "cart": [
+    {
+     "sku": "SHOE-TR-10",
+     "name": "Stride Lab Ridgeline Trail Shoe, Men's 10",
+     "qty": 1,
+     "unitCents": 12900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 800
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SHOE-TR-10",
+     "name": "Stride Lab Ridgeline Trail Shoe, Men's 10",
+     "qty": 1,
+     "unitCents": 12900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 800
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-10-30T08:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "men's trail running shoes size 10 Ridgeline"
+    },
+    {
+     "step": 2,
+     "at": "2026-10-30T08:01:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Stride Lab Ridgeline Trail Shoe, men's sizes 8-13, $129.00, size 10 shown as available"
+    },
+    {
+     "step": 3,
+     "at": "2026-10-30T08:02:15Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Stride Lab Ridgeline Trail Shoe, Men's 10 x1",
+     "sku": "SHOE-TR-10",
+     "qty": 1,
+     "amountCents": 12900
+    },
+    {
+     "step": 4,
+     "at": "2026-10-30T08:02:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $137.00",
+     "amountCents": 13700
+    },
+    {
+     "step": 5,
+     "at": "2026-10-30T08:03:20Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $137.00 with the saved wallet",
+     "amountCents": 13700
+    },
+    {
+     "step": 6,
+     "at": "2026-10-30T15:45:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SL-5521 cancelled: size 10 is out of stock. Refund will be processed in 5-7 business days."
+    },
+    {
+     "step": 7,
+     "at": "2026-10-30T15:50:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Told the buyer the store cancelled the order after payment"
+    },
+    {
+     "step": 8,
+     "at": "2026-11-06T09:00:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Asked the store for the refund reference; no reply yet"
+    }
+   ],
+   "storeRecord": [
+    "SL-5521 | paid $137.00 | status CANCELLED (OOS) | refund: not issued"
+   ],
+   "complaint": "The store cancelled my shoe order but kept my $137. It's been ten days and nothing came back.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Stride Lab Ridgeline Trail Shoe, Men's 10 x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Stride Lab Ridgeline Trail Shoe, Men's 10 x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Checkout total $137.00"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "SL-5521 | paid $137.00"
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "status CANCELLED (OOS) | refund: not issued"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 6,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Order SL-5521 cancelled: size 10 is out of stock",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "The agent's order kept the mandate, but at step 6 the store cancelled after taking payment and its record shows no refund; a cancellation after charging fails storeFulfilledAsOrdered, so R1 makes the store responsible."
+  },
+  {
+   "id": "Z-B11",
+   "title": "Scented day cream bought for a buyer who ruled out fragrance",
+   "instruction": "I need a face moisturizer, nothing with fragrance, my skin reacts to it. Under $40.",
+   "conditions": {
+    "item": "face moisturizer",
+    "quantity": 1,
+    "maxTotalCents": 4000,
+    "exclusions": [
+     "fragrance"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "petaltheory",
+    "name": "Petal Theory"
+   },
+   "cart": [
+    {
+     "sku": "CRM-ROSE",
+     "name": "Petal Theory Rose Day Cream 50 ml",
+     "qty": 1,
+     "unitCents": 2600
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "CRM-ROSE",
+     "name": "Petal Theory Rose Day Cream 50 ml",
+     "qty": 1,
+     "unitCents": 2600
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-02T19:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "face moisturizer for sensitive skin"
+    },
+    {
+     "step": 2,
+     "at": "2026-11-02T19:01:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Petal Theory Unscented Daily Moisturizer 50 ml, $27.00, currently out of stock"
+    },
+    {
+     "step": 3,
+     "at": "2026-11-02T19:02:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Petal Theory Rose Day Cream 50 ml, $26.00, contains rose fragrance oil"
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T19:02:40Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Petal Theory Rose Day Cream 50 ml x1, contains rose fragrance oil",
+     "sku": "CRM-ROSE",
+     "qty": 1,
+     "amountCents": 2600
+    },
+    {
+     "step": 5,
+     "at": "2026-11-02T19:03:20Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $30.50",
+     "amountCents": 3050
+    },
+    {
+     "step": 6,
+     "at": "2026-11-02T19:03:50Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $30.50 via PayPal",
+     "amountCents": 3050
+    },
+    {
+     "step": 7,
+     "at": "2026-11-02T19:30:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Your cream ships today!"
+    },
+    {
+     "step": 8,
+     "at": "2026-11-02T19:31:00Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Order placed; tracking will follow"
+    }
+   ],
+   "storeRecord": [
+    "Petal Theory packing slip #PT-3390",
+    "Rose Day Cream 50 ml - qty 1 - packed",
+    "Shipped 11/03 USPS"
+   ],
+   "complaint": "I'm sensitive to fragrance and said so. The cream that came smells strongly of roses and my skin broke out.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Petal Theory Rose Day Cream 50 ml x1"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Petal Theory Rose Day Cream 50 ml x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Checkout total $30.50"
+    ],
+    "exclusionsRespected": [
+     "no",
+     "agent_log",
+     "Added Petal Theory Rose Day Cream 50 ml x1, contains rose fragrance oil"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $30.50 via PayPal"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Rose Day Cream 50 ml - qty 1 - packed"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 4,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Added Petal Theory Rose Day Cream 50 ml x1, contains rose fragrance oil",
+   "firstDeviationCondition": "exclusionsRespected",
+   "why": "The buyer ruled out fragrance and step 4 added a cream that contains rose fragrance oil; the store charged and shipped that cream as ordered, so R2 makes the agent responsible."
+  },
+  {
+   "id": "Z-B12",
+   "title": "Puzzle bought for a vague 'toy she will like' instruction",
+   "instruction": "Get a toy my 6-year-old niece will like, nothing that needs batteries, under $40.",
+   "conditions": {
+    "item": "a toy my 6-year-old niece will like",
+    "quantity": 1,
+    "maxTotalCents": 4000,
+    "exclusions": [
+     "anything with batteries"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "littleorbit",
+    "name": "Little Orbit Toys"
+   },
+   "cart": [
+    {
+     "sku": "PZL-OCEAN",
+     "name": "Wooden Ocean Animals Puzzle (24 pcs)",
+     "qty": 1,
+     "unitCents": 2199
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "PZL-OCEAN",
+     "name": "Wooden Ocean Animals Puzzle (24 pcs)",
+     "qty": 1,
+     "unitCents": 2199
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-10-29T17:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "toys for 6 year old girl no batteries"
+    },
+    {
+     "step": 2,
+     "at": "2026-10-29T17:01:30Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Wooden Ocean Animals Puzzle (24 pcs), ages 4-7, no batteries needed, $21.99"
+    },
+    {
+     "step": 3,
+     "at": "2026-10-29T17:02:10Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added Wooden Ocean Animals Puzzle (24 pcs) x1",
+     "sku": "PZL-OCEAN",
+     "qty": 1,
+     "amountCents": 2199
+    },
+    {
+     "step": 4,
+     "at": "2026-10-29T17:02:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $27.98",
+     "amountCents": 2798
+    },
+    {
+     "step": 5,
+     "at": "2026-10-29T17:03:15Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $27.98",
+     "amountCents": 2798
+    },
+    {
+     "step": 6,
+     "at": "2026-10-29T18:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Puzzle shipped, enjoy!"
+    }
+   ],
+   "storeRecord": [
+    "LOT-2290 Wooden Ocean Animals Puzzle 24pc x1 SHIPPED 10/30"
+   ],
+   "complaint": "My niece already has a puzzle like this and isn't interested. The agent should have picked something she'd actually like.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "unknown",
+     "none",
+     ""
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added Wooden Ocean Animals Puzzle (24 pcs) x1"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Checkout total $27.98"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "no batteries needed"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "agent_log",
+     "Paid $27.98"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Wooden Ocean Animals Puzzle 24pc x1 SHIPPED 10/30"
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "'A toy she will like' cannot be checked against any record, so itemMatchesMandate stays unknown; every other fact holds, and R3 leaves it undetermined."
+  }
+ ]
+}
