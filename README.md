@@ -2,11 +2,16 @@
 
 **Trust the buyer first. If that was wrong, give notice and take it back.**
 
+**Demo: https://refund-first-desk.onrender.com** (PayPal sandbox)
+
 When an AI shopping agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Then the records are checked. Only if the check finds the buyer responsible does the buyer get a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never more than was refunded. In every other ending the buyer keeps the refund.
 
 1. **Refund first.** PayPal's refund status is COMPLETED before any check starts (within the limits; sandbox runs 1.87–3.17 s).
 2. **Then check.** The AI's verdict and fixed rules in code; money moves only when they agree.
 3. **Take it back, only if the buyer was responsible.** Notice, 5 business days to dispute, then the wallet that paid is charged again.
+
+- **A live agent that really shops:** Claude takes the buyer's instruction, shops a small catalog we wrote one tool call at a time, and pays from the saved sandbox wallet if it decides to; the investigator reads that numbered log as it reads the prepared cases ([more](#a-live-agent-that-really-shops)).
+- **A case book and a limit set by the buyer's own record:** every finished case lands in a case book that shows whoever runs the agent which conditions it broke at which step. The buyer's instant-refund limit moves with that buyer's own past cases, by fixed rules in code; the AI never sets it ([more](#the-case-book-what-to-fix-in-the-agent)).
 
 The refund can come first because it can be taken back: the buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and money moves only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies that pattern to purchases made by AI agents, by rule and before the check.
 
@@ -16,7 +21,7 @@ Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) a
 
 ## Try the demo
 
-**https://refund-first-desk.onrender.com** (PayPal sandbox). To keep the demo fast and its AI bill bounded, the prepared cases replay Claude's recorded answers from our live runs, and the screen says "recorded answer replayed". Edit the buyer's sentence before pressing **Report it** and the deep check calls Claude live for that case.
+The demo (link at the top) runs in the PayPal sandbox. To keep the demo fast and its AI bill bounded, the prepared cases replay Claude's recorded answers from our live runs, and wherever the screen names the model (the header, the quick check, the deep check and the AI key) it adds "recorded answer replayed". Edit the buyer's sentence before pressing **Report it** and the deep check calls Claude live for that case.
 
 To watch a real agent make the purchase first, use **Watch a live AI agent shop** at the top: pick an instruction (or write your own), approve the conditions, and run the **careful** or the **hasty** agent. Claude shops a small catalog we wrote, one tool call per step, and pays from the saved sandbox wallet if it decides to. Then report it in one sentence, as below. See [A live agent that really shops](#a-live-agent-that-really-shops).
 
@@ -92,34 +97,34 @@ The record also moves the next purchase's instant-refund limit, by fixed rules i
 
 ## Measurements
 
-All in the PayPal sandbox with live Claude calls (`claude-haiku-5-5`, no recorded answers replayed), 2026-11-10. **The 30 cases, the agents' action logs and the answer key were written by us for this demo.** The answer key was fixed before the live AI first ran on these cases (SHA-256 of `scenarios/cases.json`: `5873cb94…447d`). Targets were written down before measuring.
+All in the PayPal sandbox with live Claude calls (`claude-haiku-5-5`, no recorded answers replayed). The table shows run 4, measured on 2026-11-12 at commit `7a3ebfb`. **The 30 cases, the agents' action logs and the answer key were written by us for this demo.** The answer key was fixed before the live AI first ran on these cases (SHA-256 of `scenarios/cases.json`: `5873cb94…447d`). Targets were written down before measuring.
 
 | What | Target | Result |
 |---|---|---|
 | What the buyer has to do | one sentence | one sentence |
-| Report → PayPal refund status COMPLETED, within the limits | every run ≤ 60 s | 1.87–3.17 s (26/26) |
+| Report → PayPal refund status COMPLETED, within the limits | every run ≤ 60 s | 1.99–3.19 s (26/26) |
 | Refund completed before any check started, within the limits | every case | 26/26 |
-| Over the limits, buyer not responsible: report → refund COMPLETED | ≤ 5 min | 2.5–14.3 s (3/3); the buyer-responsible case got no refund (1/1) |
-| Verdicts matching the answer key where both keys agreed | ≥ 27 of 30 | 29/30; the 30th went to a person (keys disagreed), counted as wrong |
-| First step where the agent left the mandate, matching the answer key | ≥ 27 of 30 | 30/30 after tuning the prompt twice on these same 30 cases (27/30, 25/28 and 27/30 before); 10/10 on 10 new hold-out cases, see below |
-| Keys disagree: no money moves, case waits for a person | 0 money moves | 0 (1 case in the person queue; 3 deliberate disagreements in the tests) |
+| Over the limits, buyer not responsible: report → refund COMPLETED | ≤ 5 min | 4.1–13.6 s (3/3); the buyer-responsible case got no refund (1/1) |
+| Verdicts matching the answer key where both keys agreed | ≥ 27 of 30 | 28/30; S14 and S22 went to a person (keys disagreed), counted as wrong |
+| First step where the agent left the mandate, matching the answer key | ≥ 27 of 30 | 29/30 (S28 answered "no step off"); 30/30 in runs 2 and 3. All after tuning the prompt twice on these same 30 cases (27/30, 25/28 and 27/30 before); 10/10 on 10 new hold-out cases, see below |
+| Keys disagree: no money moves, case waits for a person | 0 money moves | 0 (2 cases in the person queue; 3 deliberate disagreements in the tests) |
 | Quick check closes a buyer-responsible case | 0 | 0 of 6 |
 | Quick check closes the cases marked for it in the answer key | ≥ 90 %, all 7 that code alone can show | 12/12, 7/7 |
-| Refund completed → "you will not be charged again" notice | ≤ 10 s | median 0.9 s, max 3.8 s (12/12); in one of the two runs after tuning, one notice took 13.5 s because a single AI reply was slow |
+| Refund completed → "you will not be charged again" notice | ≤ 10 s | median 1.0 s, max 3.2 s (12/12); in run 1 after tuning, one notice took 13.5 s because a single AI reply was slow |
 | Buyer charged again when responsible, from the saved wallet, buyer not present | confirmed by PayPal lookup | 4 of 4 (a 5th was stopped by the buyer's dispute) |
 | Buyer charged again when not responsible | 0 | 0 |
 | Failure and abuse conditions reproduced on the sandbox | no unconsented, duplicate or over-cap charge | 9/9 |
 | Ledger equals PayPal lookups for the buyer, the store and PayPal's fees (the desk's own two accounts are not compared) | every order | 30/30 (30-case run), 10/10 (abuse run) |
 
-Reported without a target: the two keys agreed on 97 % of cases; the deep check took 5.9–11.5 s (median 7.7 s); two simple rules ("the last step" and "the first pay or checkout step") found the first wrong step in 0/30 and 2/30 cases; the live AI cost about $0.0017 per case.
+Reported without a target: the two keys agreed on 93 % of cases (28/30); the deep check took 5.6–12.1 s (median 7.9 s); two simple rules ("the last step" and "the first pay or checkout step") found the first wrong step in 0/30 and 2/30 cases; the live AI cost about $0.0017 per case (from the 2026-11-10 run; the run 4 evidence file holds no cost figure).
 
 How the table was reached, run by run (all on the same 30 cases and the same fixed answer key):
 
 - Untuned prompt, three runs: first step 27/30, 25/28 and 27/30. The first sandbox run also had 2 cases stopped by sandbox errors (the desk's sandbox PayPal balance was short, so PayPal refused one refund and left two pending); we topped the sandbox balance up and ran again.
 - The misses fell into three kinds: calling a store-only problem (seen only in the store record) a step, counting "opened checkout" instead of "paid" as the step, and not knowing when the records are too thin to tell. The answer key's rules for these were written before the AI first ran; the prompt had not stated them. We added them to the prompt, and fixed one wording slip that a second run exposed (a store step that cancels after charging). **These numbers come after tuning on the same 30 cases.**
-- Tuned prompt on the 30 cases: run 1 first step 29/30 (one notice at 13.5 s, line above); run 2 first step 30/30 and every line passed. The table shows run 2.
+- Tuned prompt on the 30 cases: run 1 first step 29/30 (one notice at 13.5 s, line above); run 2 first step 30/30 and every line passed.
 - After the store-payout and screen fixes (same prompt, same 30 cases): run 3 first step 30/30, verdicts 29/30 (S22 to a person), every line passed; refund 1.88–3.09 s (26/26), notice max 3.0 s, over the limits 3.3–13.2 s, ledger 30/30; abuse 9/9, ledger 10/10. Two earlier runs of this build did not finish: one hit a PayPal 503 on a lookup after the money had moved (S28), and in the other the desk's sandbox PayPal balance ran out, so PayPal left refunds pending (19 cases stopped). We topped the sandbox balance up before run 3.
-- After merging the case book and the live agent (2026-11-12, same prompt, same 30 cases; each case has its own buyer, so no limit moved): run 4 first step 29/30 (S28 answered "no step off"; S28 has varied between runs before), verdicts 28/30 (S14 and S22 went to a person because the keys disagreed; no money moved for either), every line passed; refund 1.99–3.19 s (26/26), notice max 3.2 s, over the limits 4.1–13.6 s, ledger 30/30; abuse 9/9, ledger 10/10.
+- After merging the case book and the live agent (2026-11-12, same prompt, same 30 cases; each case has its own buyer, so no limit moved): run 4 first step 29/30 (S28 answered "no step off"; S28 has varied between runs before), verdicts 28/30 (S14 and S22 went to a person because the keys disagreed; no money moved for either), every line passed; refund 1.99–3.19 s (26/26), notice max 3.2 s, over the limits 4.1–13.6 s, ledger 30/30; abuse 9/9, ledger 10/10. The table above shows this run.
 - The money paths (store payouts that fail, wait or lose their answer, the 30-day boundary, prepaid stores) were cross-checked by an outside reviewer (Codex) three times. Every finding was fixed with a test that failed first; the six findings of the third check are confirmed by those tests only, with no fourth review.
 - Hold-out: 10 new cases written by a writer who had not seen the prompt, answer key fixed before any AI run (`scenarios/holdout.json`). Untuned prompt 7/10 on the first step, missing exactly the three kinds above; tuned prompt 10/10 in three runs; verdicts 10/10 in every run.
 
@@ -157,6 +162,7 @@ On the hosted demo the live agent is capped: 15 runs a day for all visitors, 3 p
 
 - **Simulated:** shipping and returns; the store's records; waiting periods (a fast-forward button moves the policy clock only); the agent operator paying its invoice.
 - **Constructed by us:** the 30 cases, the agents' numbered action logs, the store records and the answer key. For the live agent: the catalog, its stores and the 4 prepared instructions (the live agent's log is its own).
+- **Fast-forward and the counting windows:** the 30-day instant-refund count and the 180-day record window compare the policy clock with the real time each case was reported. Pressing fast-forward several times moves only the policy clock, so on the demo earlier cases can drop out of those windows too early. Without fast-forward, as in real use, the two clocks are the same and this does not happen.
 - **Sandbox only:** charging a saved PayPal wallet without the buyer present requires PayPal's approval (billing agreements / reference transactions) on live accounts.
 - **Policy numbers are assumptions:** $50 per case, 2 instant refunds per 30 days, 5 business days' notice (the same notice period PayPal's buyer protection terms give before recovering a temporary refund). The way a buyer's record moves the limit (±$25 and ±1 refund per case, at most two cases up, 180 days) is an assumption too, not based on measured abuse or loss data; all of it is in settings (`POLICY_TRUST_*`).
 
@@ -181,7 +187,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 112 tests against an in-memory PayPal stand-in
+npm test                       # 151 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 
@@ -201,7 +207,7 @@ Scripts: `node scripts/loop.mjs` (cases end to end on the sandbox), `node script
 
 ## Evidence
 
-Measured on 2026-11-10 with the scripts above; each run writes a JSON file with every PayPal call, the ledger and the case records to `data/evidence/` (not committed, because it holds sandbox account identifiers). Recorded answers from the live AI runs are in `scenarios/recorded/`, keyed by a hash of the records the AI read.
+Measured on 2026-11-10 and 2026-11-12 with the scripts above; each run writes a JSON file with every PayPal call, the ledger and the case records to `data/evidence/` (not committed, because it holds sandbox account identifiers). Recorded answers from the live AI runs are in `scenarios/recorded/`, keyed by a hash of the records the AI read.
 
 ## License
 

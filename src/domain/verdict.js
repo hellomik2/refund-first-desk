@@ -9,7 +9,7 @@
 //   R3  any fact is still unknown after R1 and R2                                       -> UNDETERMINED (buyer keeps the refund)
 //   R4  the order matches every slot of the mandate, the buyer approved paying,
 //       and the store delivered and charged as ordered                                 -> BUYER
-import { SHIPPING_SKU } from './agentlog.js';
+import { SHIPPING_SKU, TAX_SKU } from './agentlog.js';
 import { cartTotalCents } from './money.js';
 
 export const MANDATE_FACTS = [
@@ -89,8 +89,8 @@ export function codeFacts({ mandate, paypalOrder, agentCart }) {
     put('storeChargedAsOrdered', same, 'paypal_order', `Cart submitted by the agent ${agentTotal} cents in ${agentCart.length} lines vs PayPal order ${paypalOrder.totalCents} cents in ${paypalOrder.items.length} lines: ${same ? 'same lines and total' : 'different'}`);
   }
   if (c.quantity != null) {
-    // Only when the order holds one item (shipping aside); with more, which line counts is a judgement.
-    const items = paypalOrder.items.filter((i) => i.sku !== SHIPPING_SKU);
+    // Only when the order holds one item (shipping and tax aside); with more, which line counts is a judgement.
+    const items = paypalOrder.items.filter((i) => i.sku !== SHIPPING_SKU && i.sku !== TAX_SKU);
     if (new Set(items.map((i) => i.sku)).size === 1) {
       const qty = items.reduce((sum, i) => sum + i.qty, 0);
       put('quantityMatchesMandate', qty === c.quantity, 'paypal_order', `PayPal order quantity ${qty} vs mandate quantity ${c.quantity}`);

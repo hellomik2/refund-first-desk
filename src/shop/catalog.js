@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT } from '../config.js';
 import { fromCents } from '../domain/money.js';
-import { SHIPPING_SKU } from '../domain/agentlog.js';
+import { SHIPPING_SKU, TAX_SKU } from '../domain/agentlog.js';
 
 export function loadCatalog(root = ROOT) {
   return JSON.parse(readFileSync(join(root, 'scenarios', 'catalog.json'), 'utf8'));
@@ -68,6 +68,6 @@ export function priceCart(catalog, lines) {
   const taxCents = Math.round(subtotalCents * store.taxRate);
   const paypalCart = [...items];
   if (shippingCents) paypalCart.push({ sku: SHIPPING_SKU, name: 'Shipping', qty: 1, unitCents: shippingCents });
-  if (taxCents) paypalCart.push({ sku: 'TAX', name: 'Sales tax', qty: 1, unitCents: taxCents });
+  if (taxCents) paypalCart.push({ sku: TAX_SKU, name: 'Sales tax', qty: 1, unitCents: taxCents });
   return { store: { id: store.id, name: store.name }, items, subtotalCents, shippingCents, taxCents, totalCents: subtotalCents + shippingCents + taxCents, paypalCart };
 }

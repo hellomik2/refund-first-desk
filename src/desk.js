@@ -194,6 +194,11 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     if (mandate.status !== 'APPROVED') throw new DeskError('MANDATE_NOT_APPROVED');
     const buyer = must(S.buyers, mandate.buyerId, 'buyer');
     if (buyer.wallet?.consent !== 'ACTIVE') throw new DeskError('NO_ACTIVE_CONSENT', 'The buyer has no saved wallet with active consent');
+    // One saved-wallet charge per instruction. If an earlier answer from PayPal was lost, the money may have moved:
+    // a second request would carry a new request id and could charge again, so the desk does not send one.
+    if (Object.values(S.orders).some((o) => o.mandateId === mandate.id && (o.payment === 'SAVED_WALLET' || o.paypal))) {
+      throw new DeskError('ALREADY_PAID_ONCE', 'A payment for this instruction was already sent. The desk does not pay twice for one instruction.');
+    }
     const order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'SAVED_WALLET', scenarioId, fixtureFacts, fixtureDeep, fixtureQuick });
     S.orders[order.id] = order;
     const res = await paypal.chargeSavedWallet({

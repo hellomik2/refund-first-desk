@@ -21,10 +21,14 @@ export function costUsd({ model, inputTokens = 0, outputTokens = 0 }) {
 }
 
 const isAgent = (c) => c.purpose === 'agent';
+// Runs that have started but may not have a call in the file yet, per usage file: every workspace has its own
+// budget object over the same file, so the places held are kept here, shared by all of them.
+const startedRuns = new Map(); // file -> Set of run ids
 
 export function createAiBudget({ file, dailyCallCap, spendCapUsd }) {
   const calls = () => (existsSync(file) ? readFileSync(file, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
   const today = () => new Date().toISOString().slice(0, 10);
+  const held = startedRuns.get(file) || startedRuns.set(file, new Set()).get(file);
   return {
     record(usage) {
       mkdirSync(dirname(file), { recursive: true });
@@ -38,14 +42,22 @@ export function createAiBudget({ file, dailyCallCap, spendCapUsd }) {
       if (all.reduce((sum, c) => sum + c.usd, 0) >= spendCapUsd) return 'AI_SPEND_CAP';
       return null;
     },
-    /** @returns {string|null} why a new shopping run may not start, or null */
-    agentBlockedBy({ dailyRunCap }) {
+    /**
+     * Why a new shopping run may not start, or null. With `holdFor`, a run that may start takes its place under the
+     * daily cap in the same synchronous step, so runs started at the same moment cannot all pass. A run counts
+     * until `releaseRun`, and after that through its calls in the file.
+     * @returns {string|null}
+     */
+    agentBlockedBy({ dailyRunCap, holdFor = null }) {
       const all = calls();
       if (all.reduce((sum, c) => sum + c.usd, 0) >= spendCapUsd) return 'AI_SPEND_CAP';
       const runs = new Set(all.filter((c) => isAgent(c) && c.at.startsWith(today())).map((c) => c.runId));
+      for (const id of held) runs.add(id);
       if (runs.size >= dailyRunCap) return 'DAILY_AGENT_RUN_CAP';
+      if (holdFor) held.add(holdFor);
       return null;
     },
+    releaseRun: (runId) => held.delete(runId),
     runUsd: (runId) => calls().filter((c) => c.runId === runId).reduce((sum, c) => sum + c.usd, 0),
   };
 }

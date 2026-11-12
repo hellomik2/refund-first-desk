@@ -8,7 +8,7 @@ import { AGENTS, runShoppingAgent } from './agent.js';
 /**
  * @param {object} o
  * @param {() => Promise<{agentTurn: Function}>} o.provider  the live model (created on first use)
- * @param {{agentBlockedBy: Function, runUsd: Function}} o.budget
+ * @param {{agentBlockedBy: Function, releaseRun: Function, runUsd: Function}} o.budget
  * @param {{dailyRunCap: number, runsPerWorkspace: number, maxCalls: number}} o.caps
  */
 export function createLiveShopper({ desk, db, catalog, provider, budget, caps, beforePay = () => {} }) {
@@ -19,13 +19,29 @@ export function createLiveShopper({ desk, db, catalog, provider, budget, caps, b
     if (mandate.live.status) throw new DeskError('ALREADY_RUN', 'This instruction was already given to an agent. Start a new one.');
     const runsHere = Object.values(db.data.mandates).filter((m) => m.live?.status).length;
     if (runsHere >= caps.runsPerWorkspace) throw new DeskError('WORKSPACE_AGENT_LIMIT', `A workspace can run the live agent ${caps.runsPerWorkspace} times. Start a fresh workspace to try more.`);
-    const blocked = budget.agentBlockedBy({ dailyRunCap: caps.dailyRunCap });
-    if (blocked) throw new DeskError(blocked, blocked === 'DAILY_AGENT_RUN_CAP' ? 'The live agent has reached its daily limit. The prepared cases still run.' : 'The AI spending cap is reached.');
-
-    const model = await provider(); // before anything is marked as running: no live AI, no run
+    // From the checks to marking the run, nothing awaits: two starts at the same moment cannot both pass.
     const runId = `R${randomBytes(6).toString('hex')}`;
+    const blocked = budget.agentBlockedBy({ dailyRunCap: caps.dailyRunCap, holdFor: runId });
+    if (blocked) throw new DeskError(blocked, blocked === 'DAILY_AGENT_RUN_CAP' ? 'The live agent has reached its daily limit. The prepared cases still run.' : 'The AI spending cap is reached.');
     const live = mandate.live;
-    Object.assign(live, { kind, runId, status: 'RUNNING', startedAt: new Date().toISOString(), steps: [], calls: 0 });
+    const started = { kind, runId, status: 'RUNNING', startedAt: new Date().toISOString(), steps: [], calls: 0 };
+    Object.assign(live, started);
+    try {
+      return await runHeld(mandateId, mandate, live, started);
+    } finally {
+      budget.releaseRun(runId); // from here the run counts through its calls in the usage file
+    }
+  }
+
+  async function runHeld(mandateId, mandate, live, { kind, runId }) {
+    let model;
+    try {
+      model = await provider();
+    } catch (err) {
+      // No live AI, no run: the instruction is left as it was, to be run again.
+      for (const k of ['kind', 'runId', 'status', 'startedAt', 'steps', 'calls']) delete live[k];
+      throw err;
+    }
     db.save();
     const turn = async (params) => {
       live.calls += 1;

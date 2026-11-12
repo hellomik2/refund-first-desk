@@ -4,6 +4,7 @@
 // between the report and the check so the refund can be seen on its own; no duration shown
 // includes that wait.
 import { limitCard, refreshCaseBook } from './casebook.js';
+import { aiKeySource, aiPillText, buyerKeysLine, deepAiSource, quickAiSource } from './ailabels.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -216,7 +217,7 @@ function current() {
 function render(working = '') {
   if (!state) return;
   const cur = current();
-  $('ai-pill').textContent = state.flags.aiProvider === 'fixture' ? 'AI not connected: stand-in answers' : `AI: ${state.flags.aiModel || state.flags.aiProvider}`;
+  $('ai-pill').textContent = aiPillText(state.flags, cur.kase);
   renderCases(cur);
   refreshCaseBook(state, cases);
   renderLive(cur);
@@ -576,7 +577,7 @@ function quickCard(k, checking) {
     rows.push(factLine(key, f.value, ev?.quote, ev ? `AI, quoting ${label(DOCS_IN, ev.doc)}` : 'AI, with no quote from these two documents', q.downgraded?.includes(key)));
   }
   const aiLine = q.ai
-    ? `AI asked about item and ruled-out items${Object.keys(q.aiFacts || {}).includes('quantityMatchesMandate') ? ' and quantity' : ''} (${q.ai.provider === 'fixture' ? 'stand-in answers' : esc(q.ai.model || q.ai.provider)}).`
+    ? `AI asked about item and ruled-out items${Object.keys(q.aiFacts || {}).includes('quantityMatchesMandate') ? ' and quantity' : ''} (${quickAiSource(q.ai)}).`
     : 'Code found a mismatch first, so the AI was not asked.';
   const result = q.closed
     ? `<div class="result go"><strong>Closed in the buyer's favour.</strong> The buyer can never be charged again for this order. Who is responsible is still open: the deep check and the two keys decide that.</div>`
@@ -595,10 +596,7 @@ function deepCard(k, checking) {
     <p class="sub">${byWhom(inv)}</p>${traceHtml(k)}</div>`;
 }
 
-const byWhom = (inv) =>
-  inv.ai?.provider === 'fixture'
-    ? 'AI not connected: the investigator’s answers here are stand-ins from our answer key. Code checked the quote against that step.'
-    : `The investigator (${esc(inv.ai?.model || inv.ai?.provider || 'AI')}${inv.ai?.provider === 'recorded' ? ', recorded answer replayed' : ''}) read every record; code then checked its quote against that step.`;
+const byWhom = deepAiSource;
 
 function markQuote(line, quote) {
   const qt = String(quote || '').trim();
@@ -679,7 +677,7 @@ function keyBox(kind, key, inv) {
       <span class="kr">Rule ${esc(key.rule)}. ${esc(label(RULES, key.rule))}</span>${reasons ? `<ul class="kreasons">${reasons}</ul>` : ''}</div>`;
   }
   // The AI key shows its conclusion only. Its own wording is not put on screen as an argument.
-  const src = key.source === 'fixture-default' ? 'Stand-in: no hand-written verdict, so it reads the records the way the rules do' : inv.ai?.provider === 'fixture' ? 'Stand-in answer from our answer key (AI not connected)' : `The investigator, ${esc(inv.ai?.model || inv.ai?.provider || 'AI')}`;
+  const src = aiKeySource(key, inv);
   return `<div class="key k-ai"><span class="kh">AI key: the investigator's verdict</span><strong>${esc(label(WHO_SHORT, key.liable))}</strong><span class="kr">${src}</span></div>`;
 }
 
@@ -709,7 +707,7 @@ function keysCard(k, order, working) {
     const list = moved.length ? movedList(moved) : '<p class="sub">Nothing has moved yet.</p>';
     if (v.rule === 'R0') outcome = `<div class="result"><strong>The records could not be tied together.</strong> Neither key is used; the buyer keeps the refund.</div>${list}`;
     else if (v.rule === 'OPERATOR') outcome = `<div class="result wait"><strong>The keys differed. A person chose ${esc(label(WHO_SHORT, v.liable).toLowerCase())}</strong> at ${time(v.decidedAt)}${v.note ? `: <q>${esc(v.note)}</q>` : '.'} Ledger lines since that choice:</div>${list}`;
-    else if (v.liable === 'BUYER') outcome = `<div class="result"><strong>Both keys name the buyer.</strong> That only sends a notice. The re-charge waits for the notice period and stops on a dispute. Ledger lines since the keys agreed:</div>${list}`;
+    else if (v.liable === 'BUYER') outcome = `<div class="result"><strong>Both keys name the buyer.</strong> ${buyerKeysLine(k)} Ledger lines since the keys agreed:</div>${list}`;
     else outcome = `<div class="result go"><strong>${v.liable === 'UNDETERMINED' ? 'Both keys say nobody can be named, so the desk absorbs it.' : `Both keys name ${esc(label(WHO_IN, v.liable))}.`}</strong> Only then did the desk act. Ledger lines since the keys agreed:</div>${list}`;
   }
   return `<div class="card stage-card"><h3>Two keys</h3>${keysPair(inv)}${outcome}${factsAndRecords(inv)}</div>`;

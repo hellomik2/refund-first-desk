@@ -7,6 +7,7 @@
 import { fromCents } from './money.js';
 
 export const SHIPPING_SKU = 'SHIP';
+export const TAX_SKU = 'TAX';
 
 /** Older logs are plain strings: each string is one "message" step by the agent. */
 export function normalizeAgentLog(log = []) {
