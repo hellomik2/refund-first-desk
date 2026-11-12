@@ -56,5 +56,6 @@ details.card.fold[open] > summary { margin-bottom: var(--s3); }
 
 @media (max-width: 760px) {
   .moment { padding: var(--s5); }
+  .moment .row > button { flex: 1 1 100%; } /* one action per line, so a label never wraps into a narrow column */
   .seq li { grid-template-columns: 1fr; gap: 0; }
 }
