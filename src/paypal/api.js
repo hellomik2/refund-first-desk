@@ -157,6 +157,7 @@ export function readCapture(capture) {
     status: capture.status,
     grossCents: toCents(capture.amount.value),
     feeCents: breakdown.paypal_fee ? toCents(breakdown.paypal_fee.value) : null,
+    netCents: breakdown.net_amount ? toCents(breakdown.net_amount.value) : null, // what reached the desk's PayPal account
     customId: capture.custom_id || null,
     invoiceId: capture.invoice_id || null,
   };
@@ -169,6 +170,8 @@ export function readRefund(refund) {
     status: refund.status,
     amountCents: refund.amount ? toCents(refund.amount.value) : null,
     totalRefundedCents: breakdown.total_refunded_amount ? toCents(breakdown.total_refunded_amount.value) : null,
+    feeReturnedCents: breakdown.paypal_fee ? toCents(breakdown.paypal_fee.value) : null, // part of the capture fee PayPal gave back
+    netCents: breakdown.net_amount ? toCents(breakdown.net_amount.value) : null, // what left the desk's PayPal account
     createTime: refund.create_time || null,
   };
 }

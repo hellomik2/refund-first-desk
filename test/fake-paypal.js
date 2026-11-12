@@ -53,7 +53,7 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
 
   function capture(o) {
     const grossCents = cents(o.unit.amount.value);
-    const cap = { id: id('CAP'), status: api.captureStatus, grossCents, feeCents: fee(grossCents), custom_id: o.unit.custom_id, invoice_id: o.unit.invoice_id, at: new Date().toISOString(), refundedCents: 0 };
+    const cap = { id: id('CAP'), status: api.captureStatus, grossCents, feeCents: fee(grossCents), netShortCents: api.captureNetShortCents, custom_id: o.unit.custom_id, invoice_id: o.unit.invoice_id, at: new Date().toISOString(), refundedCents: 0 };
     state.captures.set(cap.id, cap);
     o.captureId = cap.id;
     o.status = 'COMPLETED';
@@ -102,7 +102,7 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
     },
     async getCapture(captureId) {
       const cap = state.captures.get(captureId);
-      return ok({ id: cap.id, status: cap.status, amount: usd(cap.grossCents), custom_id: cap.custom_id, invoice_id: cap.invoice_id, seller_receivable_breakdown: { paypal_fee: usd(cap.feeCents) } });
+      return ok({ id: cap.id, status: cap.status, amount: usd(cap.grossCents), custom_id: cap.custom_id, invoice_id: cap.invoice_id, seller_receivable_breakdown: { gross_amount: usd(cap.grossCents), paypal_fee: usd(cap.feeCents), net_amount: usd(cap.grossCents - cap.feeCents - (cap.netShortCents || 0)) } });
     },
     async refundCapture(captureId, { requestId, amountCents } = {}) {
       state.log.push('refundCapture');
@@ -117,13 +117,17 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
         cap.refundedCents += amount;
         // api.refundsPending mimics the sandbox when the merchant balance is short: PayPal accepts the
         // refund and funds it by eCheck, so the lookup says PENDING (reason ECHECK) for a while.
-        const refund = { id: id('REF'), status: api.refundsPending ? 'PENDING' : 'COMPLETED', amountCents: amount, at: new Date().toISOString() };
+        const refund = { id: id('REF'), status: api.refundsPending ? 'PENDING' : 'COMPLETED', amountCents: amount, feeReturnedCents: api.refundFeeReturnedCents, at: new Date().toISOString() };
         state.refunds.set(refund.id, refund);
         return refund;
       });
       return ok(refundBody(r), 201);
     },
     async getRefund(refundId) {
+      if (api.failNextGetRefund) {
+        api.failNextGetRefund = false;
+        throw new Error('network error while looking up the refund');
+      }
       return ok(refundBody(state.refunds.get(refundId)));
     },
     async deletePaymentToken(vaultId) {
@@ -177,10 +181,15 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
     };
   }
   function refundBody(r) {
-    return { id: r.id, status: r.status, amount: usd(r.amountCents), seller_payable_breakdown: { total_refunded_amount: usd(r.amountCents) }, create_time: r.at };
+    // As the sandbox answers: paypal_fee is the fee PayPal gives back (0.00 in every sandbox refund we looked up), net_amount what left the desk.
+    const back = r.feeReturnedCents || 0;
+    return { id: r.id, status: r.status, amount: usd(r.amountCents), seller_payable_breakdown: { gross_amount: usd(r.amountCents), paypal_fee: usd(back), net_amount: usd(r.amountCents - back), total_refunded_amount: usd(r.amountCents) }, create_time: r.at };
   }
 
   api.refundsPending = false;
+  api.refundFeeReturnedCents = 0; // part of the capture fee PayPal gives back on each later refund
+  api.captureNetShortCents = 0; // later captures report a net amount this much below gross minus fee
+  api.failNextGetRefund = false;
   // PENDING mimics a capture PayPal accepted but has not credited yet (for example an eCheck); DECLINED or FAILED a clear failure.
   api.captureStatus = 'COMPLETED';
   /** PayPal finishes captures that were still pending: every PENDING capture (and its order) becomes COMPLETED. */
