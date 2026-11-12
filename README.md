@@ -4,6 +4,21 @@
 
 **Demo: https://refund-first-desk.onrender.com** (PayPal sandbox)
 
+![The buyer reported it and the money went back first: PayPal refund status COMPLETED 2.87 s after the report, while the deep check is still reading](docs/img/refund-first.png)
+
+*The refund comes first: PayPal's refund status is COMPLETED 2.87 s after the report, while the deep check is still reading the records.*
+
+![Here the buyer was responsible: the rules key and the AI key both say Buyer, so the buyer gets a notice and 5 business days to dispute before any re-charge](docs/img/two-keys-notice.png)
+
+*Then the two keys: fixed rules in code and the AI investigator (here a recorded answer replayed) both name the buyer, so the buyer gets a notice and 5 business days to dispute before the saved wallet is charged again.*
+
+**For judges, four steps on the demo** (the case in the two screenshots):
+
+1. Open the demo. It runs on Render's free plan: if you see a Render loading page, wait and refresh; waking up can take up to about two minutes.
+2. Pick *Order matches what the buyer approved*, press **Approve these conditions**, then **Let the agent shop and pay**.
+3. Press **Report it**. The refund completes in seconds, then the quick check, the deep check and the two keys run.
+4. Both keys name the buyer, so a notice comes first. Press **Fast-forward the notice period**: the saved sandbox wallet is charged again, never for more than was refunded.
+
 When an AI shopping agent buys the wrong thing, PayPal refunds the buyer within seconds, before the purchase is checked. The records are checked afterwards. If the check finds the buyer responsible, the buyer gets a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never for more than was refunded. In every other outcome the buyer keeps the refund.
 
 1. **Refund first.** PayPal's refund status is COMPLETED before the purchase is checked (within the limits; sandbox runs 1.99–3.19 s).
@@ -17,13 +32,13 @@ The desk also has:
 
 The refund can come first because it can be taken back. The buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and a re-charge happens on its own only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies the same pattern to purchases made by AI agents, by rule, and before the check.
 
-Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 entries we read, we found none that refunds before the check and then has a step to take the money back from the buyer.
+Other entries in this hackathon also check agent purchases against what the buyer approved. On 2026-11-09 we found 217 public GitHub repositories by search (16 search terms, repositories updated after 2026-10-01; the hackathon's Devpost gallery was not public then) and read the READMEs of the 211 that had one. Among them we found none that refunds before the check and then has a step to take the money back from the buyer.
 
 Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) and Payouts, in the PayPal sandbox. Claude reads the purchase records, finds the first step where the agent went off what the buyer approved, and gives its own verdict. Fixed rules in code give a second verdict. A re-charge or an agent invoice happens on its own only when the two agree; otherwise a person decides. When the records cannot be tied together (rule R0), the buyer keeps the refund and the desk pays the store from its own funds.
 
 ## The problem
 
-A buyer tells an agent "compare prices, don't buy yet", and the agent buys. Or it picks the 750 ml bottle when the buyer asked for 500 ml. Today the buyer has to contact the seller, open a dispute, escalate it and answer requests for documents. PayPal says most decisions take about 14 days, and some take 30 or more. An item that arrived as described, but was not what the buyer asked the agent for, may not be covered at all.
+A buyer tells an agent "compare prices, don't buy yet", and the agent buys. Or it picks the 750 ml bottle when the buyer asked for 500 ml. Today the buyer has to contact the seller, open a dispute, escalate it and answer requests for documents. PayPal says most decisions take about 14 days, and some take 30 or more ([PayPal Help: How long does it take to resolve a dispute or claim?](https://www.paypal.com/us/cshelp/article/how-long-does-it-take-to-resolve-a-dispute-or-claim-help257)). An item that arrived as described, but was not what the buyer asked the agent for, may not be covered at all.
 
 ## Try the demo
 
@@ -38,7 +53,7 @@ To watch a real agent make the purchase first, use **Watch a live AI agent shop*
    - *Order matches what the buyer approved*: the buyer was responsible, gets a notice, and is charged again after it.
 2. Each visitor gets a separate workspace. A buyer starts with **$50 a case and 2 instant refunds per 30 days**, and the buyer's own record moves both (see [the buyer's limit](#the-case-book-and-the-buyers-limit)). If you run *Order matches what the buyer approved* to the end (fast-forward, charged again), the limit drops to $25 and 1 instant refund, which is already used, so every later purchase in that workspace is checked first. If instead two cases were the agent's fault, a $58 purchase is refunded first. To start over, press **Start a fresh workspace** (top right).
 3. For the buyer-responsible outcome, press **Fast-forward the notice period** to skip the 5-business-day notice; the saved wallet is then charged again.
-4. The server runs on Render's free plan. After a quiet spell, the first page load can take about a minute while it wakes up.
+4. The server runs on Render's free plan. After a quiet spell, the first page load can take up to about two minutes while it wakes up; if you see a Render loading page, refresh.
 
 The **Pay at PayPal and save the wallet** button shows how the wallet gets saved in the first place. On this screen we tested it only as far as PayPal's sign-in page and back through Cancel. Approving at PayPal, capturing the payment and saving the wallet were tested with the same PayPal calls in a separate test script on 2026-11-09, not through this screen. To try it, you need your own PayPal sandbox personal account, signed in at `sandbox.paypal.com` first.
 
@@ -73,7 +88,7 @@ If PayPal accepts a refund but leaves it pending, the desk looks it up again, an
 
 The buyer can dispute during the notice period, or withdraw consent; either one stops the charge for good.
 
-Pieces of this exist in other entries to this hackathon: checking the purchase against a mandate, searching for the first deviation, holding or cancelling a payment before it settles, refunding once a verdict is in, an operator making the store whole, moving money only when checks agree, and rules, then AI, then a person. What we did not find among the 217 entries we read is this order with this last step: refund first, then check, then take the money back from the buyer, after notice, and only if they were responsible.
+Pieces of this exist in other entries to this hackathon: checking the purchase against a mandate, searching for the first deviation, holding or cancelling a payment before it settles, refunding once a verdict is in, an operator making the store whole, moving money only when checks agree, and rules, then AI, then a person. What we did not find in the READMEs of those 217 repositories (GitHub search, 2026-11-09) is this order with this last step: refund first, then check, then take the money back from the buyer, after notice, and only if they were responsible.
 
 ### What the AI does, and what it never does
 
@@ -148,7 +163,7 @@ How we got to the table, run by run (all on the same 30 cases and the same fixed
 - An outside reviewer (Codex) cross-checked the money paths (store payouts that fail, wait or lose their answer, the 30-day boundary, prepaid stores) three times. Every finding was fixed with a test that failed first. The six findings of the third check are confirmed by those tests only, with no fourth review.
 - Hold-out: 10 new cases written by someone who had not seen the prompt, with the answer key fixed before any AI run (`scenarios/holdout.json`). The untuned prompt got 7/10 on the first step, missing exactly the three kinds above; the tuned prompt got 10/10 in three runs; verdicts were 10/10 in every run.
 
-Not comparable side by side: PayPal's "about 14 days" is its published guidance for real disputes; our seconds are sandbox measurements. "Refunded" means PayPal's refund status is COMPLETED. When the money appears depends on the funding source (PayPal balance the same day; bank or debit card about 5 business days; credit cards one or two statement cycles).
+Not comparable side by side: PayPal's "about 14 days" is its [published guidance](https://www.paypal.com/us/cshelp/article/how-long-does-it-take-to-resolve-a-dispute-or-claim-help257) for real disputes; our seconds are sandbox measurements. "Refunded" means PayPal's refund status is COMPLETED. When the money appears depends on the funding source (PayPal balance the same day; bank or debit card about 5 business days; credit cards one or two statement cycles).
 
 Failure and abuse conditions: the same order reported twice; the same refund request sent again; an amount over the per-case limit ($50); more instant refunds than allowed in 30 days (2); a buyer who withdrew save-for-later consent; a dispute during the notice period; records that cannot settle it; a re-charge above the amount fixed at purchase; a re-charge requested twice.
 
@@ -197,7 +212,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 185 tests against an in-memory PayPal stand-in
+npm test                       # 189 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 
