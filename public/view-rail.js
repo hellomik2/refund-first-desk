@@ -1,5 +1,6 @@
 // The line of steps at the top of a case: where this case is now, and what comes next.
 import { S, $, esc, sentences, usd, signed, time, day, secs, humanize, label, linesSince, refundTiming, REASONS, FACT_LABELS, FACT_SHORT, INTEGRITY, RULES, WHO, WHO_SHORT, WHO_IN, DOCS, DOCS_IN, NOTICES, REVIEW_REASONS, ACCOUNTS, KINDS } from './shared.js';
+import { unpaidOrderView } from './payment.js';
 
 // ---- the line: the order of operations is the product ------------------------------------------------
 const lockIcon = (open) =>
@@ -54,6 +55,7 @@ export function stations({ order, kase: k }, working) {
     st.notice = { state: 'done', sub: `dispute any time before ${day(k.notice.chargeNotBefore)}` };
     if (r?.status === 'COMPLETED') st.recharge = { state: 'charged', sub: `${usd(r.amountCents)} from the saved wallet` };
     else if (r?.status === 'HALTED') st.recharge = { state: 'halt', sub: `stopped: ${label(REASONS, r.blockedBy)}` };
+    else if (r?.status === 'UNCONFIRMED') st.recharge = { state: 'hold', sub: 'sent; PayPal has not confirmed it' };
     else st.recharge = { state: 'todo', sub: `not before ${day(k.notice.chargeNotBefore)}` };
   } else {
     st.notice = { state: 'todo', sub: 'only if both keys name the buyer' };
@@ -109,12 +111,10 @@ function scene({ mandate, order, kase: k }, working, verifyFirst) {
   }
   if (!order) return { title: 'The agent shops and pays from the saved wallet.', lead: 'Nobody is asked again at checkout.' };
   if (!order.paypal) {
-    if (order.consentCancelled) return { title: 'Cancelled at PayPal. Nothing was charged.' };
-    if (order.payment === 'CONSENT_CHECKOUT' && !order.captureSentAt && order.storePayable?.status !== 'PAYMENT_UNCONFIRMED') return { title: 'Waiting for the buyer at PayPal.' };
-    if (order.pendingCaptureStatus === 'PENDING') return { title: 'PayPal is still processing this payment.' };
-    if (order.captureSentAt) return { title: 'PayPal has not confirmed this payment.' };
-    if (order.storePayable?.status === 'PAYMENT_UNCONFIRMED') return { title: 'PayPal has not confirmed this payment.' };
-    return { title: 'PayPal refused the payment. Nothing was charged.' };
+    // the same reading of the order as the buyer's card, so the headline and the card never disagree
+    const view = unpaidOrderView(order, { busy: S.busy });
+    const nothing = view.kind === 'refused' || view.kind === 'consent-cancelled';
+    return { title: `${view.title}.${nothing ? ' Nothing was charged.' : ''}` };
   }
   if (!k) return working === 'report' ? { title: 'Sending the report.' } : { title: 'Paid. Something wrong? One sentence is enough.' };
   if (k.status === 'HUMAN_REVIEW') return { title: 'The two keys differ. A person decides.', lead: 'Nothing is charged or paid out meanwhile.' };
@@ -122,6 +122,7 @@ function scene({ mandate, order, kase: k }, working, verifyFirst) {
     if (!k.refund?.completedAt) return { title: 'The order matches what the buyer approved. No refund.', lead: 'The check came first here, so there is nothing to take back.' };
     if (r?.status === 'COMPLETED') return { title: 'Charged again after the notice period.', lead: 'Never for more than was refunded.' };
     if (r?.status === 'HALTED') return { title: 'The re-charge is stopped. The buyer keeps the refund.' };
+    if (r?.status === 'UNCONFIRMED') return { title: r.captureStatus === 'PENDING' ? 'PayPal is still processing the re-charge.' : 'PayPal has not confirmed the re-charge.', lead: 'It may have gone through. The desk asks again under the same request id and never charges twice.' };
     return { title: 'Here the buyer was responsible: notice first.', lead: 'A dispute before the date stops the charge.' };
   }
   if (v) {

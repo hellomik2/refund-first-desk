@@ -662,6 +662,102 @@ test('a declined re-charge is recorded as not collected and the store is still p
   assert.equal(order.storePayable.source, 'desk:reserve');
 });
 
+// Independent check 3: a re-charge PayPal may have taken is never closed as "not collected". Only a clear refusal
+// stops it; no answer, a 5xx or a PENDING capture waits to be asked about again, and nothing is paid from the
+// desk's own funds or shown as stopped until PayPal's answer is known.
+const rechargeLines = (ctx, order) => ctx.db.data.ledger.filter((l) => l.orderId === order.id && l.kind === 'RECHARGE_CAPTURED');
+const halted = (kase) => kase.events?.some?.((e) => e.type === 'RECHARGE_HALTED') || kase.recharge?.status === 'HALTED';
+async function dueForRecharge() {
+  const ctx = setup();
+  const { order } = await buy(ctx);
+  const kase = await runToVerdict(ctx, order);
+  assert.equal(kase.verdict.liable, 'BUYER');
+  ctx.clock.fastForwardDays(8);
+  return { ctx, order, kase };
+}
+function loseAnswers(ctx, n) {
+  const real = ctx.paypal.chargeSavedWallet;
+  let left = n;
+  ctx.paypal.chargeSavedWallet = async (req) => {
+    const res = await real(req); // PayPal takes the money
+    if (left-- > 0) throw new Error('fetch failed: socket hang up'); // and the answer never arrives
+    return res;
+  };
+  return () => (ctx.paypal.chargeSavedWallet = real);
+}
+function notStoppedYet(ctx, order, kase) {
+  assert.equal(kase.recharge.status, 'UNCONFIRMED');
+  assert.ok(!halted(kase), 'not recorded as stopped');
+  assert.notEqual(order.storePayable.source, 'desk:reserve', 'the store is not paid from the desk funds before PayPal answers');
+  assert.equal(rechargeLines(ctx, order).length, 0);
+}
+
+test('re-charge, lost answer: left unconfirmed, then asked again under the same request id and recorded once', async () => {
+  const { ctx, order, kase } = await dueForRecharge();
+  const restore = loseAnswers(ctx, 4); // the send and its quick retry, then the ledger check asks twice more
+  const r = await ctx.desk.recharge(kase.id);
+  assert.equal(r.charged, false);
+  notStoppedYet(ctx, order, kase);
+  const unknown = await ctx.desk.reconcile(order.id);
+  assert.equal(unknown.ok, false, 'a re-charge PayPal has not answered about never reads as a match');
+  restore();
+  await ctx.desk.processDue();
+  assert.equal(kase.recharge.status, 'COMPLETED');
+  assert.equal(ctx.paypal.totals().captures, 2, 'the purchase and one re-charge: never charged twice');
+  assert.equal(rechargeLines(ctx, order).length, 1);
+  assert.equal(order.storePayable.source, 'desk:purchase');
+  assert.ok((await ctx.desk.reconcile(order.id)).ok);
+});
+
+test('re-charge, capture PENDING then COMPLETED: waits, then the same PayPal order is looked up and recorded', async () => {
+  const { ctx, order, kase } = await dueForRecharge();
+  ctx.paypal.captureStatus = 'PENDING';
+  await ctx.desk.recharge(kase.id);
+  ctx.paypal.captureStatus = 'COMPLETED';
+  notStoppedYet(ctx, order, kase);
+  assert.equal((await ctx.desk.reconcile(order.id)).ok, false);
+  ctx.paypal.completePendingCaptures();
+  const sent = ctx.paypal.state.log.filter((x) => x === 'chargeSavedWallet').length;
+  await ctx.desk.recharge(kase.id);
+  assert.equal(ctx.paypal.state.log.filter((x) => x === 'chargeSavedWallet').length, sent, 'asking again sends no new charge');
+  assert.equal(kase.recharge.status, 'COMPLETED');
+  assert.equal(rechargeLines(ctx, order).length, 1);
+  assert.equal(order.storePayable.source, 'desk:purchase');
+  assert.ok((await ctx.desk.reconcile(order.id)).ok);
+});
+
+test('re-charge, capture PENDING then DECLINED: only then stopped, and the store is paid from the desk funds', async () => {
+  const { ctx, order, kase } = await dueForRecharge();
+  ctx.paypal.captureStatus = 'PENDING';
+  await ctx.desk.recharge(kase.id);
+  ctx.paypal.captureStatus = 'COMPLETED';
+  notStoppedYet(ctx, order, kase);
+  ctx.paypal.declinePendingCaptures();
+  await ctx.desk.processDue();
+  assert.equal(kase.recharge.status, 'HALTED');
+  assert.equal(rechargeLines(ctx, order).length, 0);
+  assert.equal(order.storePayable.source, 'desk:reserve');
+  assert.ok((await ctx.desk.reconcile(order.id)).ok);
+});
+
+test('re-charge: a 5xx is not a refusal (left unconfirmed); a clear 422 refusal stops it', async () => {
+  const { PayPalError } = await import('../src/paypal/client.js');
+  const a = await dueForRecharge();
+  const real = a.ctx.paypal.chargeSavedWallet;
+  a.ctx.paypal.chargeSavedWallet = async () => { throw new PayPalError({ label: 're-charge-saved-wallet', status: 503, name: 'SERVICE_UNAVAILABLE' }); };
+  await a.ctx.desk.recharge(a.kase.id);
+  notStoppedYet(a.ctx, a.order, a.kase);
+  a.ctx.paypal.chargeSavedWallet = real;
+
+  const b = await dueForRecharge();
+  b.ctx.paypal.chargeSavedWallet = async () => { throw new PayPalError({ label: 're-charge-saved-wallet', status: 422, name: 'UNPROCESSABLE_ENTITY', issues: [{ issue: 'INSTRUMENT_DECLINED' }] }); };
+  const r = await b.ctx.desk.recharge(b.kase.id);
+  assert.equal(r.charged, false);
+  assert.equal(b.kase.recharge.status, 'HALTED');
+  assert.equal(b.kase.recharge.blockedBy, 'PAYPAL_INSTRUMENT_DECLINED');
+  assert.equal(b.order.storePayable.source, 'desk:reserve');
+});
+
 // ---- fund table -----------------------------------------------------------------------------------------
 
 test('desk funds: refund-first is refused when own funds cannot cover the store', async () => {
@@ -725,6 +821,25 @@ test('consent purchase: a capture whose answer was lost cannot be cancelled; ask
   const paid = await ctx.desk.completeConsentPurchase(order.id);
   assert.ok(paid.paypal?.captureId);
   assert.equal(ctx.paypal.totals().captures, 1);
+});
+
+test('a consent payment with no answer yet blocks a new saved-wallet payment for the same instruction', async () => {
+  const ctx = setup();
+  const buyer = ctx.desk.createBuyer({ name: 'Has a saved wallet', useDemoWallet: true });
+  const mandate = ctx.desk.draftMandate({ buyerId: buyer.id, instruction: 'Buy eggs.', conditions: { item: 'eggs', quantity: 1, purchaseAuthorized: true } });
+  ctx.desk.approveMandate(mandate.id);
+  const what = { mandateId: mandate.id, store: { id: 'freshcart', name: 'FreshCart' }, cart: [{ sku: 'EGG-12', name: 'Large Eggs, 12 ct', qty: 1, unitCents: 3143 }], agentLog: [AGENT_LINE], storeRecord: [STORE_LINE], fixtureFacts: facts() };
+  const started = await ctx.desk.startConsentPurchase(what);
+  const real = ctx.paypal.captureOrder;
+  let lose = 1;
+  ctx.paypal.captureOrder = async (...args) => {
+    const res = await real(...args);
+    if (lose-- > 0) throw new Error('socket hang up');
+    return res;
+  };
+  await assert.rejects(ctx.desk.completeConsentPurchase(started.order.id));
+  await assert.rejects(ctx.desk.agentPurchase(what), (err) => err.code === 'PAYMENT_UNCONFIRMED');
+  assert.equal(ctx.paypal.totals().captures, 1, 'no second payment for one instruction');
 });
 
 test('consent purchase: a buyer who turned back before any capture was sent can still cancel', async () => {

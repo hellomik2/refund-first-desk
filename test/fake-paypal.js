@@ -84,14 +84,11 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
       state.log.push('chargeSavedWallet');
       if (api.failNextCharge) {
         api.failNextCharge = false;
-        const err = new Error('PayPal charge-saved-wallet failed: HTTP 422 INSTRUMENT_DECLINED');
-        err.code = 'INSTRUMENT_DECLINED';
-        throw err;
+        // as the real client does: a clear refusal is a PayPalError with its HTTP status
+        throw new PayPalError({ label: 'charge-saved-wallet', status: 422, name: 'UNPROCESSABLE_ENTITY', issues: [{ issue: 'INSTRUMENT_DECLINED' }] });
       }
       if (state.deletedTokens.includes(vaultId)) {
-        const err = new Error('PayPal charge-saved-wallet failed: HTTP 422 TOKEN_NOT_FOUND');
-        err.code = 'TOKEN_NOT_FOUND';
-        throw err;
+        throw new PayPalError({ label: 'charge-saved-wallet', status: 422, name: 'UNPROCESSABLE_ENTITY', issues: [{ issue: 'TOKEN_NOT_FOUND' }] });
       }
       return ok(orderBody(idem(requestId, () => {
         const o = { id: id('ORD'), status: 'CREATED', unit: unit(orderRef, mandateFingerprint, cart, totalCents) };
@@ -189,6 +186,10 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
   /** PayPal finishes captures that were still pending: every PENDING capture (and its order) becomes COMPLETED. */
   api.completePendingCaptures = () => {
     for (const c of state.captures.values()) if (c.status === 'PENDING') c.status = 'COMPLETED';
+  };
+  /** PayPal declines captures that were still pending: no money moved for them. */
+  api.declinePendingCaptures = () => {
+    for (const c of state.captures.values()) if (c.status === 'PENDING') c.status = 'DECLINED';
   };
   api.payoutStatus = 'SUCCESS'; // set to FAILED, RETURNED, BLOCKED or UNCLAIMED to mimic a payout that did not reach the store
   api.failNextGetPayout = false;

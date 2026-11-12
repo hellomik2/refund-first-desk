@@ -116,6 +116,15 @@ function outcome(k) {
       extra: noticeStep ? `<ol class="seq">${noticeStep}</ol>${asSent}` : '',
     };
   }
+  if (r.status === 'UNCONFIRMED') {
+    return {
+      label: 'Charge sent again',
+      giant: big(usd(r.amountCents)),
+      tone: 'yellow',
+      line: r.captureStatus === 'PENDING' ? 'PayPal is still processing it.' : 'PayPal has not confirmed it. It may have gone through.',
+      extra: `${noticeStep ? `<ol class="seq">${noticeStep}</ol>` : ''}<p class="fine">The desk asks PayPal again when the ledger is checked, under the same request id, so it never charges twice. The store is paid once PayPal answers.</p>`,
+    };
+  }
   if (r.status === 'PENDING') return { label: 'Charging again now', giant: big(usd(r.amountCents)), tone: 'yellow', extra: noticeStep ? `<ol class="seq">${noticeStep}</ol>` : '' };
   return { label: 'Refunded', giant: big(usd(k.refund.amountCents)), tone: 'green' };
 }

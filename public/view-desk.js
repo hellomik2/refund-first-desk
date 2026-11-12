@@ -245,6 +245,7 @@ function afterCard(k, order) {
     if (e.type === 'NOTICE_SENT') row('done', e.at, 'Notice sent to the buyer', `No charge before ${day(e.chargeNotBefore)} (${S.state.policy.noticeBusinessDays} business days).`);
     if (e.type === 'DISPUTE_FILED') row('halt', e.at, 'The buyer disputed', k.recharge ? 'The re-charge is stopped for good.' : 'Kept on file with the case.');
     if (e.type === 'RECHARGE_HALTED' && e.reason !== 'BUYER_DISPUTED') row('halt', e.at, 'Re-charge stopped', esc(label(REASONS, e.reason)));
+    if (e.type === 'RECHARGE_UNCONFIRMED') row('halt', e.at, 'Re-charge sent, no answer from PayPal yet', 'Not recorded as charged or as stopped. Asked again under the same request id when the ledger is checked.');
     if (e.type === 'RECHARGE_COMPLETED') row('money', e.at, `Saved wallet charged again: ${usd(e.amountCents)}`, `Buyer not present. Capture ${esc(e.captureId)}.`);
     if (e.type === 'STORE_PAID') row('money', e.at, `Store paid from ${e.source === 'desk:reserve' ? "the desk's own funds" : 'the purchase money'}`, `PayPal payout item: ${esc(e.payoutItemStatus || 'unknown')}.`);
     if (e.type === 'STORE_PAYOUT_FAILED') row('halt', e.at, 'Store payout failed', esc(e.error || ''));

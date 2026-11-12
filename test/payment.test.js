@@ -51,3 +51,29 @@ test('a capture PayPal answered as PENDING says PayPal is still processing it, n
   assert.doesNotMatch(v.text, /did not answer/i);
   assert.match(unpaidOrderView(wallet('PAYMENT_UNCONFIRMED')).text, /did not answer/);
 });
+
+// Independent check 3: the headline at the top of the case and the buyer's card come from the same reading of the order.
+test('the scene headline says the same as the buyer card: paying, unknown result, PENDING, refused, PENDING then refused', async () => {
+  const { S } = await import('../public/shared.js');
+  const { railHtml } = await import('../public/view-rail.js');
+  const mandate = { status: 'APPROVED' };
+  const headline = (order) => railHtml({ mandate, order, kase: null }, null).match(/<h2>(.*?)<\/h2>/)[1].replace(/<[^>]+>/g, ' ');
+  const cases = [
+    { order: wallet('PENDING_CAPTURE'), busy: true, kind: 'paying' },
+    { order: wallet('PENDING_CAPTURE'), busy: false, kind: 'unknown' },
+    { order: wallet('PAYMENT_UNCONFIRMED'), busy: false, kind: 'unconfirmed' },
+    { order: { ...wallet('PAYMENT_UNCONFIRMED'), pendingCaptureStatus: 'PENDING' }, busy: false, kind: 'unconfirmed' },
+    { order: wallet('CANCELLED'), busy: false, kind: 'refused' },
+    { order: { ...wallet('CANCELLED'), pendingCaptureStatus: 'PENDING' }, busy: false, kind: 'refused' }, // PENDING, then PayPal declined
+  ];
+  for (const c of cases) {
+    S.busy = c.busy;
+    const card = unpaidOrderView(c.order, { busy: c.busy });
+    const h = headline(c.order);
+    assert.equal(card.kind, c.kind);
+    assert.equal(/nothing was charged/i.test(h), c.kind === 'refused', `headline "${h}" for ${c.kind}`);
+    assert.equal(/refused/i.test(h), /refused/i.test(card.title), `headline "${h}" vs card "${card.title}"`);
+    assert.equal(/still processing/i.test(h), /still processing/i.test(card.title), `headline "${h}" vs card "${card.title}"`);
+  }
+  S.busy = false;
+});

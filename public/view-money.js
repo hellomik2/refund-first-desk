@@ -64,11 +64,11 @@ export function moneyColumn({ order, kase: k }) {
 }
 
 function reconciliationBlock(r) {
-  const ok = r.ok ?? (!r.storeUnknown && r.rows.every((row) => row.match));
-  const status = ok ? '<span class="m-status">Ledger matches PayPal</span>' : r.storeUnknown ? '<span class="m-status wait">No answer on the store payout yet</span>' : '<span class="m-status no">Ledger differs from PayPal</span>';
+  const ok = r.ok ?? (!r.storeUnknown && !r.rechargeUnknown && r.rows.every((row) => row.match));
+  const status = ok ? '<span class="m-status">Ledger matches PayPal</span>' : r.storeUnknown ? '<span class="m-status wait">No answer on the store payout yet</span>' : r.rechargeUnknown ? '<span class="m-status wait">No answer on the re-charge yet</span>' : '<span class="m-status no">Ledger differs from PayPal</span>';
   return `<div class="m-recon">${status}
     <table><thead><tr><th>Party</th><th class="num">Ledger</th><th class="num">PayPal</th><th class="num"></th></tr></thead><tbody>
     ${r.rows.map((row) => `<tr><td>${ACCOUNTS[row.party]}</td><td class="num">${signed(row.ledgerCents)}</td><td class="num">${signed(row.paypalCents)}</td><td class="num ${row.match ? 'yes' : 'no'}">${row.match ? 'match' : 'differs'}</td></tr>`).join('')}
     </tbody></table>
-    <p class="sub">Looked up just now: ${r.lookups.map((l) => `${l.type.replace('_', ' ')} ${esc(l.status)}`).join(', ')}.${r.simulatedStoreCents ? ` ${usd(r.simulatedStoreCents)} to the store is ledger only and is not part of this comparison.` : ''}${r.storeUnknown ? ' <strong>The store payout got no answer from PayPal yet, so this order cannot be called a match.</strong>' : ''}</p></div>`;
+    <p class="sub">Looked up just now: ${r.lookups.map((l) => `${l.type.replace('_', ' ')} ${esc(l.status)}`).join(', ')}.${r.simulatedStoreCents ? ` ${usd(r.simulatedStoreCents)} to the store is ledger only and is not part of this comparison.` : ''}${r.storeUnknown ? ' <strong>The store payout got no answer from PayPal yet, so this order cannot be called a match.</strong>' : ''}${r.rechargeUnknown ? ' <strong>The re-charge got no answer from PayPal yet, so this order cannot be called a match.</strong>' : ''}</p></div>`;
 }

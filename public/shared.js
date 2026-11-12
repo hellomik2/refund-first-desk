@@ -53,6 +53,9 @@ export const REASONS = {
   RECHARGE_CLOSED_BY_QUICK_CHECK: 'the quick check closed the re-charge for this order',
   CHARGE_FAILED: 'the charge did not go through',
   CAPTURE_NOT_COMPLETED: 'PayPal did not complete the charge',
+  CAPTURE_DECLINED: 'PayPal declined the charge',
+  CAPTURE_FAILED: 'the charge failed at PayPal',
+  CAPTURE_VOIDED: 'PayPal voided the charge',
   NOT_THE_WALLET_THAT_PAID: 'the wallet that paid this order is no longer saved, and no other wallet may be charged for it',
 };
 export const FACT_LABELS = {

@@ -250,6 +250,9 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const tried = Object.values(S.orders).filter((o) => o.mandateId === mandate.id && (o.payment === 'SAVED_WALLET' || o.paypal));
     const paidBefore = tried.find((o) => o.paypal);
     if (paidBefore) throw Object.assign(new DeskError('ALREADY_PAID_ONCE', 'A payment for this instruction was already made. The desk does not pay twice for one instruction.'), { orderId: paidBefore.id });
+    // A payment the buyer approved at PayPal whose capture was sent but not answered may have gone through as well.
+    const consentUnknown = Object.values(S.orders).find((o) => o.mandateId === mandate.id && o.payment === 'CONSENT_CHECKOUT' && !o.paypal && (o.captureSentAt || o.storePayable.status === 'PAYMENT_UNCONFIRMED'));
+    if (consentUnknown) throw Object.assign(new DeskError('PAYMENT_UNCONFIRMED', 'The payment the buyer approved at PayPal has no answer yet. It may have gone through, so the desk does not send a new one for this instruction.'), { orderId: consentUnknown.id });
     let order = tried.find((o) => o.storePayable.status === 'PAYMENT_UNCONFIRMED');
     if (!order) {
       order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'SAVED_WALLET', scenarioId, fixtureFacts, fixtureDeep, fixtureQuick });
@@ -966,8 +969,35 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   }
 
   /**
+   * Send the re-charge under its one request id, or ask about it again. A PayPal order PayPal already named is
+   * looked up (nothing is sent). No answer, a 5xx, 409 or 429 is asked once more right away under the same id;
+   * only a clear refusal of the first send (400, 401, 403, 404, 422) is marked `refused`.
+   */
+  async function sendRecharge(kase, request, resend) {
+    if (resend && kase.recharge.pendingPayPalOrderId) return paypal.getOrder(kase.recharge.pendingPayPalOrderId);
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        return await paypal.chargeSavedWallet(request);
+      } catch (err) {
+        if (!resend && attempt === 0 && err instanceof PayPalError && [400, 401, 403, 404, 422].includes(err.status)) throw Object.assign(err, { refused: true });
+        if (attempt === 0) continue;
+        throw err;
+      }
+    }
+  }
+
+  /** PayPal may have taken the re-charge: nothing is stopped and no store is paid from the desk's funds until it answers. */
+  function leaveRechargeUnconfirmed(kase, reason) {
+    if (!kase.recharge.unconfirmedReason) event(kase, 'RECHARGE_UNCONFIRMED', { reason });
+    kase.recharge = { ...kase.recharge, status: 'UNCONFIRMED', unconfirmedReason: reason };
+    db.save();
+    return { charged: false, blockedBy: 'RECHARGE_UNCONFIRMED', kase };
+  }
+
+  /**
    * Charge the buyer's saved wallet again. Every guard must pass; the amount can never exceed the
    * cap fixed at purchase or the amount that was refunded; the request id makes a repeat a no-op.
+   * A re-charge PayPal has not answered about (UNCONFIRMED) is only asked about again, under the same request id.
    */
   async function recharge(caseId, { amountCents } = {}) {
     const kase = must(S.cases, caseId, 'case');
@@ -975,8 +1005,9 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const buyer = must(S.buyers, kase.buyerId, 'buyer');
     const mandate = must(S.mandates, order.mandateId, 'mandate');
     if (kase.recharge?.status === 'PENDING') return { charged: false, blockedBy: 'CHARGE_IN_PROGRESS', kase };
-    const amount = amountCents ?? kase.recharge?.amountCents ?? kase.refund?.amountCents ?? 0;
-    const blockedBy = rechargeGuard({ order, kase, buyer, amountCents: amount, now: clock.now() });
+    const resend = kase.recharge?.status === 'UNCONFIRMED'; // decided and sent before: only PayPal's answer is missing
+    const amount = resend ? kase.recharge.amountCents : amountCents ?? kase.recharge?.amountCents ?? kase.refund?.amountCents ?? 0;
+    const blockedBy = resend ? null : rechargeGuard({ order, kase, buyer, amountCents: amount, now: clock.now() });
     if (blockedBy) {
       event(kase, 'RECHARGE_REFUSED', { blockedBy, amountCents: amount });
       // The wallet that paid this order is gone; no later wallet may stand in for it. The charge stops for good
@@ -988,7 +1019,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     kase.recharge = { ...kase.recharge, status: 'PENDING', amountCents: amount, requestId: `recharge-${kase.id}` };
     let parsed;
     try {
-      const res = await paypal.chargeSavedWallet({
+      const res = await sendRecharge(kase, {
         label: 're-charge-saved-wallet',
         vaultId: buyer.wallet.vaultId,
         orderRef: `${order.id}-RC`,
@@ -997,16 +1028,33 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
         totalCents: amount,
         description: `Re-charge after refund-first, order ${order.id}`,
         requestId: kase.recharge.requestId,
-      });
+      }, resend);
       parsed = readOrder(res.body);
-      if (!parsed.capture || parsed.capture.status !== 'COMPLETED') throw new DeskError('CAPTURE_NOT_COMPLETED', `re-charge order is ${parsed.status}`);
     } catch (err) {
-      const reason = err instanceof PayPalError ? `PAYPAL_${err.issue}` : err.code || 'CHARGE_FAILED';
+      if (!err.refused) return leaveRechargeUnconfirmed(kase, err.message);
+      const reason = `PAYPAL_${err.issue}`;
       event(kase, 'RECHARGE_FAILED', { reason });
-      await haltRecharge(kase, reason); // not collected: recorded as such, never retried silently
+      await haltRecharge(kase, reason); // clearly refused, so not collected: recorded as such, never retried silently
       db.save();
       return { charged: false, blockedBy: reason, kase };
     }
+    // PayPal Orders v2: only a DECLINED or FAILED capture, or a VOIDED order, says no money moved.
+    const captureStatus = parsed.capture?.status || null;
+    if (captureStatus === 'DECLINED' || captureStatus === 'FAILED' || (!captureStatus && parsed.status === 'VOIDED')) {
+      const reason = `CAPTURE_${captureStatus || 'VOIDED'}`;
+      event(kase, 'RECHARGE_FAILED', { reason });
+      await haltRecharge(kase, reason);
+      db.save();
+      return { charged: false, blockedBy: reason, kase };
+    }
+    if (captureStatus !== 'COMPLETED') {
+      // PENDING, or an answer without the capture: money may still move. The order is looked up next time, never replaced.
+      if (parsed.orderId) kase.recharge.pendingPayPalOrderId = parsed.orderId;
+      kase.recharge.captureStatus = captureStatus || 'NOT_IN_ANSWER';
+      return leaveRechargeUnconfirmed(kase, `PayPal order ${parsed.orderId} is ${parsed.status}, capture ${captureStatus || 'not in the answer'}`);
+    }
+    delete kase.recharge.pendingPayPalOrderId;
+    delete kase.recharge.captureStatus;
     kase.recharge = { ...kase.recharge, status: 'COMPLETED', paypalOrderId: parsed.orderId, captureId: parsed.capture.id, feeCents: parsed.capture.feeCents ?? 0, at: new Date().toISOString() };
     ledger.post({ orderId: order.id, caseId: kase.id, kind: 'RECHARGE_CAPTURED', from: 'buyer', to: 'desk:purchase', cents: parsed.capture.grossCents, paypal: { type: 'capture', id: parsed.capture.id } });
     if (kase.recharge.feeCents) {
@@ -1026,7 +1074,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const now = clock.now().getTime();
     const done = { recharged: [], storesPaid: [] };
     for (const kase of Object.values(S.cases)) {
-      if (kase.recharge?.status === 'SCHEDULED' && now >= new Date(kase.notice.chargeNotBefore).getTime()) {
+      const due = kase.recharge?.status === 'SCHEDULED' && now >= new Date(kase.notice.chargeNotBefore).getTime();
+      if (due || kase.recharge?.status === 'UNCONFIRMED') { // a re-charge without PayPal's answer is asked about again
         const r = await recharge(kase.id);
         if (r.charged) done.recharged.push(kase.id);
       }
@@ -1051,6 +1100,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const order = must(S.orders, orderId, 'order');
     const kase = Object.values(S.cases).find((c) => c.orderId === orderId) || null;
     if (['PAYOUT_PENDING', 'PAYOUT_UNCONFIRMED'].includes(order.storePayable.status)) await followStorePayout(order, kase); // a payout still on its way is looked up first, so the ledger is current
+    if (kase?.recharge?.status === 'UNCONFIRMED') await recharge(kase.id); // so is a re-charge PayPal has not answered about
     const fromPayPal = { buyer: 0, store: 0, 'paypal:fees': 0 };
     const lookups = [];
     const cap = readCapture((await paypal.getCapture(order.paypal.captureId)).body);
@@ -1084,7 +1134,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     });
     // A payout whose answer never came cannot be compared: the store side is unknown, so this never reads as a match.
     const storeUnknown = order.storePayable.status === 'PAYOUT_UNCONFIRMED';
-    return { orderId, ok: !storeUnknown && rows.every((r) => r.match), storeUnknown, rows, simulatedStoreCents: totals.store.simulatedCents, lookups };
+    const rechargeUnknown = ['UNCONFIRMED', 'PENDING'].includes(kase?.recharge?.status); // the same for a re-charge without an answer
+    return { orderId, ok: !storeUnknown && !rechargeUnknown && rows.every((r) => r.match), storeUnknown, rechargeUnknown, rows, simulatedStoreCents: totals.store.simulatedCents, lookups };
   }
 
   return {
