@@ -76,4 +76,13 @@ test('a verdict that lands between the request and the answer: the limit and the
   assert.ok(!(html.includes('$50<small>') && html.includes('responsible in <b class="num">1</b>')), 'the old limit drawn next to a book that already has the verdict');
   assert.match(html, /\$75<small>/);
   assert.match(html, /responsible in <b class="num">1<\/b>/);
+
+  // a read that fails keeps the book and its limit on screen, without Updating
+  refreshCaseBook({ ...state('STORE', 7500), workspace: 'w2' }, []);
+  assert.match(el.innerHTML, /Updating/);
+  asked.at(-1)(null);
+  await tick();
+  assert.match(el.innerHTML, /\$75<small>/);
+  assert.match(el.innerHTML, /responsible in <b class="num">1<\/b>/);
+  assert.doesNotMatch(el.innerHTML, /Updating/);
 });
