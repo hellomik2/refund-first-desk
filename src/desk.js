@@ -449,7 +449,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       const because =
         kase.limitCheck.reasons.map((r) => CHECK_FIRST_BECAUSE[r]?.(order.protection) || r).join('; ') +
         (kase.limitCheck.reasons.some((r) => r === 'OVER_PER_CASE_CAP' || r === 'OVER_30_DAY_COUNT') ? limitWhy(order.protection.limits) : '');
-      notify(kase, 'CHECKING_FIRST', `We check this order before refunding it, because ${because}. If it was not your mistake, the refund follows within 5 minutes.`);
+      notify(kase, 'CHECKING_FIRST', `We check this order before refunding it, because ${because}. If it was not your mistake, the refund follows within 5 minutes; if a person has to decide, it can take longer.`);
     }
     db.save();
     return { kase, duplicate: false };

@@ -1,5 +1,7 @@
 // The case book on screen: finished cases grouped by agent and by store, for whoever fixes the agent, and
 // the instant-refund limit the buyer's own record gives the next purchase. Counts are drawn as bar lengths.
+import { swapKeepingFocus } from './shared.js';
+
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const usd = (cents) => `$${((cents || 0) / 100).toFixed(2).replace(/\.00$/, '')}`;
@@ -31,26 +33,34 @@ let view = null; // 'workspace' | 'measured'
 let picked = false; // once the viewer picks a tab, it stays; until then the workspace shows as soon as it has a case
 let signature = '';
 let drawn = '';
-let last = { state: null, cases: [] };
+let last = { state: null, cases: [] }; // the state the book in `data` was read for: both sides are drawn from this pair
 
 /** Called on every render of the page; asks the server again only when a case changed. */
 export function refreshCaseBook(state, cases) {
   if (!state) return;
-  last = { state, cases };
   const sig = `${state.workspace}|${state.cases.map((c) => `${c.id}:${c.status}:${c.verdict?.liable || ''}:${c.recharge?.status || ''}`).join(',')}`; // a verdict or a re-charge changes the book too
-  if (sig === signature || sig === refreshCaseBook.asking) return draw();
+  if (sig === signature) {
+    last = { state, cases };
+    return draw();
+  }
+  if (sig === refreshCaseBook.asking) return draw();
   refreshCaseBook.asking = sig;
+  draw(); // shows Updating over the book still on screen
   fetch(`/api/casebook?ws=${encodeURIComponent(state.workspace)}`, { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : null))
     .then((json) => {
-      if (!json) return;
+      if (!json || refreshCaseBook.asking !== sig) return; // a newer read was asked meanwhile: this older answer is dropped
       data = json;
       signature = sig; // kept only once the answer arrived: a failed read is asked again on the next render
+      last = { state, cases };
+      refreshCaseBook.asking = null;
       draw();
     })
     .catch(() => {})
     .finally(() => {
-      if (refreshCaseBook.asking === sig) refreshCaseBook.asking = null;
+      if (refreshCaseBook.asking !== sig) return;
+      refreshCaseBook.asking = null; // a failed read: the earlier book stays, without Updating, and is asked again on the next render
+      draw();
     });
 }
 
@@ -62,6 +72,9 @@ function bar(byOutcome, count, max) {
   return `<span class="cb-track"><span class="cb-bar" style="width:${Math.max(3, (count / max) * 100)}%">${segs}</span></span>`;
 }
 
+/** The bar's colours in words, next to it: "1 agent's fault · 1 store's fault". */
+const who = (byOutcome) => `<span class="cb-o">${OUTCOME.filter(([k]) => byOutcome[k]).map(([k, name]) => `${byOutcome[k]} ${esc(name)}`).join(' · ')}</span>`;
+
 /** One row per condition. Opening a row shows the line in the log where the agent first left the mandate. */
 function rows(group, max, actorWord) {
   if (!group.conditions.length) return `<p class="sub">No first deviation at the ${actorWord}'s own steps.</p>`;
@@ -69,7 +82,7 @@ function rows(group, max, actorWord) {
     .map((c, i) => {
       const ex = c.example;
       return `<li><details class="cb-cond"${i === 0 ? ' open' : ''}>
-        <summary><span class="cb-k">${esc(CONDITION[c.condition] || c.condition)}</span>${bar(c.byOutcome, c.count, max)}<span class="cb-n num">${c.count}</span></summary>
+        <summary><span class="cb-k">${esc(CONDITION[c.condition] || c.condition)}${who(c.byOutcome)}</span>${bar(c.byOutcome, c.count, max)}<span class="cb-n num">${c.count}</span></summary>
         <p class="cb-quote"><span class="cb-at">${esc(caseName(ex))} step ${ex.step}</span> “${esc(ex.quote)}”${ex.verified ? '' : ' <span class="tag sim">quote not verified</span>'}</p>
         ${c.cases.length > 1 ? `<p class="sub">All ${c.cases.length}: ${c.cases.map((x) => `${esc(caseName(x))} (${esc(outcomeName(x.outcome))})`).join(', ')}</p>` : ''}
       </details></li>`;
@@ -102,7 +115,7 @@ function storesPanel(book, max) {
       const n = s.outcomes.STORE + s.outcomes.HUMAN_REVIEW;
       const fd = s.conditions[0]?.example;
       const head = [s.outcomes.STORE ? `${s.outcomes.STORE} store's fault` : '', s.outcomes.HUMAN_REVIEW ? `${s.outcomes.HUMAN_REVIEW} waiting for a person` : ''].filter(Boolean).join(' · ');
-      return `<li><details class="cb-cond"><summary><span class="cb-k">${esc(s.name)}</span>${bar({ STORE: s.outcomes.STORE, HUMAN_REVIEW: s.outcomes.HUMAN_REVIEW }, n || 0.0001, max)}<span class="cb-n num">${n}</span></summary>
+      return `<li><details class="cb-cond"><summary><span class="cb-k">${esc(s.name)}${who({ STORE: s.outcomes.STORE, HUMAN_REVIEW: s.outcomes.HUMAN_REVIEW })}</span>${bar({ STORE: s.outcomes.STORE, HUMAN_REVIEW: s.outcomes.HUMAN_REVIEW }, n || 0.0001, max)}<span class="cb-n num">${n}</span></summary>
         <p class="sub">${esc(head || 'no verdict against the store')}${fd ? '' : s.outcomes.STORE ? '; the first step off the mandate was not the store\'s own' : ''}</p>
         ${fd ? `<p class="cb-quote"><span class="cb-at">${esc(caseName(fd))} step ${fd.step}</span> ${esc(CONDITION[s.conditions[0].condition])}: “${esc(fd.quote)}”</p>` : ''}</details></li>`;
     })
@@ -171,17 +184,18 @@ function draw() {
         <div class="card cb-total"><p class="sub">${book.cases} case${book.cases === 1 ? '' : 's'}, by who was found responsible</p>${strip(book)}</div>
         ${storesPanel(book, max)}</section></div>`;
   }
+  const updating = refreshCaseBook.asking ? '<p class="cb-updating" role="status">Updating with the latest case…</p>' : '';
   const html = `<div class="cb-head">
       <div><h2 id="cb-h">Case book: what to fix in the agent</h2>
       <p class="hint">For the agent's operator. Bar length = cases, colour = who was found responsible.</p></div>
       <div class="cb-tabs" role="group" aria-label="Which cases">
         <button class="ghost" data-cb="workspace" aria-pressed="${!measured}">This workspace · ${ws?.cases ?? 0}</button>
         <button class="ghost" data-cb="measured" aria-pressed="${measured}">30 measured cases</button>
-      </div></div>${body}`;
+      </div></div>${updating}${body}`;
   // The page redraws often (every state read while an action runs); an unchanged book is left alone so an opened quote stays open.
   if (html === drawn) return;
   drawn = html;
-  el.innerHTML = html;
+  swapKeepingFocus(el, html);
 }
 
 /** The limit fixed on one order at purchase, and what moved it. Shown under the purchase. */

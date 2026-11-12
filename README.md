@@ -7,7 +7,7 @@
 When an AI shopping agent buys the wrong thing, PayPal refunds the buyer within seconds, before the purchase is checked. The records are checked afterwards. If the check finds the buyer responsible, the buyer gets a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never for more than was refunded. In every other outcome the buyer keeps the refund.
 
 1. **Refund first.** PayPal's refund status is COMPLETED before the purchase is checked (within the limits; sandbox runs 1.99–3.19 s).
-2. **Then check.** The AI's verdict and fixed rules in code; after the refund, any further money (a re-charge, the store's payout, an agent invoice) moves only when they agree.
+2. **Then check.** The AI's verdict and fixed rules in code; after the refund, a re-charge or an agent invoice happens on its own only when they agree. If the records cannot be tied together, the buyer keeps the refund and the desk pays the store from its own funds.
 3. **Take it back, only if the buyer was responsible.** Notice, 5 business days to dispute, then the wallet that paid is charged again.
 
 The desk also has:
@@ -15,11 +15,11 @@ The desk also has:
 - A live agent that really shops. Claude takes the buyer's instruction, shops a small catalog we wrote one tool call at a time, and pays from the saved sandbox wallet if it decides to. The investigator reads that numbered log the same way it reads the prepared cases ([more](#a-live-agent-that-really-shops)).
 - A case book, and a limit set by the buyer's own record. Every finished case goes into a case book that shows whoever runs the agent which condition it broke, and at which step. The buyer's instant-refund limit moves with that buyer's own past cases, by fixed rules in code; the AI never sets it ([more](#the-case-book-and-the-buyers-limit)).
 
-The refund can come first because it can be taken back. The buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and any further money moves only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies the same pattern to purchases made by AI agents, by rule, and before the check.
+The refund can come first because it can be taken back. The buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and a re-charge happens on its own only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies the same pattern to purchases made by AI agents, by rule, and before the check.
 
 Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 entries we read, we found none that refunds before the check and then has a step to take the money back from the buyer.
 
-Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) and Payouts, in the PayPal sandbox. Claude reads the purchase records, finds the first step where the agent went off what the buyer approved, and gives its own verdict. Fixed rules in code give a second verdict. A re-charge, the store's payout or an agent invoice happens only when the two agree; otherwise a person decides.
+Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) and Payouts, in the PayPal sandbox. Claude reads the purchase records, finds the first step where the agent went off what the buyer approved, and gives its own verdict. Fixed rules in code give a second verdict. A re-charge or an agent invoice happens on its own only when the two agree; otherwise a person decides. When the records cannot be tied together (rule R0), the buyer keeps the refund and the desk pays the store from its own funds.
 
 ## The problem
 
@@ -60,7 +60,7 @@ buyer: one sentence ─► "Refund requested" ─► limits check ─► PayPal 
                      different    ─► a person decides; nothing is charged or paid out meanwhile
 ```
 
-Over the instant-refund limit ($50 a case, or more than 2 instant refunds in 30 days), the order flips: the checks run first and, when the buyer is not responsible, the refund follows within 5 minutes.
+Over the instant-refund limit ($50 a case, or more than 2 instant refunds in 30 days), the order flips: the checks run first and, when the buyer is not responsible, the refund follows within 5 minutes (longer if a person has to decide).
 
 If PayPal accepts a refund but leaves it pending, the desk looks it up again, and the refund never closes a case or pays a store until PayPal reports it completed. If PayPal refuses a refund (for example, because the desk's PayPal balance is short), the case falls back to "check first" and the buyer is told so.
 
@@ -197,7 +197,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 171 tests against an in-memory PayPal stand-in
+npm test                       # 172 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 

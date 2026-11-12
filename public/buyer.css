@@ -15,6 +15,7 @@
 .moment .m-line { font-size: var(--f-base); }
 .moment.point .m-line .ln:first-child { font-size: var(--f-lg); font-weight: 700; } /* the amount, next to the seconds */
 .moment .quote { margin-top: var(--s4); }
+.moment.point .quote { font-style: normal; } /* upright on the green: easier to read in the video */
 .moment .row { margin-top: var(--s5); }
 .seq { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s2); }
 .seq li { display: grid; grid-template-columns: 6.5rem 1fr; gap: var(--s3); align-items: baseline; }
@@ -56,6 +57,6 @@ details.card.fold[open] > summary { margin-bottom: var(--s3); }
 
 @media (max-width: 760px) {
   .moment { padding: var(--s5); }
-  .moment .row > button { flex: 1 1 100%; } /* one action per line, so a label never wraps into a narrow column */
+  .moment .row > button { flex: 1 1 100%; flex-wrap: wrap; row-gap: var(--s1); } /* one action per line; a tag goes under the label instead of breaking it */
   .seq li { grid-template-columns: 1fr; gap: 0; }
 }

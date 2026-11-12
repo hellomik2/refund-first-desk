@@ -85,3 +85,5 @@ button.linkish { background: none; border: 0; padding: 0; color: var(--c-info); 
   .cb-cond summary, .cb-stores .cb-cond summary { grid-template-columns: minmax(0, 1fr) 2rem; row-gap: var(--s1); }
   .cb-cond summary .cb-k { grid-column: 1 / -1; }
 }
+.cb-updating { margin: var(--s3) 0 0; font-size: var(--f-sm); font-weight: 700; color: var(--c-text-2); } /* while the book is read again, both sides still show the earlier answer */
+.cb-o { display: block; font-size: var(--f-sm); color: var(--c-text-2); } /* who was responsible, in words, under the condition name */

@@ -299,6 +299,9 @@ test('operator decision: settles with rule OPERATOR; choosing the buyer keeps th
   const over = await purchase(ctx, { cart: OVER_CART, log: OVER_LOG, conditions: OVER_MANDATE, deep: { verdict: 'AGENT' } });
   const b = await reportAndCheck(ctx, over.order);
   assert.equal(ctx.paypal.totals().refunds, 1, 'only the first case, refunded first');
+  const first = b.notices.find((n) => n.type === 'CHECKING_FIRST')?.text || '';
+  assert.match(first, /within 5 minutes/);
+  assert.match(first, /if a person has to decide, it can take longer/, 'the over-limit notice does not promise 5 minutes when a person decides');
   await ctx.desk.resolveReview(b.id, 'AGENT', 'The agent picked a pack size the buyer did not ask for.');
   assert.equal(b.status, 'CLOSED_AGENT_RESPONSIBLE');
   assert.equal(b.refund.status, 'COMPLETED', 'not the buyer: the over-limit refund follows the decision');

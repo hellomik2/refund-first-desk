@@ -1,5 +1,5 @@
 // The start of the page: the prepared cases and the live agent's instructions, as compact rows.
-import { S, $, esc, usd } from './shared.js';
+import { S, $, esc, usd, swapKeepingFocus } from './shared.js';
 
 /** One row: title on the left (with a tag under it if any), amount or spending limit on the right. */
 const row = (attrs, title, tag, right, pressed, off) =>
@@ -21,7 +21,7 @@ export function casesHtml(cur) {
 }
 
 export function renderCases(cur) {
-  $('cases').innerHTML = casesHtml(cur);
+  swapKeepingFocus($('cases'), casesHtml(cur));
 }
 
 // ---- the live agent ----------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ export function liveHtml(cur) {
 
 export function renderLive(cur) {
   const el = $('live-prompts');
-  el.innerHTML = liveHtml(cur);
+  swapKeepingFocus(el, liveHtml(cur));
   if (!S.catalog) return;
   document.querySelector('[data-act="liveOwn"]').disabled = S.busy || !S.state.flags.liveAgent;
   const list = $('catalog-list');

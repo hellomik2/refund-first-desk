@@ -91,7 +91,7 @@ export function railHtml(cur, working) {
   const caption = now ? `${now.name}: ${now.sub}` : 'Nothing has happened yet';
   const { title, lead } = scene(cur, working, verifyFirst);
   return `<ol class="rail" aria-label="Steps of this case, in order">${items}</ol><p class="rail-now">${esc(caption)}</p>
-    <div class="rail-head"><h2>${sentences(title)}</h2>${lead ? `<p>${sentences(lead)}</p>` : ''}</div>`;
+    <div class="rail-head"><h2>${sentences(title)}</h2>${lead ? `<p>${esc(lead)}</p>` : ''}</div>`;
 }
 
 /** The headline of the moment on screen: one sentence for where this case is now, from server state only. */

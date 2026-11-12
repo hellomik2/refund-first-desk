@@ -21,14 +21,14 @@ export function deskColumn({ order, kase: k }, working) {
   const inv = k.investigation;
   const now = inv?.codeKey && inv?.aiKey ? 'keys' : inv?.finishedAt ? 'deep' : k.quick?.finishedAtMs ? 'quick' : '';
   if (k.status === 'HUMAN_REVIEW') return operatorPanel(k, working) + quickCard(k, false, false) + afterCard(k, order);
-  // once both keys are in, the answer comes first and the checks that led to it follow (still open to read)
-  if (now === 'keys') return keysCard(k, order, working, true) + afterCard(k, order) + quickCard(k, checking, false) + deepCard(k, checking, false);
+  // once both keys are in, the answer comes first, then the checks that led to it in order, then what happened after
+  if (now === 'keys') return keysCard(k, order, working, true) + quickCard(k, checking, false) + deepCard(k, checking, false) + afterCard(k, order);
   return quickCard(k, checking, now === 'quick') + deepCard(k, checking, now === 'deep') + keysCard(k, order, working, now === 'keys') + afterCard(k, order);
 }
 
 const took = (ms) => `<span class="took">${secs(ms)}</span>`;
 const chip = (tone, text, spin = false) => `<span class="chip c-${tone}">${spin ? '<span class="spinner"></span>' : ''}${esc(text)}</span>`;
-const head = (name, chips = '', ms = null) => `<div class="ph"><h3>${name}</h3>${chips}${ms == null ? '' : took(ms)}</div>`;
+const head = (name, chips = '', ms = null) => `<div class="ph">${chips}<h3>${name}</h3>${ms == null ? '' : took(ms)}</div>`; // chip, then title: the owner's module order
 
 function factLine(key, value, quote, by, discarded = false) {
   return `<li class="fx"><span class="ans ${esc(value)}">${esc(value)}</span><div><span class="fl">${esc(label(FACT_LABELS, key))}</span>${
@@ -167,7 +167,7 @@ function movedList(lines) {
     .join('')}</ul>`;
 }
 
-const RULE_LINE = "A re-charge, the store's payout or an invoice entry for the agent happens on its own only when they agree.";
+const RULE_LINE = 'A re-charge or an invoice entry for the agent happens on its own only when they agree. If the records cannot be tied together, the buyer keeps the refund and the desk pays the store.';
 
 function keysCard(k, order, working, now) {
   const inv = k.investigation;
@@ -188,7 +188,14 @@ function keysCard(k, order, working, now) {
   }
   const tone = v?.rule === 'OPERATOR' || !same ? chip('wait', 'different answers') : v?.liable === 'BUYER' ? chip('wait', 'same answer') : chip('go', 'same answer');
   return `<div class="card proof${now ? ' now' : ''}">${head('Two keys', tone)}
-    <p class="pr">${RULE_LINE}</p>${keysPair(inv)}${outcome}${factsAndRecords(inv)}</div>`;
+    <p class="pr">${RULE_LINE}</p>${keysPair(inv)}${firstOff(inv)}${outcome}${factsAndRecords(inv)}</div>`;
+}
+
+/** One line under the two keys: where the agent first left the mandate, from the deep check below. */
+function firstOff(inv) {
+  const fd = inv.firstDeviation;
+  if (fd?.kind !== 'STEP' || !(inv.steps || []).some((s) => s.step === fd.step)) return '';
+  return `<p class="first-off"><b>Step ${esc(fd.step)}</b> went off the mandate first${fd.condition ? ` · ${esc(label(FACT_SHORT, fd.condition))}` : ''}</p>`;
 }
 
 function factsAndRecords(inv) {

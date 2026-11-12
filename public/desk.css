@@ -81,11 +81,12 @@ ul.moved li { display: flex; justify-content: space-between; gap: var(--s3); pad
 @media (max-width: 520px) {
   .keys { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
   .gate, #desk .proof.now .gate { font-size: var(--f-xl); justify-self: center; transform: rotate(90deg); }
+  .gate.g-shut, #desk .proof.now .gate.g-shut { transform: none; }
 }
 
 /* ---- a person decides -------------------------------------------------------------------------- */
 #desk .card.op { border: 2px solid var(--c-border-yellow); }
-.op-sub { font-size: var(--f-base); margin: var(--s4) 0 var(--s1); }
+.op-sub { font-size: var(--f-md); margin: var(--s4) 0 var(--s1); }
 .choose { border-top: 1px solid var(--line); margin-top: var(--s3); padding-top: var(--s3); }
 .choose label { display: block; font-size: var(--f-sm); color: var(--c-text-2); margin-bottom: var(--s1); }
 .choose .fine { margin: 0 0 var(--s2); }
@@ -108,4 +109,5 @@ button.choice:hover:not(:disabled) { background: var(--c-accent); color: #fff; }
 /* ---- the records, folded --------------------------------------------------------------------------- */
 .records .tbl { overflow-x: auto; }
 .records pre { white-space: pre-wrap; overflow-wrap: anywhere; font: var(--f-sm)/1.5 var(--font); background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-inner); padding: var(--s3); margin: var(--s1) 0 var(--s3); }
-.records h4 { margin: var(--s2) 0 0; font-size: var(--f-sm); color: var(--c-text-2); }
+.records h4 { margin: var(--s2) 0 0; font-size: var(--f-md); color: var(--c-text-2); }
+.first-off { margin: var(--s3) 0 0; font-size: var(--f-base); color: var(--c-text-red); } /* the first step off the mandate, under the two keys */

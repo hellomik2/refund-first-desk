@@ -16,11 +16,24 @@ export const usd = (cents) => `${cents < 0 ? '-' : ''}$${(Math.abs(cents || 0) /
 export const signed = (cents) => (!cents ? '$0.00' : `${cents > 0 ? '+' : '-'}$${(Math.abs(cents) / 100).toFixed(2)}`);
 export const time = (iso) => (iso ? new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '');
 export const day = (iso) => (iso ? new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).replace(/ /g, ' ') : ''); // a date never breaks across lines
-/** Escaped text with one sentence per line: a headline of two sentences breaks between them, never inside one. */
+/** Escaped text with one sentence per line: a headline of two sentences breaks between them, never inside one.
+ *  A one-word sentence ("Paid.") stays on the line of the next one, so short sentences do not stack into a column. */
 export const sentences = (s) => {
-  const parts = String(s ?? '').split(/(?<=[.!?])\s+(?=[A-Z"“$])/);
+  const parts = String(s ?? '').split(/(?<=[.!?])\s+(?=[A-Z"“$])/).reduce((out, p) => {
+    const prev = out[out.length - 1];
+    if (prev !== undefined && !/\s/.test(prev)) out[out.length - 1] = `${prev} ${p}`;
+    else out.push(p);
+    return out;
+  }, []);
   return parts.length < 2 ? esc(s) : parts.map((p) => `<span class="ln">${esc(p)}</span>`).join(' ');
 };
+/** Replace an element's content and keep keyboard focus on the same control (matched by its data- attributes). */
+export function swapKeepingFocus(el, html) {
+  const had = el.contains(document.activeElement) ? document.activeElement : null;
+  const sel = had && [...had.attributes].filter((a) => a.name.startsWith('data-')).map((a) => `[${a.name}="${CSS.escape(a.value)}"]`).join('');
+  el.innerHTML = html;
+  if (sel) el.querySelector(had.tagName.toLowerCase() + sel)?.focus({ preventScroll: true });
+}
 export const secs = (ms) => `${(Math.max(0, ms || 0) / 1000).toFixed(2)} s`;
 export const humanize = (key) => {
   const s = String(key ?? '').replace(/_/g, ' ').toLowerCase().trim();
