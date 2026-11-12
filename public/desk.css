@@ -77,8 +77,8 @@ q.struck { text-decoration: line-through; }
 .gate.g-open { color: var(--c-success); }
 .keys.k-buyer .gate.g-open { color: var(--c-take); }
 .gate.g-shut { color: var(--c-take); }
-.moved { list-style: none; padding: 0; margin: var(--s1) 0 0; font-size: var(--f-sm); }
-.moved li { display: flex; justify-content: space-between; gap: var(--s3); padding: 2px 0; border-bottom: 1px solid var(--line); }
+ul.moved { list-style: none; padding: 0; margin: var(--s1) 0 0; font-size: var(--f-sm); }
+ul.moved li { display: flex; justify-content: space-between; gap: var(--s3); padding: 2px 0; border-bottom: 1px solid var(--line); }
 @media (max-width: 520px) {
   .keys { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
   .gate, #desk .proof.now .gate { font-size: var(--f-xl); justify-self: center; transform: rotate(90deg); }
@@ -92,10 +92,6 @@ q.struck { text-decoration: line-through; }
 .choose .fine { margin: 0 0 var(--s2); }
 button.choice { background: var(--c-surface); border: 1.5px solid var(--c-accent); color: var(--c-text); border-radius: var(--r-element); padding: var(--s2) var(--s4); font-weight: 700; }
 button.choice:hover:not(:disabled) { background: var(--c-accent); color: #fff; }
-
-/* the money column's "held while a person decides" card (view-money.js) still uses these two */
-.card.held { border: 2px solid var(--wait); }
-.card.held h3 { color: var(--wait); }
 
 /* ---- after the decision: what happened, with times ---------------------------------------------- */
 .steps { list-style: none; margin: 0; padding: 0; }

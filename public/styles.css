@@ -80,7 +80,7 @@ q { quotes: "“" "”"; }
 /* ---- header: name, environment, AI in use, start over ------------------------------------------- */
 .top { display: flex; align-items: center; gap: var(--s3) var(--s4); flex-wrap: wrap; padding-top: var(--s4); padding-bottom: var(--s4); }
 .brand { display: flex; gap: var(--s2); align-items: center; font-size: var(--f-base); font-weight: 700; letter-spacing: -0.01em; }
-.mark { width: 28px; height: 28px; border-radius: var(--r-inner); background: var(--c-accent); color: #fff; display: grid; place-items: center; font-size: var(--f-sm); flex: none; }
+.brand .mark { width: 28px; height: 28px; border-radius: var(--r-inner); background: var(--c-accent); color: #fff; display: grid; place-items: center; font-size: var(--f-sm); flex: none; }
 .top-actions { margin-left: auto; display: flex; gap: var(--s2); align-items: center; flex-wrap: wrap; }
 .pill { font-size: var(--f-sm); padding: 2px 10px; border-radius: var(--r-full); background: var(--c-surface); border: 1px solid var(--c-border-em); color: var(--c-text-2); white-space: nowrap; }
 .pill.ai { background: var(--info-bg); border-color: var(--c-info-muted); color: var(--c-on-info-muted); white-space: normal; }
@@ -147,7 +147,7 @@ summary { cursor: pointer; color: var(--c-text-2); font-size: var(--f-sm); }
 .stage { padding-top: var(--s8); padding-bottom: var(--s4); scroll-margin-top: var(--s4); }
 .rail-wrap { margin-bottom: var(--s6); }
 /* seven steps; position = order. Solid = done, thick green = now, dashed = to come, struck = closed for good */
-.rail { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--s2); }
+#rail .rail { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--s2); }
 .stn { padding-top: var(--s2); border-top: 3px solid var(--c-accent); font-size: var(--f-sm); color: var(--c-text-2); line-height: 1.3; min-width: 0; }
 .stn .dot { display: none; }
 .stn.working .dot { display: inline; }

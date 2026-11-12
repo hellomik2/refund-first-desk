@@ -204,7 +204,7 @@ function orderCards(mandate, order, spin) {
     <ul class="items">${order.cart.map((l) => `<li><span>${l.qty} × ${esc(l.name)}</span><span class="num">${usd(l.unitCents * l.qty)}</span></li>`).join('')}
     <li class="total"><span>${atPayPal ? (saved ? 'Paid at PayPal; wallet saved for the agent' : 'Paid at PayPal; wallet not saved') : 'Paid from the saved PayPal wallet'}</span><span class="num">${usd(order.totalCents)}</span></li></ul>
     <p class="fine">PayPal order <code>${esc(order.paypal.orderId)}</code></p>
-    ${limit ? `<details><summary>Instant-refund limit for this order</summary>${limit}</details>` : ''}</div>`;
+    ${!limit ? '' : order.protection.limits.basis.length ? limit : `<details><summary>Instant-refund limit for this order</summary>${limit}</details>`}</div>`;
 }
 
 // ---- buyer column ---------------------------------------------------------------------------------------

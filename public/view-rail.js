@@ -128,6 +128,7 @@ function scene({ mandate, order, kase: k }, working, verifyFirst) {
     return { title: v.rule === 'OPERATOR' ? `A person chose: ${who.toLowerCase()}. The buyer keeps the refund.` : v.liable === 'UNDETERMINED' ? 'Nobody could be named. The buyer keeps the refund.' : `Two keys agree: ${who.charAt(0).toLowerCase() + who.slice(1)} is responsible.`, lead: 'The buyer keeps the refund and is not charged again.' };
   }
   if (k.refund?.completedAt && !verifyFirst) return { title: 'The buyer reported it. The money went back first.', lead: working === 'investigate' ? 'Now the checks run.' : '' };
+  if (verifyFirst && k.refund?.completedAt) return { title: 'Checked first, then refunded.', lead: 'Over the instant-refund limit, so the check came before the refund.' };
   if (verifyFirst) return { title: 'Over the instant-refund limit, so the desk checks first.', lead: 'If it was not the buyer, the refund follows within 5 minutes.' };
   return { title: 'The buyer reported it. The refund goes out first.' };
 }
