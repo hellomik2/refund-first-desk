@@ -4,7 +4,7 @@
 // between the report and the check so the refund can be seen on its own; no duration shown
 // includes that wait.
 import { limitCard, refreshCaseBook } from './casebook.js';
-import { aiKeySource, aiPillText, buyerKeysLine, deepAiSource, quickAiSource } from './ailabels.js';
+import { aiKeySource, aiPillText, buyerKeysLine, deepAiSource, quickAiLine } from './ailabels.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -208,7 +208,9 @@ async function start(fresh = false) {
 // ---- what is on screen now ---------------------------------------------------------------------------
 function current() {
   const mandate = state.mandates.at(-1) || null;
-  const order = mandate ? state.orders.find((o) => o.mandateId === mandate.id) || null : null;
+  // After a refused payment the agent may pay again: the order that was paid is the one on screen.
+  const mine = mandate ? state.orders.filter((o) => o.mandateId === mandate.id) : [];
+  const order = mine.find((o) => o.paypal) || mine.at(-1) || null;
   const kase = order ? state.cases.find((c) => c.orderId === order.id) || null : null;
   const sc = mandate ? cases.find((c) => c.id === mandate.caseId) || null : null;
   return { mandate, order, kase, sc };
@@ -320,6 +322,7 @@ function liveAgentCard(mandate, order, working) {
   const cost = live.finishedAt ? ` ${live.calls} model calls, $${(live.usd || 0).toFixed(4)} of AI.` : '';
   let tail = '';
   if (live.status === 'NOT_PAID') tail = `<div class="result"><strong>It did not pay.</strong> Nothing was charged, so there is nothing to report. Pick another instruction to try again.</div>`;
+  if (live.status === 'PAYMENT_UNCONFIRMED') tail = `<div class="result wait"><strong>PayPal did not confirm the payment.</strong> It may have gone through. The desk sent no second payment; the next try asks PayPal about this one again, under the same request id.</div>`;
   if (live.status === 'FAILED') tail = `<div class="result"><strong>The run stopped:</strong> ${esc(live.error || 'error')}.</div>`;
   const body = liveStepsHtml(live.steps, running);
   return `<div class="card"><h3>${who} ${running ? 'is shopping' : 'shopped'}, step by step</h3>
@@ -576,9 +579,7 @@ function quickCard(k, checking) {
     const ev = f.evidence?.[0];
     rows.push(factLine(key, f.value, ev?.quote, ev ? `AI, quoting ${label(DOCS_IN, ev.doc)}` : 'AI, with no quote from these two documents', q.downgraded?.includes(key)));
   }
-  const aiLine = q.ai
-    ? `AI asked about item and ruled-out items${Object.keys(q.aiFacts || {}).includes('quantityMatchesMandate') ? ' and quantity' : ''} (${quickAiSource(q.ai)}).`
-    : 'Code found a mismatch first, so the AI was not asked.';
+  const aiLine = quickAiLine(q);
   const result = q.closed
     ? `<div class="result go"><strong>Closed in the buyer's favour.</strong> The buyer can never be charged again for this order. Who is responsible is still open: the deep check and the two keys decide that.</div>`
     : `<div class="result"><strong>Nothing settled from these two documents.</strong> On to the deep check.</div>`;

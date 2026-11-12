@@ -50,7 +50,13 @@ export function createLiveShopper({ desk, db, catalog, provider, budget, caps, b
     };
     const pay = async ({ store, cart }) => {
       beforePay();
-      const order = await desk.agentPurchase({ mandateId, store, cart, agentCart: cart, agentLog: [], storeRecord: [] });
+      let order;
+      try {
+        order = await desk.agentPurchase({ mandateId, store, cart, agentCart: cart, agentLog: [], storeRecord: [] });
+      } catch (err) {
+        if (err.orderId) live.orderId = err.orderId; // a payment PayPal has not confirmed yet stays tied to this run
+        throw err;
+      }
       live.orderId = order.id;
       return { orderId: order.id, paypalOrderId: order.paypal.orderId };
     };
@@ -79,8 +85,9 @@ export function createLiveShopper({ desk, db, catalog, provider, budget, caps, b
       const a = AGENTS[kind];
       desk.attachAgentRecord(run.purchase.orderId, { agentLog: run.steps, storeRecord: run.storeRecord, agent: { id: a.id, name: `${a.label} (live Claude)` } });
     }
+    const unconfirmed = !run.purchase && db.data.orders[live.orderId]?.storePayable.status === 'PAYMENT_UNCONFIRMED';
     Object.assign(live, {
-      status: run.purchase ? 'PAID' : 'NOT_PAID',
+      status: run.purchase ? 'PAID' : unconfirmed ? 'PAYMENT_UNCONFIRMED' : 'NOT_PAID',
       steps: run.steps,
       cart: run.priced ? { store: run.priced.store, items: run.priced.items, totalCents: run.priced.totalCents } : null,
       finalText: run.finalText,

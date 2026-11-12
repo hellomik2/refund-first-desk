@@ -91,7 +91,8 @@ export function createFactExtractor({ provider = 'fixture', recordedDir = null, 
         mkdirSync(recordedDir, { recursive: true });
         writeFileSync(file, JSON.stringify({ ...answer, recordedAt: new Date().toISOString() }, null, 1));
       }
-      return { ...answer, provider: 'anthropic', hash, ms };
+      // An answer skipped over a cap (src/context.js) is named as such, never as a live answer.
+      return { ...answer, provider: answer.notCalled ? 'not-called' : 'anthropic', hash, ms };
     }
     throw new Error(`Unknown AI provider: ${provider}`);
   }

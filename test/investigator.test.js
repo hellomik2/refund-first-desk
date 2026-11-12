@@ -523,3 +523,10 @@ test('recorded answers are kept apart by purpose and evidence hash', async () =>
   assert.equal(answer.facts.itemMatchesMandate.value, 'yes');
   assert.notEqual(evidenceHash(evidence, '', 'quick'), evidenceHash(evidence, '', 'deep'));
 });
+
+test('an AI call skipped over a cap is marked as not called, never as a live answer', async () => {
+  const fx = createFactExtractor({ provider: 'anthropic', live: { quick: async () => ({ facts: {}, note: 'AI not called: DAILY_AI_CALL_CAP', notCalled: 'DAILY_AI_CALL_CAP' }) } });
+  const answer = await fx.quick({ evidence: { mandate: { text: 'm' }, paypal_order: { text: 'o' } } });
+  assert.equal(answer.provider, 'not-called');
+  assert.equal(answer.notCalled, 'DAILY_AI_CALL_CAP');
+});

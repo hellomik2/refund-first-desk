@@ -188,28 +188,60 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     }
   }
 
+  /**
+   * Send the saved-wallet payment for an order under its one request id. No answer (or a 5xx, 409, 429) means the
+   * payment may have gone through: it is asked about once more right away under the same id, and if PayPal still
+   * does not answer, the order is left PAYMENT_UNCONFIRMED to be asked about again. Only a clear refusal of the
+   * first send (400, 401, 403, 404, 422) means nothing was charged.
+   */
+  async function chargeOnce(order, buyer, mandate) {
+    const resend = order.storePayable.status === 'PAYMENT_UNCONFIRMED';
+    const request = {
+      vaultId: buyer.wallet.vaultId,
+      orderRef: order.id,
+      mandateFingerprint: mandate.fingerprint,
+      cart: order.cart,
+      totalCents: order.totalCents,
+      description: `Agent purchase at ${order.store.name}`,
+      requestId: `purchase-${order.id}`,
+    };
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        return await paypal.chargeSavedWallet(request);
+      } catch (err) {
+        const refused = !resend && attempt === 0 && err instanceof PayPalError && [400, 401, 403, 404, 422].includes(err.status);
+        if (refused) {
+          order.storePayable.status = 'CANCELLED';
+          db.save();
+          throw err;
+        }
+        if (attempt === 0) continue;
+        order.storePayable.status = 'PAYMENT_UNCONFIRMED';
+        order.paymentError = err.message;
+        db.save();
+        throw Object.assign(new DeskError('PAYMENT_UNCONFIRMED', 'PayPal did not confirm the payment. It may have gone through, so the desk will not send a new one; trying again asks PayPal about this payment under the same request id.'), { orderId: order.id });
+      }
+    }
+  }
+
   /** The agent pays from the wallet the buyer saved earlier. No buyer in front of a screen. */
   async function agentPurchase({ mandateId, store, cart, agentCart, agentLog, storeRecord, scenarioId, fixtureFacts, fixtureDeep, fixtureQuick }) {
     const mandate = must(S.mandates, mandateId, 'mandate');
     if (mandate.status !== 'APPROVED') throw new DeskError('MANDATE_NOT_APPROVED');
     const buyer = must(S.buyers, mandate.buyerId, 'buyer');
     if (buyer.wallet?.consent !== 'ACTIVE') throw new DeskError('NO_ACTIVE_CONSENT', 'The buyer has no saved wallet with active consent');
-    // One saved-wallet charge per instruction. If an earlier answer from PayPal was lost, the money may have moved:
-    // a second request would carry a new request id and could charge again, so the desk does not send one.
-    if (Object.values(S.orders).some((o) => o.mandateId === mandate.id && (o.payment === 'SAVED_WALLET' || o.paypal))) {
-      throw new DeskError('ALREADY_PAID_ONCE', 'A payment for this instruction was already sent. The desk does not pay twice for one instruction.');
+    // One saved-wallet charge per instruction. A payment PayPal never answered may have gone through: it is
+    // asked about again under its own request id (PayPal returns the first request's latest status and does not
+    // charge again), never replaced by a new request. Only a clear refusal leaves room for a new payment.
+    const tried = Object.values(S.orders).filter((o) => o.mandateId === mandate.id && (o.payment === 'SAVED_WALLET' || o.paypal));
+    const paidBefore = tried.find((o) => o.paypal);
+    if (paidBefore) throw Object.assign(new DeskError('ALREADY_PAID_ONCE', 'A payment for this instruction was already made. The desk does not pay twice for one instruction.'), { orderId: paidBefore.id });
+    let order = tried.find((o) => o.storePayable.status === 'PAYMENT_UNCONFIRMED');
+    if (!order) {
+      order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'SAVED_WALLET', scenarioId, fixtureFacts, fixtureDeep, fixtureQuick });
+      S.orders[order.id] = order;
     }
-    const order = newOrder({ mandate, buyer, store, cart, agentCart, agentLog, storeRecord, payment: 'SAVED_WALLET', scenarioId, fixtureFacts, fixtureDeep, fixtureQuick });
-    S.orders[order.id] = order;
-    const res = await paypal.chargeSavedWallet({
-      vaultId: buyer.wallet.vaultId,
-      orderRef: order.id,
-      mandateFingerprint: mandate.fingerprint,
-      cart,
-      totalCents: order.totalCents,
-      description: `Agent purchase at ${store.name}`,
-      requestId: `purchase-${order.id}`,
-    });
+    const res = await chargeOnce(order, buyer, mandate);
     const parsed = readOrder(res.body);
     if (!parsed.capture || parsed.capture.status !== 'COMPLETED') {
       order.storePayable.status = 'CANCELLED';
@@ -490,7 +522,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
         if (checked.facts[key].value === 'no') reasons.push({ key, by: 'ai', doc: checked.facts[key].evidence[0].doc, quote: checked.facts[key].evidence[0].quote });
       }
       downgraded = checked.downgraded.filter((k) => k in aiFacts);
-      ai = { provider: answer.provider, model: answer.model || null, evidenceHash: answer.hash, ms: answer.ms ?? null, note: answer.note || null };
+      ai = { provider: answer.provider, model: answer.model || null, evidenceHash: answer.hash, ms: answer.ms ?? null, note: answer.note || null, notCalled: answer.notCalled || null };
     }
     const finishedAtMs = Date.now();
     Object.assign(kase.quick, { closed: reasons.length > 0, reasons, at: new Date(finishedAtMs).toISOString(), codeFacts: code, aiFacts, downgraded, ai, finishedAtMs, ms: finishedAtMs - startedAtMs });
@@ -551,7 +583,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       integrity,
       codeKey,
       aiKey,
-      ai: { provider: answer.provider, model: answer.model || null, evidenceHash: answer.hash, ms: answer.ms ?? null, note: answer.note || null },
+      ai: { provider: answer.provider, model: answer.model || null, evidenceHash: answer.hash, ms: answer.ms ?? null, note: answer.note || null, notCalled: answer.notCalled || null },
     });
   }
 

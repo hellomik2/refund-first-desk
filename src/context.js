@@ -53,7 +53,7 @@ export function createContext(opts = {}) {
   // as UNDETERMINED, so money moves only if the rules also say UNDETERMINED (buyer keeps the refund).
   const guarded = (job) => async (args) => {
     const blockedBy = budget.blockedBy();
-    if (blockedBy) return { facts: {}, firstDeviation: null, verdict: null, note: `AI not called: ${blockedBy}` };
+    if (blockedBy) return { facts: {}, firstDeviation: null, verdict: null, note: `AI not called: ${blockedBy}`, notCalled: blockedBy };
     return (await liveProvider())[job](args);
   };
   const liveCalls = live || { quick: guarded('quickCheck'), deep: guarded('deepCheck') };

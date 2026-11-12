@@ -47,3 +47,17 @@ test('both keys name the buyer: a notice only when a refund was paid; with no re
   assert.doesNotMatch(noRefund, /notice|re-charge/);
   assert.match(noRefund, /No refund was paid/);
 });
+
+test('the AI was not called (a cap was reached): the page says so instead of naming the model as if it answered', async () => {
+  const { quickAiLine } = await import('../public/ailabels.js');
+  const notCalled = { provider: 'not-called', model: null, notCalled: 'DAILY_AI_CALL_CAP' };
+  assert.match(quickAiLine({ ai: notCalled, aiFacts: {} }), /AI was not called \(daily AI call limit reached\)/);
+  assert.doesNotMatch(quickAiLine({ ai: notCalled, aiFacts: {} }), /asked/);
+  assert.match(deepAiSource({ ai: notCalled }), /^The investigator was not called \(daily AI call limit reached\)/);
+  assert.doesNotMatch(deepAiSource({ ai: notCalled }), /read every record/);
+  assert.match(aiKeySource({ source: 'not-called' }, { ai: { ...notCalled, notCalled: 'AI_SPEND_CAP' } }), /AI not called \(AI spending cap reached\)/);
+  assert.match(aiPillText(HOSTED, { investigation: { ai: notCalled } }), /not called for this case/);
+  // Unchanged for an answer that came back.
+  assert.equal(quickAiLine({ ai: live, aiFacts: {} }), 'AI asked about item and ruled-out items (claude-haiku-5-5).');
+  assert.equal(quickAiLine({ ai: null }), 'Code found a mismatch first, so the AI was not asked.');
+});

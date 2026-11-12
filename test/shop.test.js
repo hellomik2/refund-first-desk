@@ -278,25 +278,71 @@ test('a run that cannot reach the model leaves the instruction unrun and frees i
   assert.equal(budget.agentBlockedBy({ dailyRunCap: 1 }), null);
 });
 
-test('a payment whose answer was lost is not sent again when the agent retries', async () => {
+/** A live run on a desk whose PayPal stand-in is replaced by `charge` (it gets the real stand-in's charge). */
+async function liveRunWith(charge, turns) {
   const { createLiveShopper } = await import('../src/shop/run.js');
-  const { db, desk, paypal, mandates } = liveDesk(1);
-  // PayPal takes the money, then the answer is lost on the way back.
-  const charge = paypal.chargeSavedWallet;
-  let charges = 0;
-  paypal.chargeSavedWallet = async (args) => {
-    charges += 1;
-    const res = await charge(args);
-    if (charges === 1) throw new Error('socket hang up');
-    return res;
-  };
-  const { turn } = scripted([[['search_products', { query: 'aeropress go' }]], [['add_to_cart', { sku: '31074', quantity: 1 }]], [['checkout_and_pay', {}]], [['checkout_and_pay', {}]], 'Done.']);
+  const ctx = liveDesk(1);
+  const real = ctx.paypal.chargeSavedWallet;
+  const sent = [];
+  ctx.paypal.chargeSavedWallet = async (args) => (sent.push(args.requestId), charge(real, args, sent.length));
+  const { turn } = scripted(turns);
   const budget = createAiBudget({ file: join(mkdtempSync(join(tmpdir(), 'rfd-agent-')), 'ai-usage.jsonl'), dailyCallCap: 40, spendCapUsd: 100 });
-  const shopper = createLiveShopper({ desk, db, catalog, provider: async () => ({ agentTurn: turn }), budget, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
-  const { run } = await shopper.shop({ mandateId: mandates[0].id, kind: 'careful' });
-  assert.equal(charges, 1, 'one charge request for one instruction');
-  assert.equal(run.purchase, null);
-  assert.equal(run.steps.filter((s) => s.action === 'pay').length, 2); // both attempts are in the log, the second refused by the desk
+  const shopper = createLiveShopper({ desk: ctx.desk, db: ctx.db, catalog, provider: async () => ({ agentTurn: turn }), budget, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
+  const { mandate, run } = await shopper.shop({ mandateId: ctx.mandates[0].id, kind: 'careful' });
+  return { ...ctx, mandate, run, sent };
+}
+const BUY_COFFEE = [[['search_products', { query: 'aeropress go' }]], [['add_to_cart', { sku: '31074', quantity: 1 }]], [['checkout_and_pay', {}]]];
+
+test('a payment whose answer was lost is asked again under the same request id: charged once, recorded, reportable', async () => {
+  // PayPal takes the money, then the first answer is lost on the way back.
+  const { db, desk, paypal, mandate, run, sent } = await liveRunWith(async (real, args, n) => {
+    const res = await real(args);
+    if (n === 1) throw new Error('socket hang up');
+    return res;
+  }, [...BUY_COFFEE, 'Done.']);
+  assert.equal(new Set(sent).size, 1, 'one request id for the one payment');
+  assert.equal(paypal.totals().captures, 1, 'charged once');
+  assert.equal(mandate.live.status, 'PAID');
+  const order = db.data.orders[mandate.live.orderId];
+  assert.ok(order.paypal?.captureId, 'the capture is on the order');
+  assert.equal(db.data.ledger.filter((l) => l.orderId === order.id && l.kind === 'PURCHASE_CAPTURED').length, 1);
+  assert.ok(run.purchase);
+  const { kase } = await desk.reportProblem({ orderId: order.id, statement: 'This is not what I asked the agent to buy.' });
+  assert.ok(kase.id);
+});
+
+test('when PayPal clearly refuses the payment, the agent may pay again (a new request)', async () => {
+  const { PayPalError } = await import('../src/paypal/client.js');
+  const { db, paypal, mandate, sent } = await liveRunWith(async (real, args, n) => {
+    if (n === 1) throw new PayPalError({ label: 'charge-saved-wallet', status: 422, name: 'UNPROCESSABLE_ENTITY', issues: [{ issue: 'INSTRUMENT_DECLINED' }] });
+    return real(args);
+  }, [...BUY_COFFEE, [['checkout_and_pay', {}]], 'Done.']);
+  assert.equal(sent.length, 2);
+  assert.notEqual(sent[0], sent[1], 'the second try is a new payment request');
+  assert.equal(paypal.totals().captures, 1);
+  assert.equal(mandate.live.status, 'PAID');
+  assert.equal(Object.values(db.data.orders).filter((o) => o.storePayable.status === 'CANCELLED').length, 1);
+});
+
+test('a payment PayPal never answered stays unconfirmed: never "nothing was charged", and the next try asks again under the same id', async () => {
+  // No answer at all, twice: the desk cannot tell whether money moved.
+  const silent = await liveRunWith(async () => {
+    throw new Error('timeout');
+  }, [...BUY_COFFEE, 'Done.']);
+  assert.equal(silent.mandate.live.status, 'PAYMENT_UNCONFIRMED');
+  const pending = silent.db.data.orders[silent.mandate.live.orderId];
+  assert.equal(pending.storePayable.status, 'PAYMENT_UNCONFIRMED');
+  assert.equal(new Set(silent.sent).size, 1);
+
+  // PayPal had taken it; the agent's next try asks about that payment again and records it, with no second charge.
+  const late = await liveRunWith(async (real, args, n) => {
+    const res = await real(args);
+    if (n <= 2) throw new Error('timeout');
+    return res;
+  }, [...BUY_COFFEE, [['checkout_and_pay', {}]], 'Done.']);
+  assert.equal(new Set(late.sent).size, 1, 'every try used the same request id');
+  assert.equal(late.paypal.totals().captures, 1);
+  assert.equal(late.mandate.live.status, 'PAID');
 });
 
 test('the prepared-case purchase also pays once per instruction', async () => {
