@@ -682,3 +682,55 @@ test('ledger and PayPal agree for every party after an agent-responsible case', 
   assert.equal(by.buyer, 0, 'buyer paid and got everything back');
   assert.equal(by.store, order.totalCents, 'store received the full price');
 });
+
+// The buyer approved at PayPal and the desk sent the capture: from then on money may have moved. A pending capture
+// or a lost answer is never closed as "the buyer turned back, nothing was charged"; asking again records it.
+async function consentStarted(ctx) {
+  const buyer = ctx.desk.createBuyer({ name: 'At PayPal' });
+  const mandate = ctx.desk.draftMandate({ buyerId: buyer.id, instruction: 'Buy eggs.', conditions: { item: 'eggs', quantity: 1, purchaseAuthorized: true } });
+  ctx.desk.approveMandate(mandate.id);
+  const started = await ctx.desk.startConsentPurchase({ mandateId: mandate.id, store: { id: 'freshcart', name: 'FreshCart' }, cart: [{ sku: 'EGG-12', name: 'Large Eggs, 12 ct', qty: 1, unitCents: 3143 }], agentLog: [AGENT_LINE], storeRecord: [STORE_LINE], fixtureFacts: facts() });
+  return started.order;
+}
+
+test('consent purchase: a capture PayPal answers PENDING cannot be cancelled as "nothing was charged" and is recorded once completed', async () => {
+  const ctx = setup();
+  const order = await consentStarted(ctx);
+  ctx.paypal.captureStatus = 'PENDING';
+  await assert.rejects(ctx.desk.completeConsentPurchase(order.id), (err) => err.code === 'PAYMENT_UNCONFIRMED');
+  ctx.paypal.captureStatus = 'COMPLETED';
+  assert.equal(order.storePayable.status, 'PAYMENT_UNCONFIRMED');
+  assert.throws(() => ctx.desk.cancelConsentPurchase(order.id), (err) => err.code === 'CAPTURE_ALREADY_SENT');
+  assert.ok(!order.consentCancelled);
+  ctx.paypal.completePendingCaptures();
+  const paid = await ctx.desk.completeConsentPurchase(order.id);
+  assert.equal(paid.paypal.status, 'COMPLETED');
+  assert.equal(ctx.paypal.totals().captures, 1);
+  assert.equal(ctx.db.data.ledger.filter((l) => l.kind === 'PURCHASE_CAPTURED').length, 1);
+});
+
+test('consent purchase: a capture whose answer was lost cannot be cancelled; asking again records the one capture', async () => {
+  const ctx = setup();
+  const order = await consentStarted(ctx);
+  const real = ctx.paypal.captureOrder;
+  let lose = 1;
+  ctx.paypal.captureOrder = async (...args) => {
+    const res = await real(...args);
+    if (lose-- > 0) throw new Error('socket hang up');
+    return res;
+  };
+  await assert.rejects(ctx.desk.completeConsentPurchase(order.id));
+  assert.throws(() => ctx.desk.cancelConsentPurchase(order.id), (err) => err.code === 'CAPTURE_ALREADY_SENT');
+  assert.notEqual(order.storePayable.status, 'CANCELLED');
+  const paid = await ctx.desk.completeConsentPurchase(order.id);
+  assert.ok(paid.paypal?.captureId);
+  assert.equal(ctx.paypal.totals().captures, 1);
+});
+
+test('consent purchase: a buyer who turned back before any capture was sent can still cancel', async () => {
+  const ctx = setup();
+  const order = await consentStarted(ctx);
+  ctx.desk.cancelConsentPurchase(order.id);
+  assert.equal(order.storePayable.status, 'CANCELLED');
+  assert.equal(order.consentCancelled, true);
+});

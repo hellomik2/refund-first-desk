@@ -399,3 +399,105 @@ test('a payment with no answer is not a buyer who turned back at PayPal: Cancel 
   assert.equal(order.storePayable.status, 'PAYMENT_UNCONFIRMED', 'never "cancelled, nothing was charged"');
   assert.ok(!order.consentCancelled);
 });
+
+// ---- payment states that are not a clear answer (PayPal Orders v2 capture status: COMPLETED, DECLINED,
+// PARTIALLY_REFUNDED, PENDING, REFUNDED, FAILED; order status VOIDED). Only DECLINED, FAILED or VOIDED say no money moved.
+
+const KITCHEN = { id: 'kitchenhub', name: 'KitchenHub' };
+const COFFEE_CART = [{ sku: '31074', name: 'AeroPress Go', qty: 1, unitCents: 3995 }];
+
+test('a capture PayPal answers PENDING is not cancelled: no new payment, and it is recorded once PayPal completes it', async () => {
+  const { db, desk, paypal, mandates } = liveDesk(1);
+  const buy = () => desk.agentPurchase({ mandateId: mandates[0].id, store: KITCHEN, cart: COFFEE_CART, agentCart: COFFEE_CART, agentLog: [], storeRecord: [] });
+  const sent = [];
+  const real = paypal.chargeSavedWallet;
+  paypal.chargeSavedWallet = async (args) => (sent.push(args.requestId), real(args));
+  paypal.captureStatus = 'PENDING';
+  await assert.rejects(buy(), (err) => err.code === 'PAYMENT_UNCONFIRMED' && !!err.orderId);
+  paypal.captureStatus = 'COMPLETED';
+  const orders = () => Object.values(db.data.orders);
+  assert.equal(orders().length, 1);
+  assert.equal(orders()[0].storePayable.status, 'PAYMENT_UNCONFIRMED', 'money may move: never "cancelled, nothing was charged"');
+
+  // Asked again while PayPal is still processing: still unconfirmed, and no new payment request goes out.
+  await assert.rejects(buy(), (err) => err.code === 'PAYMENT_UNCONFIRMED');
+  assert.equal(paypal.totals().captures, 1);
+  assert.equal(new Set(sent).size, 1, 'never a new payment request');
+
+  // PayPal completes the capture: the next ask records it, still one payment.
+  paypal.completePendingCaptures();
+  const order = await buy();
+  assert.equal(order.paypal.status, 'COMPLETED');
+  assert.equal(orders().length, 1);
+  assert.equal(paypal.totals().captures, 1, 'one instruction, one payment');
+  assert.equal(new Set(sent).size, 1);
+  assert.equal(db.data.ledger.filter((l) => l.kind === 'PURCHASE_CAPTURED').length, 1);
+});
+
+test('a capture PayPal answers DECLINED is a clear failure: nothing was charged, a new payment may go out', async () => {
+  const { db, desk, paypal, mandates } = liveDesk(1);
+  const buy = () => desk.agentPurchase({ mandateId: mandates[0].id, store: KITCHEN, cart: COFFEE_CART, agentCart: COFFEE_CART, agentLog: [], storeRecord: [] });
+  paypal.captureStatus = 'DECLINED';
+  await assert.rejects(buy(), (err) => err.code === 'CAPTURE_NOT_COMPLETED');
+  assert.equal(Object.values(db.data.orders)[0].storePayable.status, 'CANCELLED');
+  paypal.captureStatus = 'COMPLETED';
+  const order = await buy();
+  assert.equal(order.paypal.status, 'COMPLETED');
+  assert.equal(Object.values(db.data.orders).length, 2, 'the declined order stays cancelled; the new one is paid');
+});
+
+test('Cancel on an unconfirmed payment, then the same instruction again: still one payment (codex round 3 path)', async () => {
+  const { db, desk, paypal, mandates } = liveDesk(1);
+  const buy = () => desk.agentPurchase({ mandateId: mandates[0].id, store: KITCHEN, cart: COFFEE_CART, agentCart: COFFEE_CART, agentLog: [], storeRecord: [] });
+  const real = paypal.chargeSavedWallet;
+  let lose = 2; // PayPal takes the money; the first two answers are lost
+  paypal.chargeSavedWallet = async (args) => {
+    const res = await real(args);
+    if (lose-- > 0) throw new Error('socket hang up');
+    return res;
+  };
+  await assert.rejects(buy(), (err) => err.code === 'PAYMENT_UNCONFIRMED');
+  const first = Object.values(db.data.orders)[0];
+  assert.throws(() => desk.cancelConsentPurchase(first.id), (err) => err.code === 'NOT_A_CONSENT_CHECKOUT');
+  const order = await buy();
+  assert.equal(order.id, first.id);
+  assert.equal(paypal.totals().captures, 1);
+  assert.equal(paypal.totals().capturedCents, 3995);
+  assert.equal(db.data.ledger.filter((l) => l.kind === 'PURCHASE_CAPTURED').length, 1);
+});
+
+test('a retry with a different cart records the order that was actually paid, never the new cart', async () => {
+  // The coffee maker payment goes through but both answers are lost; the agent then switches to dish soap and pays.
+  // The desk asks PayPal about the first order again (same request id): what was paid is the coffee maker.
+  const coffee = priceCart(catalog, [{ sku: '31074', qty: 1 }]);
+  const soap = priceCart(catalog, [{ sku: '55216', qty: 1 }]);
+  const { db, paypal, mandate, run } = await liveRunWith(async (real, args, n) => {
+    const res = await real(args);
+    if (n <= 2) throw new Error('timeout');
+    return res;
+  }, [
+    ...BUY_COFFEE,
+    [['remove_from_cart', { sku: '31074' }]],
+    [['add_to_cart', { sku: '55216', quantity: 1 }]],
+    [['checkout_and_pay', {}]],
+    'Done.',
+  ]);
+  assert.equal(paypal.totals().captures, 1);
+  assert.equal(paypal.totals().capturedCents, coffee.totalCents);
+  const order = db.data.orders[mandate.live.orderId];
+  assert.equal(order.totalCents, coffee.totalCents);
+  const paidLine = order.agentLog.filter((s) => s.action === 'pay').at(-1);
+  assert.equal(paidLine.amountCents, coffee.totalCents, 'the pay step shows what PayPal charged');
+  assert.match(paidLine.content, /\$46\.90/);
+  assert.doesNotMatch(paidLine.content, /^Paid \$8\.48/);
+  const shipped = order.agentLog.filter((s) => s.actor === 'store').map((s) => s.content).join(' ');
+  assert.match(shipped, /AeroPress Go/);
+  assert.doesNotMatch(shipped, /Dish Soap/, 'the store never ships what was not paid for');
+  const store = order.storeRecord.join(' ');
+  assert.match(store, /\$46\.90/);
+  assert.match(store, /AeroPress Go/);
+  assert.doesNotMatch(store, /Dish Soap|\$8\.48/);
+  assert.equal(run.purchase.totalCents, coffee.totalCents);
+  assert.equal(mandate.live.cart.totalCents, coffee.totalCents, 'the page shows the cart that was paid');
+  assert.ok(soap.totalCents !== coffee.totalCents);
+});

@@ -58,7 +58,8 @@ export function createLiveShopper({ desk, db, catalog, provider, budget, caps, b
         throw err;
       }
       live.orderId = order.id;
-      return { orderId: order.id, paypalOrderId: order.paypal.orderId };
+      // What PayPal charged: an earlier payment PayPal had not confirmed can be the one recorded here.
+      return { orderId: order.id, paypalOrderId: order.paypal.orderId, totalCents: order.totalCents, store: order.store, cart: order.cart };
     };
     let run;
     try {

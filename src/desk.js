@@ -194,8 +194,25 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
    * does not answer, the order is left PAYMENT_UNCONFIRMED to be asked about again. Only a clear refusal of the
    * first send (400, 401, 403, 404, 422) means nothing was charged.
    */
+  function leaveUnconfirmed(order, reason, message) {
+    order.storePayable.status = 'PAYMENT_UNCONFIRMED';
+    order.paymentError = reason;
+    db.save();
+    return Object.assign(new DeskError('PAYMENT_UNCONFIRMED', message), { orderId: order.id });
+  }
+  const NO_ANSWER = 'PayPal did not confirm the payment. It may have gone through, so the desk will not send a new one; trying again asks PayPal about this payment under the same request id.';
+
   async function chargeOnce(order, buyer, mandate) {
     const resend = order.storePayable.status === 'PAYMENT_UNCONFIRMED';
+    // PayPal already named this payment's order and said its capture was not completed yet: look that order up.
+    // Nothing is sent, so nothing can be charged again, however long ago the payment was made.
+    if (resend && order.pendingPayPalOrderId) {
+      try {
+        return await paypal.getOrder(order.pendingPayPalOrderId);
+      } catch (err) {
+        throw leaveUnconfirmed(order, err.message, NO_ANSWER);
+      }
+    }
     const request = {
       vaultId: buyer.wallet.vaultId,
       orderRef: order.id,
@@ -216,10 +233,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
           throw err;
         }
         if (attempt === 0) continue;
-        order.storePayable.status = 'PAYMENT_UNCONFIRMED';
-        order.paymentError = err.message;
-        db.save();
-        throw Object.assign(new DeskError('PAYMENT_UNCONFIRMED', 'PayPal did not confirm the payment. It may have gone through, so the desk will not send a new one; trying again asks PayPal about this payment under the same request id.'), { orderId: order.id });
+        throw leaveUnconfirmed(order, err.message, NO_ANSWER);
       }
     }
   }
@@ -243,11 +257,20 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     }
     const res = await chargeOnce(order, buyer, mandate);
     const parsed = readOrder(res.body);
-    if (!parsed.capture || parsed.capture.status !== 'COMPLETED') {
+    const captureStatus = parsed.capture?.status || null;
+    // PayPal Orders v2: only a DECLINED or FAILED capture, or a VOIDED order, says no money moved. A PENDING capture
+    // (or an answer without the capture) may still be paid later: the order waits to be looked up, never replaced.
+    if (captureStatus === 'DECLINED' || captureStatus === 'FAILED' || (!captureStatus && parsed.status === 'VOIDED')) {
       order.storePayable.status = 'CANCELLED';
       db.save();
-      throw new DeskError('CAPTURE_NOT_COMPLETED', `PayPal order ${parsed.orderId} is ${parsed.status}`);
+      throw new DeskError('CAPTURE_NOT_COMPLETED', `PayPal order ${parsed.orderId} is ${parsed.status}, capture ${captureStatus || 'none'}`);
     }
+    if (captureStatus !== 'COMPLETED') {
+      if (parsed.orderId) order.pendingPayPalOrderId = parsed.orderId;
+      order.pendingCaptureStatus = captureStatus || 'NOT_IN_ANSWER';
+      throw leaveUnconfirmed(order, `PayPal order ${parsed.orderId} is ${parsed.status}, capture ${captureStatus || 'not in the answer'}`, `PayPal has not completed this payment yet (capture ${captureStatus || 'not in the answer'}). Money may still move, so the desk will not send a new one; trying again looks this payment up at PayPal.`);
+    }
+    delete order.pendingCaptureStatus;
     recordCapture(order, buyer, parsed);
     db.save();
     return order;
@@ -297,6 +320,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     if (order.paypal) return order;
     // Only a buyer at the PayPal screen can turn back. A saved-wallet payment with no answer may have gone through.
     if (order.payment !== 'CONSENT_CHECKOUT') throw new DeskError('NOT_A_CONSENT_CHECKOUT', 'Only a purchase waiting for the buyer at PayPal can be cancelled.');
+    // Once the buyer approved and the capture was sent, money may have moved: only PayPal's answer closes it.
+    if (order.captureSentAt) throw new DeskError('CAPTURE_ALREADY_SENT', 'The buyer approved at PayPal and the payment was sent. It is not cancelled; asking PayPal again records what happened.');
     order.consentCancelled = true;
     order.storePayable.status = 'CANCELLED';
     db.save();
@@ -307,9 +332,45 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const order = must(S.orders, orderId, 'order');
     if (order.paypal) return order;
     const buyer = must(S.buyers, order.buyerId, 'buyer');
-    const res = await paypal.captureOrder(order.pendingPayPalOrderId, `capture-${order.id}`);
+    const firstSend = !order.captureSentAt;
+    const capture = async () => {
+      try {
+        return await paypal.captureOrder(order.pendingPayPalOrderId, `capture-${order.id}`);
+      } catch (err) {
+        if (firstSend && err instanceof PayPalError && [400, 401, 403, 404, 422].includes(err.status)) {
+          delete order.captureSentAt; // a clear refusal: nothing was charged, the buyer may still turn back
+          db.save();
+          throw err;
+        }
+        throw leaveUnconfirmed(order, err.message, NO_ANSWER);
+      }
+    };
+    let res;
+    if (firstSend) {
+      order.captureSentAt = new Date().toISOString();
+      db.save();
+      res = await capture();
+    } else {
+      // Sent before without a clear answer: look the PayPal order up; capture (same request id) only if it has none.
+      try {
+        res = await paypal.getOrder(order.pendingPayPalOrderId);
+      } catch (err) {
+        throw leaveUnconfirmed(order, err.message, NO_ANSWER);
+      }
+      if (!readOrder(res.body).capture) res = await capture();
+    }
     const parsed = readOrder(res.body);
-    if (!parsed.capture || parsed.capture.status !== 'COMPLETED') throw new DeskError('CAPTURE_NOT_COMPLETED');
+    const captureStatus = parsed.capture?.status || null;
+    if (captureStatus === 'DECLINED' || captureStatus === 'FAILED' || (!captureStatus && parsed.status === 'VOIDED')) {
+      delete order.captureSentAt; // PayPal clearly did not take the money
+      db.save();
+      throw new DeskError('CAPTURE_NOT_COMPLETED', `PayPal order ${parsed.orderId} is ${parsed.status}, capture ${captureStatus || 'none'}`);
+    }
+    if (captureStatus !== 'COMPLETED') {
+      order.pendingCaptureStatus = captureStatus || 'NOT_IN_ANSWER';
+      throw leaveUnconfirmed(order, `PayPal order ${parsed.orderId} is ${parsed.status}, capture ${captureStatus || 'not in the answer'}`, `PayPal has not completed this payment yet (capture ${captureStatus || 'not in the answer'}). Money may still move; asking again looks this payment up at PayPal.`);
+    }
+    delete order.pendingCaptureStatus;
     // Only the wallet that paid this order may ever be charged again for it. If PayPal did not save
     // it, the buyer has no saved wallet with consent and this purchase is protected "check first".
     buyer.wallet = parsed.vault?.id

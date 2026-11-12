@@ -172,6 +172,7 @@ Reported without a target: the careful agent paid 5 of 6 times, each purchase wi
 - **Simulated:** shipping and returns; the store's records; waiting periods (a fast-forward button moves the policy clock only); the agent operator paying its invoice.
 - **Written by us:** the 30 cases, the agents' numbered action logs, the store records and the answer key. For the live agent: the catalog, its stores and the 4 prepared instructions (the live agent's log is its own).
 - **Fast-forward and the counting windows:** the 30-day instant-refund count and the 180-day record window compare the policy clock with the real time each case was reported. Pressing fast-forward several times moves only the policy clock, so in the demo earlier cases can drop out of those windows too early. Without fast-forward, as in real use, the two clocks are the same and this does not happen.
+- **Payments without a clear answer:** a capture PayPal reports as `PENDING`, or a payment whose answer was lost, stays "not confirmed". The desk never cancels it or sends a new payment; asking again looks it up at PayPal. Only a `DECLINED` or `FAILED` capture (or a `VOIDED` order) counts as "nothing was charged". The tests cover this with the in-memory PayPal stand-in, not the sandbox.
 - **Sandbox only:** on live accounts, charging a saved PayPal wallet without the buyer present requires PayPal's approval (billing agreements / reference transactions).
 - **Policy numbers are assumptions:** $50 per case, 2 instant refunds per 30 days, 5 business days' notice (the same notice period PayPal's buyer protection terms give before recovering a temporary refund). How a buyer's record moves the limit (±$25 and ±1 refund per case, at most two cases up, 180 days) is an assumption too, not based on measured abuse or loss data. All of these are settings in `src/config.js` (`POLICY_*`; the record rule is `POLICY_TRUST_*`).
 
@@ -196,7 +197,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 162 tests against an in-memory PayPal stand-in
+npm test                       # 169 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 

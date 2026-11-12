@@ -53,7 +53,7 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
 
   function capture(o) {
     const grossCents = cents(o.unit.amount.value);
-    const cap = { id: id('CAP'), status: 'COMPLETED', grossCents, feeCents: fee(grossCents), custom_id: o.unit.custom_id, invoice_id: o.unit.invoice_id, at: new Date().toISOString(), refundedCents: 0 };
+    const cap = { id: id('CAP'), status: api.captureStatus, grossCents, feeCents: fee(grossCents), custom_id: o.unit.custom_id, invoice_id: o.unit.invoice_id, at: new Date().toISOString(), refundedCents: 0 };
     state.captures.set(cap.id, cap);
     o.captureId = cap.id;
     o.status = 'COMPLETED';
@@ -184,6 +184,12 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
   }
 
   api.refundsPending = false;
+  // PENDING mimics a capture PayPal accepted but has not credited yet (for example an eCheck); DECLINED or FAILED a clear failure.
+  api.captureStatus = 'COMPLETED';
+  /** PayPal finishes captures that were still pending: every PENDING capture (and its order) becomes COMPLETED. */
+  api.completePendingCaptures = () => {
+    for (const c of state.captures.values()) if (c.status === 'PENDING') c.status = 'COMPLETED';
+  };
   api.payoutStatus = 'SUCCESS'; // set to FAILED, RETURNED, BLOCKED or UNCLAIMED to mimic a payout that did not reach the store
   api.failNextGetPayout = false;
   api.rejectNextPayout = false;
