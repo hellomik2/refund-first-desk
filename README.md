@@ -1,6 +1,18 @@
 # Refund-First Desk
 
-**When an AI shopping agent buys the wrong thing, the buyer gets the money back first. Who pays is worked out afterwards.**
+**Trust the buyer first. If that was wrong, give notice and take it back.**
+
+When an AI shopping agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Then the records are checked. Only if the check finds the buyer responsible does the buyer get a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never more than was refunded. In every other ending the buyer keeps the refund.
+
+```
+1. Refund first    PayPal refund COMPLETED before any check     within the limits; sandbox runs 1.87–3.17 s
+2. Then check      the AI's verdict + fixed rules in code       money moves only when they agree
+3. Take it back    only if the buyer was responsible            notice → 5 business days to dispute → charged again
+```
+
+The refund can come first because it can be taken back: the buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and money moves only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies that pattern to purchases made by AI agents, by rule and before the check.
+
+Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 entries we read, we did not find one that refunds before the check and has a step to take the money back from the buyer.
 
 Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) and Payouts, in the PayPal sandbox. Claude reads the purchase records, finds the first step where the agent went off what the buyer approved, and gives its own verdict. Fixed rules in code give a second verdict. Money moves only when the two agree; otherwise a person decides.
 
@@ -30,7 +42,7 @@ A buyer tells an agent "compare prices, don't buy yet", and the agent buys. Or i
 
 ## What the desk does
 
-Good news for the buyer comes fast; bad news comes slowly, with notice.
+Trust the buyer first: the refund comes before the check. If the check finds the buyer responsible, the desk gives notice and takes the money back; otherwise the buyer keeps it. Good news for the buyer comes fast; bad news comes slowly, with notice.
 
 ```
 buyer: one sentence ─► "Refund requested" ─► limits check ─► PayPal refund COMPLETED (seconds)
@@ -49,7 +61,7 @@ Over a limit ($50 a case, or more than 2 instant refunds in 30 days) the order f
 
 A refund that PayPal accepts but leaves pending is looked up again and never closes a case or pays a store until PayPal reports it completed. When PayPal refuses a refund (for example, the desk's PayPal balance is short), the case falls back to "check first" and the buyer is told so.
 
-Pieces of this exist in other entries to this hackathon (first-deviation search, money moving only when checks agree, rules then AI then a person). What we did not find among the 217 entries we read is this order: refund first, then check, then charge the buyer again only if they were responsible.
+Pieces of this exist in other entries to this hackathon (checking the purchase against a mandate, first-deviation search, holding or cancelling a payment before it settles, refunding once a verdict is in, an operator making the store whole, money moving only when checks agree, rules then AI then a person). What we did not find among the 217 entries we read is the order and the last step: refund first, then check, then take the money back from the buyer, after notice, only if they were responsible.
 
 | Responsible | Buyer | Store | Money |
 |---|---|---|---|

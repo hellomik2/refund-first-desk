@@ -348,7 +348,7 @@ function railHtml(cur, working) {
     .join('');
   const lead = verifyFirst
     ? 'Over a limit, so the quick check comes first. If it was not the buyer’s mistake, the refund follows within 5 minutes.'
-    : 'The money goes back before anything is checked. Notice and re-charge happen only if both keys name the buyer, and a dispute stops them.';
+    : 'Trust the buyer first: the money goes back before anything is checked. It is taken back only if both keys name the buyer, after notice, and a dispute stops that.';
   return `<div class="rail-head"><h2>What happens, in order</h2><p>${esc(lead)}</p></div><ol class="rail" aria-label="Steps of this case, in order">${items}</ol>`;
 }
 

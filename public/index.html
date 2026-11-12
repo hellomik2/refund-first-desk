@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Refund-First Desk</title>
-  <meta name="description" content="When an AI agent buys the wrong thing, the buyer gets the money back first. A quick check, a deep check and two keys (the AI's own verdict and fixed rules in code) come after. Built on PayPal Orders, Payments, Vault and Payouts (sandbox).">
+  <meta name="description" content="Trust the buyer first. If that was wrong, give notice and take it back. When an AI agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Only if the AI's verdict and fixed rules in code both find the buyer responsible does the buyer get notice and 5 business days to dispute before the wallet that paid is charged again. Built on PayPal Orders, Payments, Vault and Payouts (sandbox).">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%230c2340%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27white%27%3E%E2%86%A9%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -14,7 +14,8 @@
       <span class="mark" aria-hidden="true">↩</span>
       <div>
         <h1>Refund-First Desk</h1>
-        <p class="tagline">An AI agent bought the wrong thing. The buyer gets the money back first and the checks come after. Nobody is charged again unless the AI's verdict and fixed rules in code agree, and the buyer had time to dispute.</p>
+        <p class="promise">Trust the buyer first. If that was wrong, give notice and take it back.</p>
+        <p class="tagline">For purchases made by AI shopping agents, on PayPal.</p>
       </div>
     </div>
     <div class="top-actions">
@@ -23,6 +24,28 @@
       <button class="ghost" id="reset">Start a fresh workspace</button>
     </div>
   </header>
+
+  <ol class="promise-steps" aria-label="The order this desk works in">
+    <li class="ps ps-first">
+      <span class="ps-n" aria-hidden="true">1</span>
+      <strong>Refund first</strong>
+      <span class="ps-t">The PayPal refund completes in seconds, before anything is checked.</span>
+      <span class="ps-f">Within the limits ($50 a case, 2 refunds per 30 days). Sandbox runs: 1.87–3.17 s.</span>
+    </li>
+    <li class="ps ps-check">
+      <span class="ps-n" aria-hidden="true">2</span>
+      <strong>Then check</strong>
+      <span class="ps-t">The AI and fixed rules in code read the records. Money moves only when they give the same answer.</span>
+      <span class="ps-f">If they differ, a person decides and nothing is charged meanwhile.</span>
+    </li>
+    <li class="ps ps-back">
+      <span class="ps-n" aria-hidden="true">3</span>
+      <strong>Take it back only if the buyer was responsible</strong>
+      <span class="ps-t">Notice first, 5 business days to dispute, then the wallet that paid is charged again, never more than was refunded.</span>
+      <span class="ps-f">A dispute stops it. In every other ending the buyer keeps the refund.</span>
+    </li>
+  </ol>
+  <p class="overlap">Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 we read, we did not find one that refunds before the check and has a step to take the money back. PayPal's own buyer protection terms already allow a temporary refund that is recovered, after at least 5 business days' notice, if a dispute goes against the buyer; this desk applies that to agent purchases, by rule.</p>
 
   <p class="disclosure" id="disclosure">
     Sandbox money, real PayPal API calls. <strong>The agent logs and the answer key are written by us for this demo.</strong> Shipping, the store's records and waiting periods are simulated; fast-forward moves the policy clock only.
