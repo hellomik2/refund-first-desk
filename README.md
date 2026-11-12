@@ -55,7 +55,8 @@ buyer: one sentence ─► "Refund requested" ─► limits check ─► PayPal 
         numbered action log, PayPal order, store record            │  left the mandate, quoting that step
                                                                    │
         two keys: fixed rules in code   +   the AI's own verdict ──┤
-                     same answer ─► money moves                    │
+                     same answer ─► re-charge, store payout or     │
+                                    agent invoice (the refund stays)
                      different    ─► a person decides; nothing is charged or paid out meanwhile
 ```
 
@@ -195,7 +196,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 152 tests against an in-memory PayPal stand-in
+npm test                       # 157 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 

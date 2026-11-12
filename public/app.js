@@ -454,6 +454,14 @@ function buyerColumn({ mandate, order, kase, sc }, working) {
   }
   if (order && order.consentCancelled) {
     html += `<div class="card"><h3>Cancelled at PayPal</h3><p class="sub">The buyer turned back on the PayPal screen. Nothing was charged. Pick a case to start again.</p></div>`;
+  } else if (order && !order.paypal && order.payment !== 'CONSENT_CHECKOUT') {
+    // A saved-wallet payment PayPal did not confirm: no Cancel, it may have gone through. The live agent card says so itself.
+    if (mandate.live) html += '';
+    else if (order.storePayable?.status === 'PAYMENT_UNCONFIRMED')
+      html += `<div class="card"><h3>PayPal has not confirmed this payment</h3>
+      <p class="sub" style="margin-bottom:10px">The agent sent the payment from the saved wallet and PayPal did not answer. The money may have moved, so the desk does not send a new payment. Asking again uses the same request id, and PayPal does not charge twice.</p>
+      <button class="primary" data-act="purchase" ${busy ? 'disabled' : ''}>${spin}Ask PayPal about this payment again</button></div>`;
+    else html += `<div class="card"><h3>PayPal refused the payment</h3><p class="sub">PayPal clearly declined the saved-wallet payment, so nothing was charged. Pick a case to start again.</p></div>`;
   } else if (order && !order.paypal) {
     html += `<div class="card"><h3>Waiting for the buyer at PayPal</h3>
       <p class="sub" style="margin-bottom:10px">PayPal shows the payment and the request to save the wallet for future agent purchases on one screen.</p>

@@ -384,3 +384,18 @@ test('the spend cap is checked before every model call of a run, not only at its
   assert.equal(run.stopReason, 'AI_SPEND_CAP');
   assert.equal(mandate.live.status, 'NOT_PAID');
 });
+
+test('a payment with no answer is not a buyer who turned back at PayPal: Cancel is refused and the order stays unconfirmed', async () => {
+  // PayPal takes the money and the answer is lost every time: the desk cannot tell whether money moved.
+  const { db, desk, paypal, mandate } = await liveRunWith(async (real, args) => {
+    await real(args);
+    throw new Error('socket hang up');
+  }, [...BUY_COFFEE, 'Done.']);
+  assert.equal(mandate.live.status, 'PAYMENT_UNCONFIRMED');
+  assert.equal(paypal.totals().captures, 1, 'PayPal did take the money');
+  const order = db.data.orders[mandate.live.orderId];
+  assert.equal(order.payment, 'SAVED_WALLET');
+  assert.throws(() => desk.cancelConsentPurchase(order.id), (err) => err.code === 'NOT_A_CONSENT_CHECKOUT');
+  assert.equal(order.storePayable.status, 'PAYMENT_UNCONFIRMED', 'never "cancelled, nothing was charged"');
+  assert.ok(!order.consentCancelled);
+});

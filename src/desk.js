@@ -295,6 +295,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   function cancelConsentPurchase(orderId) {
     const order = must(S.orders, orderId, 'order');
     if (order.paypal) return order;
+    // Only a buyer at the PayPal screen can turn back. A saved-wallet payment with no answer may have gone through.
+    if (order.payment !== 'CONSENT_CHECKOUT') throw new DeskError('NOT_A_CONSENT_CHECKOUT', 'Only a purchase waiting for the buyer at PayPal can be cancelled.');
     order.consentCancelled = true;
     order.storePayable.status = 'CANCELLED';
     db.save();
