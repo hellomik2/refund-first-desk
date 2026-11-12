@@ -4,7 +4,7 @@
 .cb-head h2 { font: 600 21px/1.25 var(--serif); color: var(--navy); }
 .cb-head .hint { color: var(--ink-2); font-size: 13.5px; max-width: 78ch; margin-top: 4px; }
 .cb-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-.cb-tabs [aria-selected="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+.cb-tabs [aria-selected="true"], .cb-tabs button.ghost[aria-selected="true"]:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
 .cb-src { font-size: 12.5px; color: var(--ink-2); margin: 0 0 12px; max-width: 110ch; }
 button.linkish { background: none; border: 0; padding: 0; color: var(--info); text-decoration: underline; font-size: inherit; }
 
