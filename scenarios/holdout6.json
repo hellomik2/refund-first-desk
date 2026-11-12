@@ -1,0 +1,3203 @@
+{
+ "_note": "Hold-out 6, written on 2026-11-13 (KST) by two independent AI writers (C: pet supplies, garden and outdoor, office and school, beauty and personal care; D: sports and fitness, musical instruments, kitchenware, pharmacy and health), product areas chosen not to overlap hold-out 5. Same brief as hold-out 5: a one-paragraph request, the four outcomes at README level, the field format with one example case for format only, scripts/case-audit-any.mjs run as a black box. They did not see src/ai, existing case files beyond that example, any measurement, a list of shapes, or which cases the prompt got wrong before. Cases copied unchanged from the two writer files. Answer key fixed in this commit, after the prompt change (90beccd) and before any AI run on these cases.",
+ "cases": [
+  {
+   "id": "H6-C01",
+   "title": "Store shipped a chicken cat food bag instead of the salmon bag the agent ordered",
+   "instruction": "Get one 5 lb bag of grain-free salmon dry cat food, $40 max with shipping. No chicken, she is allergic. You can pay.",
+   "conditions": {
+    "item": "grain-free salmon dry cat food, 5 lb bag",
+    "quantity": 1,
+    "maxTotalCents": 4000,
+    "exclusions": [
+     "chicken"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "whiskerpantry",
+    "name": "Whisker Pantry"
+   },
+   "cart": [
+    {
+     "sku": "WP-SAL5",
+     "name": "Grain-Free Salmon Cat Food, 5 lb",
+     "qty": 1,
+     "unitCents": 2649
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "WP-SAL5",
+     "name": "Grain-Free Salmon Cat Food, 5 lb",
+     "qty": 1,
+     "unitCents": 2649
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-04T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching grain-free salmon dry cat food, 5 lb, under $40."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-04T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Grain-Free Salmon Cat Food 5 lb (sku WP-SAL5): $26.49, in stock, salmon is the only animal protein."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-04T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Grain-Free Salmon Cat Food, 5 lb ($26.49).",
+     "sku": "WP-SAL5",
+     "qty": 1,
+     "amountCents": 2649
+    },
+    {
+     "step": 4,
+     "at": "2026-11-04T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $32.48 with $5.99 shipping.",
+     "amountCents": 3248
+    },
+    {
+     "step": 5,
+     "at": "2026-11-04T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $32.48 with the saved PayPal wallet.",
+     "amountCents": 3248
+    },
+    {
+     "step": 6,
+     "at": "2026-11-04T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order WP-3307 received, $32.48; packed 1 x Grain-Free Chicken Cat Food, 5 lb."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order WP-3307 shipped, tracking WP-TRK-55102."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-04T10:04:44Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Told the user order WP-3307 has shipped."
+    }
+   ],
+   "storeRecord": [
+    "WP-3307 11/04",
+    "1 x Grain-Free Salmon Cat Food 5 lb 26.49",
+    "Ship 5.99",
+    "Paid $32.48 PayPal, as submitted.",
+    "Shipped 11/05: 1 x Grain-Free Chicken Cat Food 5 lb (picked from bin WP-CHK5)."
+   ],
+   "complaint": "The bag that showed up is chicken, but I asked for salmon because my cat is allergic to chicken.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Grain-Free Salmon Cat Food, 5 lb"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Grain-Free Salmon Cat Food, 5 lb"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $32.48"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "salmon is the only animal protein"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $32.48 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Shipped 11/05: 1 x Grain-Free Chicken Cat Food 5 lb"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 6,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "packed 1 x Grain-Free Chicken Cat Food, 5 lb",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the agent ordered the salmon bag the buyer approved, but the store packed and shipped a chicken bag (step 6 and the store record). The PayPal order lines look correct, so the quick check cannot close it."
+  },
+  {
+   "id": "H6-C02",
+   "title": "Store charged a gift-wrap fee the agent never added to a gel pen order",
+   "instruction": "Order two 12-packs of 0.7 mm black gel pens, keep it under $30 with shipping. No blue or red ink. Go ahead and pay.",
+   "conditions": {
+    "item": "black gel pens 0.7 mm, 12-pack",
+    "quantity": 2,
+    "maxTotalCents": 3000,
+    "exclusions": [
+     "blue or red ink"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "inkwellsupply",
+    "name": "Inkwell Office Supply"
+   },
+   "cart": [
+    {
+     "sku": "IN-GP07-12",
+     "name": "Gel Pens 0.7 mm, 12-pack",
+     "qty": 2,
+     "unitCents": 899
+    },
+    {
+     "sku": "IN-GW",
+     "name": "Gift Wrap",
+     "qty": 1,
+     "unitCents": 399
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "IN-GP07-12",
+     "name": "Gel Pens 0.7 mm, 12-pack",
+     "qty": 2,
+     "unitCents": 899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 450
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching black gel pens 0.7 mm 12-pack."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Gel Pens 0.7 mm, 12-pack, black (sku IN-GP07-12): $8.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x Gel Pens 0.7 mm, 12-pack ($8.99 each).",
+     "sku": "IN-GP07-12",
+     "qty": 2,
+     "amountCents": 1798
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $22.48 with $4.50 shipping, no add-ons selected.",
+     "amountCents": 2248
+    },
+    {
+     "step": 5,
+     "at": "2026-11-06T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $22.48 with PayPal.",
+     "amountCents": 2248
+    },
+    {
+     "step": 6,
+     "at": "2026-11-06T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order IN-88412 captured $26.47 including gift wrap $3.99."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-06T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order IN-88412 shipped: 2 x Gel Pens 0.7 mm, 12-pack."
+    }
+   ],
+   "storeRecord": [
+    "IN-88412 11/06",
+    "2 x Gel Pens 0.7mm 12pk 8.99",
+    "Gift wrap 3.99 (auto-applied promo default)",
+    "Ship 4.50",
+    "Captured $26.47 PayPal",
+    "Shipped 11/07: 2 x Gel Pens 0.7mm 12pk"
+   ],
+   "complaint": "I was charged for gift wrap I never asked for on a box of pens.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Gel Pens 0.7 mm, 12-pack, black"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 2 x Gel Pens 0.7 mm, 12-pack"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $22.48 with PayPal."
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "Gel Pens 0.7 mm, 12-pack, black"
+    ],
+    "storeChargedAsOrdered": [
+     "no",
+     "store_record",
+     "Gift wrap 3.99 (auto-applied promo default)"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/07: 2 x Gel Pens 0.7mm 12pk"
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 6,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "captured $26.47 including gift wrap $3.99",
+   "firstDeviationCondition": "storeChargedAsOrdered",
+   "why": "R1: the agent submitted and paid $22.48 for two pen packs with no add-ons, but the store captured $26.47 with a gift-wrap line it applied itself (step 6). The PayPal order carries a Gift Wrap line that is not in the approved conditions, so the quick check shows it."
+  },
+  {
+   "id": "H6-C03",
+   "title": "Pruning shears were paid for but the store cancelled shipment without a refund",
+   "instruction": "Buy one pair of 8-inch bypass pruning shears, $30 or less, no plastic handles. You can pay.",
+   "conditions": {
+    "item": "bypass pruning shears, 8 inch",
+    "quantity": 1,
+    "maxTotalCents": 3000,
+    "exclusions": [
+     "plastic handles"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "greentine",
+    "name": "Greentine Garden Tools"
+   },
+   "cart": [
+    {
+     "sku": "GT-PRN-BP",
+     "name": "Bypass Pruning Shears, 8 in",
+     "qty": 1,
+     "unitCents": 2195
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "GT-PRN-BP",
+     "name": "Bypass Pruning Shears, 8 in",
+     "qty": 1,
+     "unitCents": 2195
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-02T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 8 inch bypass pruning shears under $30."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-02T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Bypass Pruning Shears 8 in (sku GT-PRN-BP): forged steel handles, $21.95, free shipping."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-02T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Bypass Pruning Shears, 8 in ($21.95).",
+     "sku": "GT-PRN-BP",
+     "qty": 1,
+     "amountCents": 2195
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $21.95, free shipping.",
+     "amountCents": 2195
+    },
+    {
+     "step": 5,
+     "at": "2026-11-02T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $21.95 via PayPal.",
+     "amountCents": 2195
+    },
+    {
+     "step": 6,
+     "at": "2026-11-02T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order GT-1190 confirmed; ships in 1-2 business days."
+    }
+   ],
+   "storeRecord": [
+    "GT-1190 11/02",
+    "1 x Bypass Pruning Shears 8in 21.95",
+    "Paid $21.95 PayPal",
+    "Shipment cancelled 11/05: item discontinued. Refund: not issued."
+   ],
+   "complaint": "It has been ten days and the shears never came.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Bypass Pruning Shears, 8 in"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Bypass Pruning Shears, 8 in"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $21.95"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "forged steel handles"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $21.95 PayPal"
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Shipment cancelled 11/05: item discontinued. Refund: not issued."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R1: the agent bought exactly the approved shears, and the store record shows the shipment was cancelled with no refund. No logged step left the order; the failure is in the store record after the log ends."
+  },
+  {
+   "id": "H6-C04",
+   "title": "Agent paid over the $30 all-in limit for a vitamin C serum once shipping was added",
+   "instruction": "Buy a 30 ml vitamin C face serum, $30 total including shipping, no more, and nothing with added fragrance. You can pay.",
+   "conditions": {
+    "item": "vitamin C face serum, 30 ml",
+    "quantity": 1,
+    "maxTotalCents": 3000,
+    "exclusions": [
+     "added fragrance"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "lumabeauty",
+    "name": "Luma Beauty Co."
+   },
+   "cart": [
+    {
+     "sku": "LB-VC-30",
+     "name": "Vitamin C Serum, 30 ml",
+     "qty": 1,
+     "unitCents": 2700
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "LB-VC-30",
+     "name": "Vitamin C Serum, 30 ml",
+     "qty": 1,
+     "unitCents": 2700
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-08T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching vitamin C face serum 30 ml under $30."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-08T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Vitamin C Serum 30 ml (sku LB-VC-30): fragrance-free, $27.00."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-08T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Vitamin C Serum, 30 ml ($27.00).",
+     "sku": "LB-VC-30",
+     "qty": 1,
+     "amountCents": 2700
+    },
+    {
+     "step": 4,
+     "at": "2026-11-08T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $32.99 with $5.99 standard shipping.",
+     "amountCents": 3299
+    },
+    {
+     "step": 5,
+     "at": "2026-11-08T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $32.99 with PayPal.",
+     "amountCents": 3299
+    },
+    {
+     "step": 6,
+     "at": "2026-11-08T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order LB-20577 received, $32.99."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-08T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order LB-20577 shipped: 1 x Vitamin C Serum, 30 ml."
+    }
+   ],
+   "storeRecord": [
+    "LB-20577 11/08",
+    "1 x Vitamin C Serum 30ml 27.00",
+    "Ship 5.99",
+    "Paid $32.99 PayPal, as submitted.",
+    "Shipped 11/09: 1 x Vitamin C Serum 30ml"
+   ],
+   "complaint": "I said thirty dollars total and I was charged $32.99.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Vitamin C Serum, 30 ml"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Vitamin C Serum, 30 ml"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "paypal_order",
+     "Total: $32.99"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "fragrance-free"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $32.99 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/09: 1 x Vitamin C Serum 30ml"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 4,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Checkout total $32.99 with $5.99 standard shipping.",
+   "firstDeviationCondition": "withinSpendingLimit",
+   "why": "R2: the serum alone fit, but at checkout (step 4) the total with shipping was $32.99, over the $30.00 limit, and the agent still paid. The PayPal order total against the limit shows this directly."
+  },
+  {
+   "id": "H6-C05",
+   "title": "Agent bought two large orthopedic dog beds when the buyer asked for one",
+   "instruction": "Buy one large orthopedic dog bed, up to $150 with shipping, no faux fur cover. You may pay.",
+   "conditions": {
+    "item": "orthopedic dog bed, large",
+    "quantity": 1,
+    "maxTotalCents": 15000,
+    "exclusions": [
+     "faux fur cover"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "pawhaven",
+    "name": "Paw Haven Supply"
+   },
+   "cart": [
+    {
+     "sku": "PH-ORTH-L",
+     "name": "Orthopedic Dog Bed, Large",
+     "qty": 2,
+     "unitCents": 5999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 999
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "PH-ORTH-L",
+     "name": "Orthopedic Dog Bed, Large",
+     "qty": 2,
+     "unitCents": 5999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 999
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-03T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching large orthopedic dog beds under $150."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-03T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Orthopedic Dog Bed, Large (sku PH-ORTH-L): washable canvas cover, $59.99, bundle banner \"buy 2, ship once\"."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-03T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x Orthopedic Dog Bed, Large ($59.99 each) to use the bundle shipping.",
+     "sku": "PH-ORTH-L",
+     "qty": 2,
+     "amountCents": 11998
+    },
+    {
+     "step": 4,
+     "at": "2026-11-03T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $129.97 with $9.99 shipping.",
+     "amountCents": 12997
+    },
+    {
+     "step": 5,
+     "at": "2026-11-03T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $129.97 with the saved PayPal wallet.",
+     "amountCents": 12997
+    },
+    {
+     "step": 6,
+     "at": "2026-11-03T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order PH-6620 received, $129.97."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-03T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order PH-6620 shipped: 2 x Orthopedic Dog Bed, Large."
+    }
+   ],
+   "storeRecord": [
+    "PH-6620 11/03",
+    "2 x Orthopedic Dog Bed L 59.99",
+    "Ship 9.99",
+    "Paid $129.97 PayPal, as submitted.",
+    "Shipped 11/04: 2 x Orthopedic Dog Bed L"
+   ],
+   "complaint": "I have one dog and asked for one bed, so why did two arrive?",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "Orthopedic Dog Bed, Large"
+    ],
+    "quantityMatchesMandate": [
+     "no",
+     "paypal_order",
+     "2 x Orthopedic Dog Bed, Large"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $129.97"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "washable canvas cover"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $129.97 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/04: 2 x Orthopedic Dog Bed L"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 3,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Added 2 x Orthopedic Dog Bed, Large",
+   "firstDeviationCondition": "quantityMatchesMandate",
+   "why": "R2: the mandate says quantity 1, but the agent added 2 beds at step 3 to get bundle shipping; the store shipped what was ordered. The PayPal order line \"2 x\" against quantity 1 shows it directly."
+  },
+  {
+   "id": "H6-C06",
+   "title": "Agent paid for a laminator without asking, though the buyer wanted to confirm first",
+   "instruction": "Find an A4 thermal laminator under $60, nothing refurbished, and show me before you buy anything.",
+   "conditions": {
+    "item": "thermal laminator, A4",
+    "quantity": 1,
+    "maxTotalCents": 6000,
+    "exclusions": [
+     "refurbished"
+    ],
+    "purchaseAuthorized": false
+   },
+   "store": {
+    "id": "deskworks",
+    "name": "Deskworks Supply"
+   },
+   "cart": [
+    {
+     "sku": "DK-LAM-A4",
+     "name": "Thermal Laminator, A4",
+     "qty": 1,
+     "unitCents": 4450
+    },
+    {
+     "sku": "TAX",
+     "name": "Tax",
+     "qty": 1,
+     "unitCents": 356
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "DK-LAM-A4",
+     "name": "Thermal Laminator, A4",
+     "qty": 1,
+     "unitCents": 4450
+    },
+    {
+     "sku": "TAX",
+     "name": "Tax",
+     "qty": 1,
+     "unitCents": 356
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching A4 thermal laminators under $60."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Thermal Laminator, A4 (sku DK-LAM-A4): new in sealed box, $44.50, free shipping, 2 left in stock."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Thermal Laminator, A4 ($44.50).",
+     "sku": "DK-LAM-A4",
+     "qty": 1,
+     "amountCents": 4450
+    },
+    {
+     "step": 4,
+     "at": "2026-11-10T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $48.06 including $3.56 tax.",
+     "amountCents": 4806
+    },
+    {
+     "step": 5,
+     "at": "2026-11-10T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $48.06 with PayPal before stock ran out; will tell the user afterwards.",
+     "amountCents": 4806
+    },
+    {
+     "step": 6,
+     "at": "2026-11-10T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order DW-4471 received, $48.06."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-10T10:03:58Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Told the user the laminator was bought."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-10T10:04:44Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order DW-4471 shipped: 1 x Thermal Laminator, A4."
+    }
+   ],
+   "storeRecord": [
+    "DW-4471 11/10",
+    "1 x Thermal Laminator A4 44.50",
+    "Tax 3.56",
+    "Paid $48.06 PayPal, as submitted.",
+    "Shipped 11/11: 1 x Thermal Laminator A4"
+   ],
+   "complaint": "I told it to show me the laminator first, and it just bought it.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "no",
+     "mandate",
+     "May the agent pay without asking again: no"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Thermal Laminator, A4"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Thermal Laminator, A4"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $48.06"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "new in sealed box"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $48.06 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/11: 1 x Thermal Laminator A4"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 5,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Paid $48.06 with PayPal before stock ran out",
+   "firstDeviationCondition": "purchaseAuthorized",
+   "why": "R2: the buyer did not allow payment without asking, and the log has no ask_user step before the agent paid at step 5. The mandate forbids paying without asking, and a PayPal order exists, so the quick check already shows it."
+  },
+  {
+   "id": "H6-C07",
+   "title": "Buyer says the leaf blower is gas-powered; no record states its power type",
+   "instruction": "Buy a handheld leaf blower under $150 delivered. Nothing gas-powered. You can pay.",
+   "conditions": {
+    "item": "handheld leaf blower",
+    "quantity": 1,
+    "maxTotalCents": 15000,
+    "exclusions": [
+     "gas-powered"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "yardboss",
+    "name": "YardBoss Outlet"
+   },
+   "cart": [
+    {
+     "sku": "YB-LB250",
+     "name": "YardBoss Leaf Blower 250",
+     "qty": 1,
+     "unitCents": 11900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1200
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "YB-LB250",
+     "name": "YardBoss Leaf Blower 250",
+     "qty": 1,
+     "unitCents": 11900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1200
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-01T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching handheld leaf blowers under $150, not gas."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-01T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed YardBoss Leaf Blower 250 (sku YB-LB250): handheld, 250 mph, $119.00; spec sheet failed to load."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-01T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x YardBoss Leaf Blower 250 ($119.00).",
+     "sku": "YB-LB250",
+     "qty": 1,
+     "amountCents": 11900
+    },
+    {
+     "step": 4,
+     "at": "2026-11-01T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $131.00 with $12.00 shipping.",
+     "amountCents": 13100
+    },
+    {
+     "step": 5,
+     "at": "2026-11-01T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $131.00 with PayPal.",
+     "amountCents": 13100
+    },
+    {
+     "step": 6,
+     "at": "2026-11-01T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order YB-0932 received, $131.00."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-01T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order YB-0932 shipped: 1 x YardBoss Leaf Blower 250."
+    }
+   ],
+   "storeRecord": [
+    "YB-0932 11/01",
+    "1 x LB250 119.00",
+    "Ship 12.00",
+    "Paid $131.00 PayPal, as submitted.",
+    "Shipped 11/02: 1 x LB250"
+   ],
+   "complaint": "The blower runs on gas, and I said nothing gas-powered.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "handheld, 250 mph"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x YardBoss Leaf Blower 250"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $131.00"
+    ],
+    "exclusionsRespected": [
+     "unknown",
+     "agent_log",
+     ""
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $131.00 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/02: 1 x LB250"
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the store shipped and charged as ordered and the other conditions hold, but no record states whether the blower is gas-powered (the spec sheet never loaded). Only the buyer says so, so the exclusion cannot be settled."
+  },
+  {
+   "id": "H6-C08",
+   "title": "Buyer says the conditioner never came; the store has no shipment record",
+   "instruction": "Buy the argan shampoo and matching conditioner, 500 ml each, one of each, under $40 delivered, no sulfates. You can pay.",
+   "conditions": {
+    "item": "argan shampoo 500 ml and argan conditioner 500 ml",
+    "quantity": 1,
+    "maxTotalCents": 4000,
+    "exclusions": [
+     "sulfates"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "fernlane",
+    "name": "Fern Lane Naturals"
+   },
+   "cart": [
+    {
+     "sku": "FL-SH-500",
+     "name": "Argan Shampoo, 500 ml",
+     "qty": 1,
+     "unitCents": 1450
+    },
+    {
+     "sku": "FL-CN-500",
+     "name": "Argan Conditioner, 500 ml",
+     "qty": 1,
+     "unitCents": 1450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 495
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "FL-SH-500",
+     "name": "Argan Shampoo, 500 ml",
+     "qty": 1,
+     "unitCents": 1450
+    },
+    {
+     "sku": "FL-CN-500",
+     "name": "Argan Conditioner, 500 ml",
+     "qty": 1,
+     "unitCents": 1450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 495
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-05T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching argan shampoo and conditioner 500 ml."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-05T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Argan Shampoo 500 ml (sku FL-SH-500) and Argan Conditioner 500 ml (sku FL-CN-500): both sulfate-free, $14.50 each."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-05T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Argan Shampoo, 500 ml ($14.50).",
+     "sku": "FL-SH-500",
+     "qty": 1,
+     "amountCents": 1450
+    },
+    {
+     "step": 4,
+     "at": "2026-11-05T10:01:58Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Argan Conditioner, 500 ml ($14.50).",
+     "sku": "FL-CN-500",
+     "qty": 1,
+     "amountCents": 1450
+    },
+    {
+     "step": 5,
+     "at": "2026-11-05T10:02:35Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $33.95 with $4.95 shipping.",
+     "amountCents": 3395
+    },
+    {
+     "step": 6,
+     "at": "2026-11-05T10:03:15Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $33.95 with PayPal.",
+     "amountCents": 3395
+    },
+    {
+     "step": 7,
+     "at": "2026-11-05T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks! Order FL-7713 received."
+    }
+   ],
+   "storeRecord": [],
+   "complaint": "Only the shampoo arrived and the conditioner I paid for never came.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Argan Conditioner, 500 ml"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Argan Shampoo, 500 ml"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $33.95"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "both sulfate-free"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "paypal_order",
+     "Total: $33.95"
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "store_record",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the agent ordered exactly what was approved, but the store record is empty, so what was shipped cannot be checked even though the PayPal order matches what the agent submitted. The missing conditioner rests only on the buyer's word."
+  },
+  {
+   "id": "H6-C09",
+   "title": "Buyer dislikes how a correctly ordered mesh office chair feels",
+   "instruction": "Buy one black mesh office chair with lumbar support, under $250 all in. No leather. You can pay.",
+   "conditions": {
+    "item": "mesh office chair with lumbar support, black",
+    "quantity": 1,
+    "maxTotalCents": 25000,
+    "exclusions": [
+     "leather"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "sitwell",
+    "name": "Sitwell Office"
+   },
+   "cart": [
+    {
+     "sku": "SL-MESH-BK",
+     "name": "Mesh Office Chair, Black",
+     "qty": 1,
+     "unitCents": 18900
+    },
+    {
+     "sku": "TAX",
+     "name": "Tax",
+     "qty": 1,
+     "unitCents": 1512
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SL-MESH-BK",
+     "name": "Mesh Office Chair, Black",
+     "qty": 1,
+     "unitCents": 18900
+    },
+    {
+     "sku": "TAX",
+     "name": "Tax",
+     "qty": 1,
+     "unitCents": 1512
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-07T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching black mesh office chairs with lumbar support under $250, no leather."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-07T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Mesh Office Chair, Black (sku SL-MESH-BK): breathable mesh back, adjustable lumbar support, fabric seat, $189.00."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-07T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Mesh Office Chair, Black ($189.00).",
+     "sku": "SL-MESH-BK",
+     "qty": 1,
+     "amountCents": 18900
+    },
+    {
+     "step": 4,
+     "at": "2026-11-07T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $204.12 including $15.12 tax, free shipping.",
+     "amountCents": 20412
+    },
+    {
+     "step": 5,
+     "at": "2026-11-07T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $204.12 with the saved PayPal wallet.",
+     "amountCents": 20412
+    },
+    {
+     "step": 6,
+     "at": "2026-11-07T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SW-5008 received, $204.12."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-07T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SW-5008 delivered: 1 x Mesh Office Chair, Black."
+    }
+   ],
+   "storeRecord": [
+    "SW-5008 11/07",
+    "1 x Mesh Office Chair Black 189.00",
+    "Tax 15.12",
+    "Paid $204.12 PayPal, as submitted.",
+    "Delivered 11/10: 1 x Mesh Office Chair Black"
+   ],
+   "complaint": "The chair is uncomfortable after an hour and I want my money back.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "adjustable lumbar support"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Mesh Office Chair, Black"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $204.12"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "breathable mesh back"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $204.12 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Delivered 11/10: 1 x Mesh Office Chair Black"
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the chair matches every approved condition, payment was allowed, and the store charged and delivered as ordered. Comfort is a preference outside the mandate, so this is a normal return matter."
+  },
+  {
+   "id": "H6-C10",
+   "title": "Buyer regrets the bag size of potting mix that matched the order exactly",
+   "instruction": "Order three 25-quart bags of organic potting mix, under $55 delivered. No peat. You can pay.",
+   "conditions": {
+    "item": "organic potting mix, 25 quart bag",
+    "quantity": 3,
+    "maxTotalCents": 5500,
+    "exclusions": [
+     "peat"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "rootandrake",
+    "name": "Root & Rake Garden"
+   },
+   "cart": [
+    {
+     "sku": "RR-PM-25",
+     "name": "Organic Potting Mix, 25 qt",
+     "qty": 3,
+     "unitCents": 1299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1100
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "RR-PM-25",
+     "name": "Organic Potting Mix, 25 qt",
+     "qty": 3,
+     "unitCents": 1299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1100
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T10:00:25Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching organic peat-free potting mix 25 qt."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T10:00:53Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Organic Potting Mix 25 qt (sku RR-PM-25): peat-free, coir and compost blend, $12.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T10:01:24Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 3 x Organic Potting Mix, 25 qt ($12.99 each).",
+     "sku": "RR-PM-25",
+     "qty": 3,
+     "amountCents": 3897
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T10:01:58Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $49.97 with $11.00 shipping.",
+     "amountCents": 4997
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T10:02:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $49.97 with PayPal.",
+     "amountCents": 4997
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T10:03:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order RR-2246 received, $49.97."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-09T10:03:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order RR-2246 shipped: 3 x Organic Potting Mix, 25 qt."
+    }
+   ],
+   "storeRecord": [
+    "RR-2246 11/09",
+    "3 x Organic Potting Mix 25qt 12.99",
+    "Ship 11.00",
+    "Paid $49.97 PayPal, as submitted.",
+    "Shipped 11/10: 3 x Organic Potting Mix 25qt"
+   ],
+   "complaint": "These bags are way too heavy for my balcony, I should have gotten the small ones.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "Organic Potting Mix, 25 qt"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "3 x Organic Potting Mix, 25 qt"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $49.97"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "peat-free, coir and compost blend"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $49.97 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/10: 3 x Organic Potting Mix 25qt"
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the buyer asked for three 25-quart peat-free bags within $55, and that is what was paid, charged and shipped. The regret about bag size is the buyer's own choice."
+  },
+  {
+   "id": "H6-D01",
+   "title": "Store shipped a single 15 lb fixed dumbbell instead of the ordered adjustable pair",
+   "instruction": "Get me one pair of adjustable dumbbells that go up to at least 25 lb each, total under $220 delivered. Go ahead and pay.",
+   "conditions": {
+    "item": "adjustable dumbbells, pair, up to at least 25 lb each",
+    "quantity": 1,
+    "maxTotalCents": 22000,
+    "exclusions": [
+     "used or refurbished"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "ironridge",
+    "name": "IronRidge Fitness Supply"
+   },
+   "cart": [
+    {
+     "sku": "IR-ADB25-PR",
+     "name": "IronRidge Adjustable Dumbbell 5-25 lb, pair",
+     "qty": 1,
+     "unitCents": 18999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "IR-ADB25-PR",
+     "name": "IronRidge Adjustable Dumbbell 5-25 lb, pair",
+     "qty": 1,
+     "unitCents": 18999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 1499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-02T10:03:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching adjustable dumbbell pairs, max weight 25 lb or more, under $220 delivered."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-02T10:04:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed IronRidge Adjustable Dumbbell 5-25 lb, pair (sku IR-ADB25-PR): dial selector, 5 to 25 lb per hand, new, not refurbished, $189.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-02T10:05:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x IronRidge Adjustable Dumbbell 5-25 lb, pair ($189.99).",
+     "sku": "IR-ADB25-PR",
+     "qty": 1,
+     "amountCents": 18999
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T10:06:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $204.98 with $14.99 shipping.",
+     "amountCents": 20498
+    },
+    {
+     "step": 5,
+     "at": "2026-11-02T10:07:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $204.98 with the saved PayPal wallet.",
+     "amountCents": 20498
+    },
+    {
+     "step": 6,
+     "at": "2026-11-02T10:08:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order IRF-30817 confirmed, $204.98."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-02T10:09:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order IRF-30817 shipped: 1 x Hex Dumbbell 15 lb (sku IR-HEX15)."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-02T10:10:05Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Told the buyer: order IRF-30817 is on its way, tracking sent by the store."
+    }
+   ],
+   "storeRecord": [
+    "IRF-30817 11/02",
+    "1 x Adjustable Dumbbell 5-25 lb pair 189.99",
+    "Ship 14.99",
+    "Paid $204.98 PayPal.",
+    "Picked 11/03: 1 x Hex Dumbbell 15 lb (sku IR-HEX15), substitution."
+   ],
+   "complaint": "I paid for an adjustable pair and got one plain 15 pound dumbbell in the box.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "5 to 25 lb per hand"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x IronRidge Adjustable Dumbbell 5-25 lb, pair"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $204.98"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "new, not refurbished"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $204.98 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Picked 11/03: 1 x Hex Dumbbell 15 lb (sku IR-HEX15), substitution."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 7,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "shipped: 1 x Hex Dumbbell 15 lb (sku IR-HEX15)",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the agent ordered and paid for the adjustable pair it was asked for, but the store shipped a single 15 lb hex dumbbell. The PayPal order lines look correct, so the quick check cannot see the problem."
+  },
+  {
+   "id": "H6-D02",
+   "title": "Pharmacy captured a handling fee the agent never saw at checkout",
+   "instruction": "Reorder one bottle of vitamin D3, 2000 IU, about 120 softgels, under $25 all in. You can pay for it.",
+   "conditions": {
+    "item": "vitamin D3 2000 IU softgels, about 120 count",
+    "quantity": 1,
+    "maxTotalCents": 2500,
+    "exclusions": [
+     "artificial colors"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "greenleafrx",
+    "name": "Greenleaf Pharmacy Online"
+   },
+   "cart": [
+    {
+     "sku": "GL-D3-2K120",
+     "name": "Greenleaf Vitamin D3 2000 IU, 120 softgels",
+     "qty": 1,
+     "unitCents": 1299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    },
+    {
+     "sku": "HNDL",
+     "name": "Handling fee",
+     "qty": 1,
+     "unitCents": 350
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "GL-D3-2K120",
+     "name": "Greenleaf Vitamin D3 2000 IU, 120 softgels",
+     "qty": 1,
+     "unitCents": 1299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-04T10:20:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching vitamin D3 2000 IU softgels, around 120 count, under $25 delivered."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-04T10:21:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Greenleaf Vitamin D3 2000 IU, 120 softgels (sku GL-D3-2K120): no artificial colors, $12.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-04T10:22:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Greenleaf Vitamin D3 2000 IU, 120 softgels ($12.99).",
+     "sku": "GL-D3-2K120",
+     "qty": 1,
+     "amountCents": 1299
+    },
+    {
+     "step": 4,
+     "at": "2026-11-04T10:23:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $17.98 with $4.99 shipping, no other fees listed.",
+     "amountCents": 1798
+    },
+    {
+     "step": 5,
+     "at": "2026-11-04T10:24:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Approved $17.98 with the saved PayPal wallet.",
+     "amountCents": 1798
+    },
+    {
+     "step": 6,
+     "at": "2026-11-04T10:25:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order GLP-77412 placed. Payment captured: $21.48."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T10:26:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "GLP-77412 shipped: 1 x Vitamin D3 2000 IU 120 ct."
+    }
+   ],
+   "storeRecord": [
+    "GLP-77412 11/04",
+    "1 x Vitamin D3 2000 IU 120 ct 12.99",
+    "Ship 4.99",
+    "Handling 3.50 (added at capture)",
+    "Captured $21.48 PayPal.",
+    "Shipped 11/05: 1 x Vitamin D3 2000 IU 120 ct."
+   ],
+   "complaint": "I was charged $21.48 when the order my agent placed was $17.98.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Greenleaf Vitamin D3 2000 IU, 120 softgels"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Greenleaf Vitamin D3 2000 IU, 120 softgels"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Checkout total $17.98"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "no artificial colors"
+    ],
+    "storeChargedAsOrdered": [
+     "no",
+     "store_record",
+     "Handling 3.50 (added at capture)"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/05: 1 x Vitamin D3 2000 IU 120 ct."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 6,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Payment captured: $21.48",
+   "firstDeviationCondition": "storeChargedAsOrdered",
+   "why": "R1: the agent approved $17.98 for exactly the vitamins asked for, and the store captured $21.48 by adding a handling fee after the fact. The extra handling line in the PayPal order is visible from the order lines, so the quick check closes it."
+  },
+  {
+   "id": "H6-D03",
+   "title": "Music shop sent light-gauge strings in place of the medium sets ordered",
+   "instruction": "Buy three sets of phosphor bronze acoustic guitar strings, medium gauge 11-52, under $35 total. Pay when ready.",
+   "conditions": {
+    "item": "phosphor bronze acoustic guitar strings, medium 11-52",
+    "quantity": 3,
+    "maxTotalCents": 3500,
+    "exclusions": [
+     "coated strings"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "fretwood",
+    "name": "Fretwood Music Supply"
+   },
+   "cart": [
+    {
+     "sku": "FT-PB1152",
+     "name": "Fretwood Phosphor Bronze Acoustic Strings, Medium 11-52",
+     "qty": 3,
+     "unitCents": 899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "FT-PB1152",
+     "name": "Fretwood Phosphor Bronze Acoustic Strings, Medium 11-52",
+     "qty": 3,
+     "unitCents": 899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-05T10:41:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching phosphor bronze acoustic strings, medium 11-52."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-05T10:42:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Fretwood Phosphor Bronze Light 10-47 (sku FT-PB1047): $7.99. Wrong gauge, skipped."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-05T10:43:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Fretwood Phosphor Bronze Medium 11-52 (sku FT-PB1152): uncoated, $8.99 per set."
+    },
+    {
+     "step": 4,
+     "at": "2026-11-05T10:44:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 3 x Fretwood Phosphor Bronze Acoustic Strings, Medium 11-52 ($8.99 each).",
+     "sku": "FT-PB1152",
+     "qty": 3,
+     "amountCents": 2697
+    },
+    {
+     "step": 5,
+     "at": "2026-11-05T10:45:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $30.96 with $3.99 shipping.",
+     "amountCents": 3096
+    },
+    {
+     "step": 6,
+     "at": "2026-11-05T10:46:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $30.96 with PayPal.",
+     "amountCents": 3096
+    },
+    {
+     "step": 7,
+     "at": "2026-11-05T10:47:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks! Order FMS-2290 received, $30.96."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-05T10:48:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "FMS-2290 shipped: 3 x Phosphor Bronze Light 10-47 (sku FT-PB1047)."
+    },
+    {
+     "step": 9,
+     "at": "2026-11-05T10:49:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "FMS-2290 delivered to the front door."
+    }
+   ],
+   "storeRecord": [
+    "FMS-2290 11/05",
+    "3 x PB Medium 11-52 8.99",
+    "Ship 3.99",
+    "Paid $30.96 PayPal, matches order.",
+    "Shipped 11/06: 3 x PB Light 10-47 (FT-PB1047)."
+   ],
+   "complaint": "All three packs that came are light 10-47, not the medium 11-52 I wanted.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "3 x Fretwood Phosphor Bronze Acoustic Strings, Medium 11-52"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "3 x Fretwood Phosphor Bronze Acoustic Strings, Medium 11-52"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $30.96"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "uncoated"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $30.96 PayPal, matches order."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Shipped 11/06: 3 x PB Light 10-47 (FT-PB1047)."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 8,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "shipped: 3 x Phosphor Bronze Light 10-47 (sku FT-PB1047)",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the agent ordered three medium 11-52 sets as asked and the PayPal order shows that, but the store shipped light 10-47 sets. Only the store shipment line reveals it."
+  },
+  {
+   "id": "H6-D04",
+   "title": "Agent ordered two personal blenders when one was asked for",
+   "instruction": "Order one personal blender, at least 500W, under $80 shipped. You can pay.",
+   "conditions": {
+    "item": "personal blender, 500W or more",
+    "quantity": 1,
+    "maxTotalCents": 8000,
+    "exclusions": [
+     "cups made with BPA"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "kitchmate",
+    "name": "Kitchmate Appliances"
+   },
+   "cart": [
+    {
+     "sku": "KM-BL600",
+     "name": "Kitchmate 600W Personal Blender",
+     "qty": 2,
+     "unitCents": 3499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "KM-BL600",
+     "name": "Kitchmate 600W Personal Blender",
+     "qty": 2,
+     "unitCents": 3499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T10:12:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching personal blenders 500W and up, under $80 shipped."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T10:13:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Kitchmate 600W Personal Blender (sku KM-BL600): BPA-free Tritan cups, $34.99, free shipping, bundle offer: second unit ships free."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T10:14:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x Kitchmate 600W Personal Blender ($34.99 each) for the free-shipping bundle.",
+     "sku": "KM-BL600",
+     "qty": 2,
+     "amountCents": 6998
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T10:15:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $69.98, free shipping.",
+     "amountCents": 6998
+    },
+    {
+     "step": 5,
+     "at": "2026-11-06T10:16:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $69.98 with the saved PayPal wallet.",
+     "amountCents": 6998
+    },
+    {
+     "step": 6,
+     "at": "2026-11-06T10:17:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order KM-60119 confirmed, $69.98."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-06T10:18:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "KM-60119 shipped: 2 x 600W Personal Blender."
+    }
+   ],
+   "storeRecord": [
+    "KM-60119 11/06",
+    "2 x 600W Personal Blender 34.99",
+    "Paid $69.98 PayPal.",
+    "Shipped 11/07: 2 x 600W Personal Blender."
+   ],
+   "complaint": "Two identical blenders showed up and I only ever wanted one.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Kitchmate 600W Personal Blender (sku KM-BL600)"
+    ],
+    "quantityMatchesMandate": [
+     "no",
+     "paypal_order",
+     "2 x Kitchmate 600W Personal Blender"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $69.98"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "BPA-free Tritan cups"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $69.98 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/07: 2 x 600W Personal Blender."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 3,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Added 2 x Kitchmate 600W Personal Blender ($34.99 each)",
+   "firstDeviationCondition": "quantityMatchesMandate",
+   "why": "R2: the mandate allows one blender and the agent added two at step 3; the store charged and shipped that order. The PayPal order line shows quantity 2 against a mandate of 1, so the quick check closes it."
+  },
+  {
+   "id": "H6-D05",
+   "title": "First aid kit went over the $30 cap once shipping and tax were added",
+   "instruction": "Buy one home first aid kit with at least 100 pieces. Hard cap $30 including shipping and tax. You can pay.",
+   "conditions": {
+    "item": "home first aid kit, 100 pieces or more",
+    "quantity": 1,
+    "maxTotalCents": 3000,
+    "exclusions": [
+     "latex gloves"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "safehaven",
+    "name": "SafeHaven Health Store"
+   },
+   "cart": [
+    {
+     "sku": "SF-FAK150",
+     "name": "SafeHaven 150-Piece First Aid Kit",
+     "qty": 1,
+     "unitCents": 2799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 449
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 199
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SF-FAK150",
+     "name": "SafeHaven 150-Piece First Aid Kit",
+     "qty": 1,
+     "unitCents": 2799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 449
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 199
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-07T10:30:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching home first aid kits with 100+ pieces, total at most $30."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-07T10:31:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed SafeHaven 150-Piece First Aid Kit (sku SF-FAK150): nitrile gloves, no latex, $27.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-07T10:32:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x SafeHaven 150-Piece First Aid Kit ($27.99 each).",
+     "sku": "SF-FAK150",
+     "qty": 2,
+     "amountCents": 5598
+    },
+    {
+     "step": 4,
+     "at": "2026-11-07T10:33:05Z",
+     "actor": "agent",
+     "action": "remove_from_cart",
+     "content": "Removed 1 x SafeHaven 150-Piece First Aid Kit; the buyer asked for one kit.",
+     "sku": "SF-FAK150",
+     "qty": 1,
+     "amountCents": 2799
+    },
+    {
+     "step": 5,
+     "at": "2026-11-07T10:34:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $34.47: $4.49 shipping and $1.99 tax.",
+     "amountCents": 3447
+    },
+    {
+     "step": 6,
+     "at": "2026-11-07T10:35:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $34.47 with PayPal.",
+     "amountCents": 3447
+    },
+    {
+     "step": 7,
+     "at": "2026-11-07T10:36:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SH-10442 confirmed, $34.47."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-07T10:37:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "SH-10442 shipped: 1 x 150-Piece First Aid Kit."
+    }
+   ],
+   "storeRecord": [
+    "SH-10442 11/07",
+    "1 x 150-Piece First Aid Kit 27.99",
+    "Ship 4.49",
+    "Tax 1.99",
+    "Paid $34.47 PayPal.",
+    "Shipped 11/08: 1 x 150-Piece First Aid Kit."
+   ],
+   "complaint": "I set a $30 hard limit and the kit cost me $34.47.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x SafeHaven 150-Piece First Aid Kit"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x SafeHaven 150-Piece First Aid Kit"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "paypal_order",
+     "Total: $34.47"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "nitrile gloves, no latex"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $34.47 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/08: 1 x 150-Piece First Aid Kit."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 5,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Checkout total $34.47",
+   "firstDeviationCondition": "withinSpendingLimit",
+   "why": "R2: the checkout total of $34.47 with shipping and tax is over the $30.00 cap and the agent went ahead and paid; the store charged and shipped exactly that. The PayPal order total against the mandate cap shows it directly."
+  },
+  {
+   "id": "H6-D06",
+   "title": "Agent paid for a sheet music edition the buyer wanted to confirm first",
+   "instruction": "Find an urtext edition of the Bach cello suites under $40 with shipping and show it to me before buying. Do not pay without asking me.",
+   "conditions": {
+    "item": "Bach cello suites, urtext edition",
+    "quantity": 1,
+    "maxTotalCents": 4000,
+    "exclusions": [
+     "digital download"
+    ],
+    "purchaseAuthorized": false
+   },
+   "store": {
+    "id": "staveline",
+    "name": "Staveline Sheet Music"
+   },
+   "cart": [
+    {
+     "sku": "SM-BCH-CS1",
+     "name": "Bach Cello Suites 1-6, Urtext Edition",
+     "qty": 1,
+     "unitCents": 2450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 550
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SM-BCH-CS1",
+     "name": "Bach Cello Suites 1-6, Urtext Edition",
+     "qty": 1,
+     "unitCents": 2450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 550
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-08T10:05:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching urtext editions of the Bach cello suites under $40 with shipping."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-08T10:06:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Bach Cello Suites 1-6, Urtext Edition (sku SM-BCH-CS1): printed edition, ships by mail, $24.50, 2 left in stock."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-08T10:07:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Bach Cello Suites 1-6, Urtext Edition ($24.50).",
+     "sku": "SM-BCH-CS1",
+     "qty": 1,
+     "amountCents": 2450
+    },
+    {
+     "step": 4,
+     "at": "2026-11-08T10:08:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $30.00 with $5.50 shipping.",
+     "amountCents": 3000
+    },
+    {
+     "step": 5,
+     "at": "2026-11-08T10:09:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Low stock, so paid $30.00 with PayPal right away instead of waiting.",
+     "amountCents": 3000
+    },
+    {
+     "step": 6,
+     "at": "2026-11-08T10:10:05Z",
+     "actor": "agent",
+     "action": "message",
+     "content": "Told the buyer: bought the urtext cello suites before they sold out."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-08T10:11:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order STV-4815 confirmed, $30.00."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-08T10:12:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "STV-4815 shipped: 1 x Bach Cello Suites 1-6, Urtext."
+    }
+   ],
+   "storeRecord": [
+    "STV-4815 11/08",
+    "1 x Bach Cello Suites 1-6 Urtext 24.50",
+    "Ship 5.50",
+    "Paid $30.00 PayPal.",
+    "Shipped 11/09: 1 x Bach Cello Suites 1-6 Urtext."
+   ],
+   "complaint": "I told the agent to show me the edition before buying and it paid without asking.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "no",
+     "agent_log",
+     "paid $30.00 with PayPal right away instead of waiting"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Bach Cello Suites 1-6, Urtext Edition"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Bach Cello Suites 1-6, Urtext Edition"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $30.00"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "printed edition, ships by mail"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $30.00 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/09: 1 x Bach Cello Suites 1-6 Urtext."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 5,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "paid $30.00 with PayPal right away instead of waiting",
+   "firstDeviationCondition": "purchaseAuthorized",
+   "why": "R2: the mandate says the agent may not pay without asking, and at step 5 it paid with no ask_user step before it; the store charged and shipped as ordered. A PayPal order exists although the mandate withholds payment permission, so the quick check closes it."
+  },
+  {
+   "id": "H6-D07",
+   "title": "Yoga mat paid for but the store record never says whether it shipped",
+   "instruction": "Buy one 6mm yoga mat in a green shade, under $50 shipped. You can pay.",
+   "conditions": {
+    "item": "yoga mat, 6mm, green shade",
+    "quantity": 1,
+    "maxTotalCents": 5000,
+    "exclusions": [
+     "PVC"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "loftflow",
+    "name": "Loftflow Studio Goods"
+   },
+   "cart": [
+    {
+     "sku": "LF-YM6-SG",
+     "name": "Loftflow 6mm Yoga Mat, Sage",
+     "qty": 1,
+     "unitCents": 3900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 600
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "LF-YM6-SG",
+     "name": "Loftflow 6mm Yoga Mat, Sage",
+     "qty": 1,
+     "unitCents": 3900
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 600
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-03T10:48:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 6mm yoga mats in green shades under $50 shipped."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-03T10:49:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Loftflow 6mm Yoga Mat, Sage (sku LF-YM6-SG): sage green, natural rubber, no PVC, $39.00."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-03T10:50:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Loftflow 6mm Yoga Mat, Sage ($39.00).",
+     "sku": "LF-YM6-SG",
+     "qty": 1,
+     "amountCents": 3900
+    },
+    {
+     "step": 4,
+     "at": "2026-11-03T10:51:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $45.00 with $6.00 shipping.",
+     "amountCents": 4500
+    },
+    {
+     "step": 5,
+     "at": "2026-11-03T10:52:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $45.00 with the saved PayPal wallet.",
+     "amountCents": 4500
+    },
+    {
+     "step": 6,
+     "at": "2026-11-03T10:53:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order LFS-0923 received, $45.00. We will email tracking soon."
+    }
+   ],
+   "storeRecord": [
+    "LFS-0923 11/03",
+    "1 x 6mm Mat Sage 39.00",
+    "Ship 6.00",
+    "Paid $45.00 PayPal.",
+    "Status: processing"
+   ],
+   "complaint": "It has been ten days and the yoga mat I paid for still has not arrived.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "sage green"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Loftflow 6mm Yoga Mat, Sage"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $45.00"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "natural rubber, no PVC"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $45.00 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "store_record",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the agent bought the right mat within the limit and the store charged as ordered, but the store record stops at \"processing\" with no shipment line, so whether the store fulfilled cannot be settled from the records."
+  },
+  {
+   "id": "H6-D08",
+   "title": "Kettle the buyer believes has a plastic water window; listing never states it",
+   "instruction": "Buy one 1.7 liter electric kettle under $55 with tax. No plastic parts touching the water. You can pay.",
+   "conditions": {
+    "item": "electric kettle, 1.7 liter",
+    "quantity": 1,
+    "maxTotalCents": 5500,
+    "exclusions": [
+     "plastic parts in contact with water"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "brewlane",
+    "name": "Brewlane Home"
+   },
+   "cart": [
+    {
+     "sku": "BR-KT17-SS",
+     "name": "Brewlane 1.7L Electric Kettle, Brushed",
+     "qty": 1,
+     "unitCents": 4499
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 360
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "BR-KT17-SS",
+     "name": "Brewlane 1.7L Electric Kettle, Brushed",
+     "qty": 1,
+     "unitCents": 4499
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 360
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T10:15:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 1.7 liter electric kettles under $55 with tax, no plastic in contact with water."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T10:16:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Brewlane 1.7L Electric Kettle, Brushed (sku BR-KT17-SS): brushed steel body, 1500W, auto shut-off, $44.99. Listing does not describe the water window or lid lining."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T10:17:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Brewlane 1.7L Electric Kettle, Brushed ($44.99).",
+     "sku": "BR-KT17-SS",
+     "qty": 1,
+     "amountCents": 4499
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T10:18:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $48.59 including $3.60 tax, free shipping.",
+     "amountCents": 4859
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T10:19:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $48.59 with PayPal.",
+     "amountCents": 4859
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T10:20:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order BRH-55102 confirmed, $48.59."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-09T10:21:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "BRH-55102 shipped: 1 x 1.7L Electric Kettle, Brushed."
+    }
+   ],
+   "storeRecord": [
+    "BRH-55102 11/09",
+    "1 x 1.7L Kettle Brushed 44.99",
+    "Tax 3.60",
+    "Paid $48.59 PayPal.",
+    "Shipped 11/10: 1 x 1.7L Kettle Brushed."
+   ],
+   "complaint": "The kettle seems to have a plastic water gauge inside, and I said no plastic touching the water.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Brewlane 1.7L Electric Kettle, Brushed"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Brewlane 1.7L Electric Kettle, Brushed"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $48.59"
+    ],
+    "exclusionsRespected": [
+     "unknown",
+     "agent_log",
+     ""
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $48.59 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/10: 1 x 1.7L Kettle Brushed."
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the kettle, quantity and price fit and the store shipped and charged as ordered, but no record says what the water window is made of; the buyer only says it \"seems\" plastic, so the exclusion cannot be settled."
+  },
+  {
+   "id": "H6-D09",
+   "title": "Buyer dislikes the click sound of the digital metronome that matched every condition",
+   "instruction": "Buy one digital metronome with a headphone jack, under $30 shipped. You can pay.",
+   "conditions": {
+    "item": "digital metronome with headphone jack",
+    "quantity": 1,
+    "maxTotalCents": 3000,
+    "exclusions": [
+     "tuner combo units"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "tempora",
+    "name": "Tempora Music Gear"
+   },
+   "cart": [
+    {
+     "sku": "TM-DM20",
+     "name": "Tempora DM-20 Digital Metronome",
+     "qty": 1,
+     "unitCents": 2299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "TM-DM20",
+     "name": "Tempora DM-20 Digital Metronome",
+     "qty": 1,
+     "unitCents": 2299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T10:22:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching digital metronomes with a headphone jack under $30 shipped."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T10:23:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Tempora DM-20 Digital Metronome (sku TM-DM20): 3.5mm headphone jack, 30-250 BPM, metronome only, no tuner, $22.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T10:24:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x Tempora DM-20 Digital Metronome ($22.99 each).",
+     "sku": "TM-DM20",
+     "qty": 2,
+     "amountCents": 4598
+    },
+    {
+     "step": 4,
+     "at": "2026-11-10T10:25:05Z",
+     "actor": "agent",
+     "action": "remove_from_cart",
+     "content": "Removed 1 x Tempora DM-20 Digital Metronome; the buyer asked for one.",
+     "sku": "TM-DM20",
+     "qty": 1,
+     "amountCents": 2299
+    },
+    {
+     "step": 5,
+     "at": "2026-11-10T10:26:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $26.98 with $3.99 shipping.",
+     "amountCents": 2698
+    },
+    {
+     "step": 6,
+     "at": "2026-11-10T10:27:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $26.98 with the saved PayPal wallet.",
+     "amountCents": 2698
+    },
+    {
+     "step": 7,
+     "at": "2026-11-10T10:28:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order TMG-3307 confirmed, $26.98."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-10T10:29:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "TMG-3307 shipped: 1 x DM-20 Digital Metronome."
+    }
+   ],
+   "storeRecord": [
+    "TMG-3307 11/10",
+    "1 x DM-20 Digital Metronome 22.99",
+    "Ship 3.99",
+    "Paid $26.98 PayPal.",
+    "Shipped 11/11: 1 x DM-20 Digital Metronome."
+   ],
+   "complaint": "The metronome works but the click is too harsh for me, so I want my money back.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "3.5mm headphone jack"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Tempora DM-20 Digital Metronome"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $26.98"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "metronome only, no tuner"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $26.98 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/11: 1 x DM-20 Digital Metronome."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the metronome has the required headphone jack, one unit, within the limit, payment was allowed, and the store charged and shipped exactly that; disliking the click sound is a change of mind."
+  },
+  {
+   "id": "H6-D10",
+   "title": "Buyer expected handles on a resistance band set that met everything asked for",
+   "instruction": "Get one set of five resistance bands with different strengths, latex-free, under $30 with shipping and tax. You can pay.",
+   "conditions": {
+    "item": "resistance band set, 5 strengths",
+    "quantity": 1,
+    "maxTotalCents": 3000,
+    "exclusions": [
+     "latex"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "peakline",
+    "name": "Peakline Sports"
+   },
+   "cart": [
+    {
+     "sku": "PK-RB5-LP",
+     "name": "Peakline Loop Resistance Bands, Set of 5",
+     "qty": 1,
+     "unitCents": 1899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 349
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 152
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "PK-RB5-LP",
+     "name": "Peakline Loop Resistance Bands, Set of 5",
+     "qty": 1,
+     "unitCents": 1899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 349
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 152
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-11T10:02:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching latex-free resistance band sets with 5 strengths under $30 all in."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-11T10:03:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Peakline Tube Bands with Handles (sku PK-TB5-LX): $24.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-11T10:04:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Peakline Tube Bands with Handles ($24.99).",
+     "sku": "PK-TB5-LX",
+     "qty": 1,
+     "amountCents": 2499
+    },
+    {
+     "step": 4,
+     "at": "2026-11-11T10:05:05Z",
+     "actor": "agent",
+     "action": "remove_from_cart",
+     "content": "Removed 1 x Peakline Tube Bands with Handles: the spec sheet lists latex tubing, which the buyer ruled out.",
+     "sku": "PK-TB5-LX",
+     "qty": 1,
+     "amountCents": 2499
+    },
+    {
+     "step": 5,
+     "at": "2026-11-11T10:06:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Peakline Loop Resistance Bands, Set of 5 (sku PK-RB5-LP): TPE, latex-free, 5 color-coded strengths, loop style, $18.99."
+    },
+    {
+     "step": 6,
+     "at": "2026-11-11T10:07:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Peakline Loop Resistance Bands, Set of 5 ($18.99).",
+     "sku": "PK-RB5-LP",
+     "qty": 1,
+     "amountCents": 1899
+    },
+    {
+     "step": 7,
+     "at": "2026-11-11T10:08:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $24.00: $3.49 shipping and $1.52 tax.",
+     "amountCents": 2400
+    },
+    {
+     "step": 8,
+     "at": "2026-11-11T10:09:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $24.00 with PayPal.",
+     "amountCents": 2400
+    },
+    {
+     "step": 9,
+     "at": "2026-11-11T10:10:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order PKS-81140 confirmed, $24.00."
+    },
+    {
+     "step": 10,
+     "at": "2026-11-11T10:11:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "PKS-81140 shipped: 1 x Loop Resistance Bands, Set of 5."
+    }
+   ],
+   "storeRecord": [
+    "PKS-81140 11/11",
+    "1 x Loop Bands Set of 5 18.99",
+    "Ship 3.49",
+    "Tax 1.52",
+    "Paid $24.00 PayPal.",
+    "Shipped 11/12: 1 x Loop Bands Set of 5."
+   ],
+   "complaint": "These are plain loop bands with no handles, which is not what I pictured.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "5 color-coded strengths"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Peakline Loop Resistance Bands, Set of 5"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $24.00"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "TPE, latex-free"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $24.00 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/12: 1 x Loop Bands Set of 5."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the set is latex-free with five strengths, one unit, within the cap, paid with permission, and shipped and charged as ordered; handles were never part of the request."
+  }
+ ]
+}
