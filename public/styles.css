@@ -88,13 +88,14 @@ q { quotes: "“" "”"; }
 
 /* ---- what this is, in three steps ------------------------------------------------------------------ */
 .hero { padding-top: var(--s6); padding-bottom: var(--s2); }
-.hero h1 { font-size: var(--f-xl); line-height: 1.1; letter-spacing: -0.03em; max-width: 24ch; }
+.hero h1 { font-size: var(--f-xl); line-height: 1.1; letter-spacing: -0.03em; max-width: 40ch; }
 .hero .tagline { font-size: var(--f-lg); color: var(--c-text-2); margin-top: var(--s2); }
 .promise-steps { list-style: none; margin: var(--s8) 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr 1.2fr; }
 .ps { position: relative; border-top: 4px solid var(--c-accent); padding: var(--s4) var(--s6) 0 0; display: flex; flex-direction: column; gap: var(--s1); min-width: 0; }
 .ps-n { position: absolute; top: -16px; left: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--c-body); border: 3px solid currentColor; display: grid; place-items: center; font-weight: 700; font-size: var(--f-sm); }
 .ps strong { font-size: var(--f-lg); line-height: 1.2; margin-top: var(--s2); }
 .ps-t { color: var(--c-text-2); }
+.ps-f { color: var(--c-text-3); font-size: var(--f-sm); }
 .ps-first { border-top-color: var(--c-success); }
 .ps-first .ps-n { color: var(--c-success); }
 .ps-back { border-top: 4px dashed var(--c-take); }

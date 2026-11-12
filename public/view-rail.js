@@ -18,11 +18,11 @@ export function stations({ order, kase: k }, working) {
   if (k?.refund?.completedAt) {
     st.refund = verifyFirst
       ? { state: 'money', sub: `${usd(k.refund.amountCents)}, ${refundTiming(k)}` }
-      : { state: 'money', sub: `${usd(k.refund.amountCents)} in ${secs(k.refund.completedAtMs - k.receivedAtMs)}, before any check` };
+      : { state: 'money', sub: `${usd(k.refund.amountCents)} in ${secs(k.refund.completedAtMs - k.receivedAtMs)}, before the purchase is checked` };
   } else if (k && verifyFirst && v?.liable === 'BUYER') st.refund = { state: 'skip', sub: 'no refund: the order matches' };
   else if (review) st.refund = { state: 'hold', sub: 'held until a person decides' };
   else if (k?.refund) st.refund = { state: 'todo', sub: `PayPal says ${k.refund.status}` };
-  else st.refund = { state: 'todo', sub: verifyFirst ? 'within 5 minutes if not the buyer' : 'before anything is checked' };
+  else st.refund = { state: 'todo', sub: verifyFirst ? 'within 5 minutes if not the buyer' : 'before the purchase is checked' };
 
   if (q?.finishedAtMs) st.quick = q.closed ? { state: 'done', tone: 'go', sub: `mismatch found in ${secs(q.ms)}` } : { state: 'done', sub: `nothing settled, ${secs(q.ms)}` };
   else st.quick = { state: 'todo', sub: 'mandate and PayPal order' };

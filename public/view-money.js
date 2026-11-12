@@ -6,7 +6,7 @@ function stageOf(l, k) {
   if (!k || l.at < k.receivedAt) return null;
   const v = k.verdict;
   if (v?.decidedAt && l.at >= v.decidedAt) return v.rule === 'OPERATOR' ? ['after a person chose', 'wait'] : v.agreed ? ['after both keys agreed', 'keys'] : ['after the decision', 'keys'];
-  if (!k.quick?.startedAt || l.at < k.quick.startedAt) return ['before any check', 'go'];
+  if (!k.quick?.startedAt || l.at < k.quick.startedAt) return ['before the purchase is checked', 'go'];
   return k.quick?.closed ? ['after the quick check', 'go'] : ['during the checks', ''];
 }
 

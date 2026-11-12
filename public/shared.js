@@ -109,7 +109,7 @@ export const linesSince = (orderId, iso) => S.state.ledger.filter((l) => l.order
  */
 export function refundTiming(k) {
   const done = k.refund.completedAtMs;
-  if (k.path === 'REFUND_FIRST') return `${secs(done - k.receivedAtMs)} after the report, before any check`;
+  if (k.path === 'REFUND_FIRST') return `${secs(done - k.receivedAtMs)} after the report, before the purchase is checked`;
   const chosen = k.verdict?.rule === 'OPERATOR' ? Date.parse(k.verdict.decidedAt) : NaN;
   if (done >= chosen) return `${secs(done - chosen)} after a person chose`;
   return `${secs(done - (k.quick?.startedAtMs ?? k.receivedAtMs))} after the check began`;
