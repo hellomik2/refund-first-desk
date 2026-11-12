@@ -6,7 +6,7 @@
 
 When an AI shopping agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Then the records are checked. Only if the check finds the buyer responsible does the buyer get a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never more than was refunded. In every other ending the buyer keeps the refund.
 
-1. **Refund first.** PayPal's refund status is COMPLETED before any check starts (within the limits; sandbox runs 1.87–3.17 s).
+1. **Refund first.** PayPal's refund status is COMPLETED before any check starts (within the limits; sandbox runs 1.99–3.19 s).
 2. **Then check.** The AI's verdict and fixed rules in code; money moves only when they agree.
 3. **Take it back, only if the buyer was responsible.** Notice, 5 business days to dispute, then the wallet that paid is charged again.
 
@@ -187,7 +187,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 151 tests against an in-memory PayPal stand-in
+npm test                       # 152 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 
