@@ -5,7 +5,9 @@
 //   up         each earlier case of this buyer closed as the agent's or the store's responsibility
 //              (both keys agreed, or a person chose): +step per case and +1 refund, at most maxUp cases
 //   down       each earlier case where this buyer was found responsible (both keys agreed, or a person
-//              chose) and did not dispute: -step per case and -1 refund. The only way a limit goes down.
+//              chose) and the notice period ran out with no dispute, so the wallet was charged again:
+//              -step per case and -1 refund. The only way a limit goes down. A verdict still inside its
+//              notice period does not count yet: the buyer may still dispute it.
 //   floor      $0 and 0 refunds: every purchase is checked first
 //
 // Only cases reported within windowDays (policy clock) count. Agents' and stores' records do not move a
@@ -21,7 +23,7 @@ export function trustLimits({ policy, buyerCases, now }) {
   const since = new Date(now).getTime() - (policy.trustWindowDays ?? 180) * DAY_MS;
   const recent = buyerCases.filter((c) => decided(c) && new Date(c.receivedAt).getTime() >= since).sort((a, b) => a.receivedAt.localeCompare(b.receivedAt));
   const up = recent.filter((c) => c.verdict.liable === 'AGENT' || c.verdict.liable === 'STORE').slice(0, policy.trustMaxUp ?? 2);
-  const down = recent.filter((c) => c.verdict.liable === 'BUYER' && !c.dispute);
+  const down = recent.filter((c) => c.verdict.liable === 'BUYER' && !c.dispute && c.recharge?.status === 'COMPLETED');
   const basis = [
     ...up.map((c) => ({ caseId: c.id, orderId: c.orderId, liable: c.verdict.liable, decidedBy: c.verdict.rule === 'OPERATOR' ? 'PERSON' : 'TWO_KEYS', effect: 'UP', cents: step, refunds: 1 })),
     ...down.map((c) => ({ caseId: c.id, orderId: c.orderId, liable: 'BUYER', decidedBy: c.verdict.rule === 'OPERATOR' ? 'PERSON' : 'TWO_KEYS', effect: 'DOWN', cents: -step, refunds: -1 })),

@@ -13,7 +13,8 @@ import { createFakePayPal } from './fake-paypal.js';
 
 const policy = defaultPolicy();
 const NOW = '2026-11-12T00:00:00.000Z';
-const kase = (id, liable, more = {}) => ({ id, orderId: `O-${id}`, receivedAt: '2026-11-01T00:00:00.000Z', status: 'CLOSED', verdict: { liable, rule: 'R2', agreed: true }, dispute: null, ...more });
+// A buyer-responsible case counts against the buyer only once the wallet was charged again after the notice period.
+const kase = (id, liable, more = {}) => ({ id, orderId: `O-${id}`, receivedAt: '2026-11-01T00:00:00.000Z', status: 'CLOSED', verdict: { liable, rule: 'R2', agreed: true }, dispute: null, recharge: liable === 'BUYER' ? { status: 'COMPLETED' } : null, ...more });
 const limits = (cases, p = policy) => trustLimits({ policy: p, buyerCases: cases, now: NOW });
 
 // ---- the rule on its own -------------------------------------------------------------------------------
@@ -37,7 +38,7 @@ test('up: at most two such cases count', () => {
   assert.deepEqual(l.basis.map((b) => b.caseId), ['C1', 'C2']);
 });
 
-test('down: the buyer\'s own responsibility verdict, not disputed, lowers it by one step and one refund', () => {
+test('down: the buyer\'s own responsibility verdict, charged again after the notice period, lowers it by one step and one refund', () => {
   const l = limits([kase('C1', 'BUYER')]);
   assert.equal(l.perCaseCapCents, 2500);
   assert.equal(l.refundsPer30Days, 1);
@@ -54,8 +55,11 @@ test('down never below zero: every purchase is then checked first', () => {
   assert.equal(l.refundsPer30Days, 0);
 });
 
-test('not lowered: a disputed buyer verdict, a case waiting for a person, an undecided or undetermined case, keys that disagree', () => {
+test('not lowered: a verdict still in its notice period, a halted re-charge, nothing refunded, a disputed verdict, a case waiting for a person, an undecided or undetermined case, keys that disagree', () => {
   const none = [
+    kase('C7', 'BUYER', { status: 'NOTICE_SENT', recharge: { status: 'SCHEDULED' } }),
+    kase('C8', 'BUYER', { status: 'RECHARGE_HALTED', recharge: { status: 'HALTED', blockedBy: 'NO_ACTIVE_CONSENT' } }),
+    kase('C9', 'BUYER', { status: 'CLOSED_NO_REFUND', recharge: null }),
     kase('C1', 'BUYER', { dispute: { at: NOW, text: 'no' } }),
     { ...kase('C2', 'BUYER'), status: 'HUMAN_REVIEW', verdict: null },
     { ...kase('C3', 'BUYER'), verdict: null, status: 'OPEN' },
@@ -129,11 +133,31 @@ async function runToVerdict(ctx, order) {
   return k;
 }
 
-test('desk: after the buyer\'s own responsibility verdict, the next purchase is checked first and the notice says why', async () => {
+/** The notice period runs out with no dispute and the saved wallet is charged again. */
+async function chargedAgain(ctx, k) {
+  ctx.clock.fastForwardDays(8);
+  await ctx.desk.processDue();
+  assert.equal(k.recharge.status, 'COMPLETED');
+}
+
+test('desk: a buyer verdict still in its notice period does not lower a purchase made meanwhile', async () => {
+  const ctx = setup();
+  const buyer = ctx.desk.createBuyer({ name: 'B', useDemoWallet: true });
+  const first = await runToVerdict(ctx, await buy(ctx, buyer));
+  assert.equal(first.recharge.status, 'SCHEDULED');
+  const meanwhile = await buy(ctx, buyer);
+  assert.equal(meanwhile.protection.perCaseCapCents, 5000, 'the buyer can still dispute, so nothing counts against them yet');
+  await ctx.desk.fileDispute(first.id, 'Not my mistake.');
+  const { kase: k } = await ctx.desk.reportProblem({ orderId: meanwhile.id, statement: 'Wrong.' });
+  assert.equal(k.path, 'REFUND_FIRST', 'one instant refund used of two');
+});
+
+test('desk: after the buyer\'s own responsibility verdict and the re-charge, the next purchase is checked first and the notice says why', async () => {
   const ctx = setup();
   const buyer = ctx.desk.createBuyer({ name: 'B', useDemoWallet: true });
   const first = await runToVerdict(ctx, await buy(ctx, buyer));
   assert.equal(first.verdict.liable, 'BUYER');
+  await chargedAgain(ctx, first);
   const next = await buy(ctx, buyer);
   assert.equal(next.protection.perCaseCapCents, 2500);
   assert.equal(next.protection.refundsPer30Days, 1);
@@ -145,6 +169,7 @@ test('desk: after the buyer\'s own responsibility verdict, the next purchase is 
   const text = k.notices.find((n) => n.type === 'CHECKING_FIRST').text;
   assert.match(text, new RegExp(`case ${first.id} found you responsible`));
   assert.equal(text.split('set from your own record').length - 1, 1, 'the reason is given once, even when both limits were hit');
+  assert.match(text, /you already had 1 instant refund in 30 days/);
 });
 
 test('desk: a disputed buyer verdict does not lower the next purchase', async () => {
@@ -194,13 +219,13 @@ test('desk: the limit is fixed at purchase; a verdict reached later does not cha
 test('desk: no money rule is loosened for a lowered buyer: the re-charge still needs notice and stops on dispute', async () => {
   const ctx = setup();
   const buyer = ctx.desk.createBuyer({ name: 'B', useDemoWallet: true });
-  await runToVerdict(ctx, await buy(ctx, buyer));
-  const next = await buy(ctx, buyer, { cents: 2000 }); // under the lowered $25: still refund first, but one refund was already used
+  await chargedAgain(ctx, await runToVerdict(ctx, await buy(ctx, buyer)));
+  const next = await buy(ctx, buyer, { cents: 2000 }); // under the lowered $25, but the one instant refund allowed was already used
   const { kase: k } = await ctx.desk.reportProblem({ orderId: next.id, statement: 'Wrong.' });
   assert.equal(k.path, 'VERIFY_FIRST');
   assert.deepEqual(k.limitCheck.reasons, ['OVER_30_DAY_COUNT']);
   await ctx.desk.investigate(k.id);
   await ctx.desk.settle(k.id);
   assert.equal(k.status, 'CLOSED_NO_REFUND', 'checked first and the buyer was responsible: nothing refunded, nothing charged again');
-  assert.equal(ctx.paypal.totals().captures, 2, 'only the two purchases: the first case is still in its notice period');
+  assert.equal(ctx.paypal.totals().captures, 3, 'two purchases and the one re-charge after the first notice period; nothing for the second order');
 });

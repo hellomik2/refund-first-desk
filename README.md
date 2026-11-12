@@ -23,7 +23,7 @@ Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) a
    - *Shipping and tax took the total over the limit* or *Four ordered and charged, three shipped* (under **Show all 30 cases**): over the $50 limit, so the check comes first and the refund follows.
    - *Agent picked navy instead of black, then the store sent red*: in our runs the two keys disagreed here and a person decides; the live AI may answer differently on another run.
    - *Order matches what the buyer approved*: the buyer was responsible, gets a notice, and is charged again after it.
-2. Each visitor gets a separate workspace. A buyer starts with **$50 a case and 2 instant refunds per 30 days**, and the buyer's own record moves both (see [The case book](#the-case-book-what-to-fix-in-the-agent)): after *Order matches what the buyer approved*, the next purchase over $25 is checked first; after two cases that were the agent's fault, a $58 purchase is refunded first. To start over, press **Start a fresh workspace** (top right).
+2. Each visitor gets a separate workspace. A buyer starts with **$50 a case and 2 instant refunds per 30 days**, and the buyer's own record moves both (see [The case book](#the-case-book-what-to-fix-in-the-agent)). Run *Order matches what the buyer approved* to the end (fast-forward, charged again): the limit drops to $25 and 1 instant refund, already used, so every next purchase in that workspace is checked first. After two cases that were the agent's fault instead, a $58 purchase is refunded first. To start over, press **Start a fresh workspace** (top right).
 3. For the buyer-responsible ending, press **Fast-forward the notice period** to skip the 5-business-day notice; the saved wallet is then charged again.
 4. The server runs on Render's free plan. After a quiet spell the first page load can take about a minute while it wakes up.
 
@@ -84,7 +84,7 @@ Every case the desk finishes lands in a case book below the cases on screen, wri
 The record also moves the next purchase's instant-refund limit, by fixed rules in code (`src/domain/trust.js`); the AI never sets it:
 
 - **Up:** each earlier case of the same buyer that was the agent's or the store's fault (both keys agreed, or a person chose): +$25 a case and +1 refund, for at most two cases.
-- **Down, the only way down:** each earlier case where this buyer was found responsible and did not dispute: −$25 and −1 refund, to a floor of $0 (every purchase checked first).
+- **Down, the only way down:** each earlier case where this buyer was found responsible and, with no dispute during the notice period, was charged again: −$25 and −1 refund, to a floor of $0 (every purchase checked first). A verdict still inside its notice period does not count yet, because the buyer can still dispute it.
 - Only that buyer's cases from the last 180 days count. The limit is fixed on the order at purchase together with the cases that moved it, and the screen shows that reason under the purchase and in the buyer's "checking first" notice. Agents' and stores' records never move a buyer's limit.
 - In the measured 30-case run each case has its own buyer, so no limit moved there and the money results are the same as before this rule (`scripts/loop.mjs --fake-paypal`, before and after).
 

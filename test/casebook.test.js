@@ -42,6 +42,20 @@ test('the measured run is the 30 prepared cases, once each', () => {
   assert.deepEqual(inReview, ['S22']);
 });
 
+test('case by case, each record matches the answer key: outcome, first step, its actor and condition', () => {
+  for (const sc of key) {
+    const r = measured.records.find((x) => x.scenarioId === sc.id);
+    const fd = sc.expected.firstDeviation;
+    assert.equal(r.outcome, inReview.includes(sc.id) ? 'HUMAN_REVIEW' : sc.expected.liable, `${sc.id} outcome`);
+    if (Number.isInteger(fd)) {
+      assert.deepEqual([r.firstDeviation.kind, r.firstDeviation.step, r.firstDeviation.condition], ['STEP', fd, sc.firstDeviationCondition], `${sc.id} first deviation`);
+      assert.equal(r.firstDeviation.actor, sc.agentLog.find((s) => s.step === fd).actor, `${sc.id} actor`);
+    } else {
+      assert.equal(r.firstDeviation.kind, fd, `${sc.id} first deviation kind`);
+    }
+  }
+});
+
 test('responsibility counts equal the answer key (S22 counted as waiting for a person)', () => {
   const expected = { AGENT: 0, STORE: 0, BUYER: 0, UNDETERMINED: 0, HUMAN_REVIEW: 0, OPEN: 0 };
   for (const sc of key) expected[inReview.includes(sc.id) ? 'HUMAN_REVIEW' : sc.expected.liable] += 1;

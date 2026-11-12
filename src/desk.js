@@ -59,7 +59,10 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
   const CHECK_FIRST_BECAUSE = {
     OVER_PER_CASE_CAP: (p) => `it is over the $${fromCents(p.perCaseCapCents ?? policy.perCaseCapCents)} instant-refund limit`,
     NO_SAVED_WALLET_CONSENT: () => 'this purchase was made without a saved wallet',
-    OVER_30_DAY_COUNT: (p) => `you already had ${p.refundsPer30Days ?? policy.refundsPer30Days} instant refunds in 30 days`,
+    OVER_30_DAY_COUNT: (p) => {
+      const n = p.refundsPer30Days ?? policy.refundsPer30Days;
+      return n === 0 ? 'your record allows no instant refunds right now' : `you already had ${n} instant refund${n === 1 ? '' : 's'} in 30 days`;
+    },
     RESERVE_TOO_LOW: () => "the desk's own funds are low right now",
     REFUND_CALL_FAILED: () => 'the instant refund did not go through',
   };

@@ -25,8 +25,10 @@ const OUTCOME = [
 ];
 
 let data = null;
-let view = null; // 'workspace' | 'measured'; the viewer's choice stays while the page is open
+let view = null; // 'workspace' | 'measured'
+let picked = false; // once the viewer picks a tab, it stays; until then the workspace shows as soon as it has a case
 let signature = '';
+let drawn = '';
 let last = { state: null, cases: [] };
 
 /** Called on every render of the page; asks the server again only when a case changed. */
@@ -34,16 +36,20 @@ export function refreshCaseBook(state, cases) {
   if (!state) return;
   last = { state, cases };
   const sig = `${state.workspace}|${state.cases.map((c) => `${c.id}:${c.status}`).join(',')}`;
-  if (sig === signature) return draw();
-  signature = sig;
+  if (sig === signature || sig === refreshCaseBook.asking) return draw();
+  refreshCaseBook.asking = sig;
   fetch(`/api/casebook?ws=${encodeURIComponent(state.workspace)}`, { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : null))
     .then((json) => {
       if (!json) return;
       data = json;
+      signature = sig; // kept only once the answer arrived: a failed read is asked again on the next render
       draw();
     })
-    .catch(() => {});
+    .catch(() => {})
+    .finally(() => {
+      if (refreshCaseBook.asking === sig) refreshCaseBook.asking = null;
+    });
 }
 
 function bar(byOutcome, count, max) {
@@ -110,14 +116,14 @@ function limitPanel(state, cases) {
     <p class="cb-limit-v"><b class="num">${usd(l.perCaseCapCents)}</b> a case, <b class="num">${l.refundsPer30Days}</b> instant refund${l.refundsPer30Days === 1 ? '' : 's'} per 30 days${l.perCaseCapCents === 0 || l.refundsPer30Days === 0 ? ': every purchase is checked first' : ''}</p>
     <div class="cb-line" aria-hidden="true"><span class="tick" style="left:${pos(l.start.perCaseCapCents)}"><i>start ${usd(l.start.perCaseCapCents)}</i></span><span class="dot ${moved ? (l.perCaseCapCents < l.start.perCaseCapCents ? 'dn' : 'up') : ''}" style="left:${pos(l.perCaseCapCents)}"></span><span class="end">${usd(0)}</span><span class="end r">${usd(max)}</span></div>
     ${basis ? `<ul class="cb-basis">${basis}</ul>` : `<p class="sub">No earlier case of this buyer has been decided, so the starting limits apply.</p>`}
-    <p class="sub">Only this buyer's own decided cases from the last ${l.windowDays} days move it, ${usd(Math.abs(l.basis[0]?.cents || state.policy.trustStepCents || 0))} and one refund per case; it goes down only when this buyer was found responsible and did not dispute. Fixed on the order at purchase, with these reasons. Agents' and stores' records never move it. The numbers are assumptions, not measured.</p></article>`;
+    <p class="sub">Only this buyer's own decided cases from the last ${l.windowDays} days move it, ${usd(Math.abs(l.basis[0]?.cents || state.policy.trustStepCents || 0))} and one refund per case. Up: a case that was the agent's or store's fault (two at most). Down: a case where this buyer was found responsible and, with no dispute in the notice period, was charged again. Fixed on the order at purchase, with these reasons. Agents' and stores' records never move it. The numbers are assumptions, not measured.</p></article>`;
 }
 
 function draw() {
   const el = $('casebook');
   if (!el || !data || !last.state) return;
   const ws = data.workspace;
-  if (!view) view = ws?.cases ? 'workspace' : 'measured';
+  if (!picked) view = ws?.cases ? 'workspace' : 'measured';
   const measured = view === 'measured';
   const book = measured ? data.measured.book : ws;
   const src = data.measured.source;
@@ -128,7 +134,7 @@ function draw() {
       ${rows(a, max, 'agent')}</article>`)
     .join('');
   const empty = !book.cases;
-  el.innerHTML = `<div class="cb-head">
+  const html = `<div class="cb-head">
       <div><h2 id="cb-h">Case book: what to fix in the agent</h2>
       <p class="hint">For the agent's operator. Every case the desk finishes lands here: which condition the agent broke, how often, and the line in its own log where it first left the mandate. Bars are counts, coloured by who was found responsible.</p></div>
       <div class="cb-tabs" role="tablist">
@@ -139,6 +145,10 @@ function draw() {
     ${empty ? `<p class="card sub">No case in this workspace yet. Run a case above, or open <button class="linkish" data-cb="measured">the 30 measured cases</button>.</p>` : `${outcomesStrip(book)}<div class="cb-grid"><div class="cb-main">${agents}</div><div class="cb-side">${measured ? '' : limitPanel(last.state, last.cases)}${storesPanel(book, max)}</div></div>`}
     ${empty ? `<div class="cb-grid"><div class="cb-main"></div><div class="cb-side">${limitPanel(last.state, last.cases)}</div></div>` : ''}
     <ul class="cb-legend cb-key">${OUTCOME.slice(0, 5).map(([k, name]) => `<li><span class="sw o-${k}"></span>${esc(name)}</li>`).join('')}</ul>`;
+  // The page redraws often (every state read while an action runs); an unchanged book is left alone so an opened quote stays open.
+  if (html === drawn) return;
+  drawn = html;
+  el.innerHTML = html;
 }
 
 /** The limit fixed on one order at purchase, and what moved it. Shown under the purchase. */
@@ -155,5 +165,6 @@ document.addEventListener('click', (event) => {
   const b = event.target.closest('[data-cb]');
   if (!b) return;
   view = b.dataset.cb;
+  picked = true;
   draw();
 });
