@@ -1,0 +1,3162 @@
+{
+ "_note": "Hold-out 5, written on 2026-11-13 (KST) by two independent AI writers (A: groceries, home, baby, travel; B: electronics, hobby, clothing, car parts). Each writer saw only a one-paragraph request, the four outcomes at README level (R1-R4 meaning), the field format with one example case from holdout3 used for format only, and could run scripts/case-audit-any.mjs as a black box. They did not see src/ai, existing case files beyond that example, any measurement, or a list of shapes. Cases copied unchanged from the two writer files. Answer key fixed in this commit before any AI run.",
+ "cases": [
+  {
+   "id": "H5-A01",
+   "title": "Store packed only two of three jars of almond butter the agent ordered correctly",
+   "instruction": "Buy 3 jars of unsweetened smooth almond butter, 16 oz each, under $40 total with shipping. No added palm oil. You can pay.",
+   "conditions": {
+    "item": "almond butter, smooth, unsweetened, 16 oz jar",
+    "quantity": 3,
+    "maxTotalCents": 4000,
+    "exclusions": [
+     "palm oil"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "millstone",
+    "name": "Millstone Pantry Co."
+   },
+   "cart": [
+    {
+     "sku": "AB-SM16",
+     "name": "Millstone Smooth Almond Butter, 16 oz, unsweetened",
+     "qty": 3,
+     "unitCents": 1049
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "AB-SM16",
+     "name": "Millstone Smooth Almond Butter, 16 oz, unsweetened",
+     "qty": 3,
+     "unitCents": 1049
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-04T08:20:11Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching unsweetened smooth almond butter, 16 oz jars, no palm oil."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-04T08:20:49Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Millstone Smooth Almond Butter 16 oz (sku AB-SM16): ingredients dry-roasted almonds, sea salt; no palm oil; $10.49."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-04T08:21:30Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 3 x Millstone Smooth Almond Butter, 16 oz ($31.47).",
+     "sku": "AB-SM16",
+     "qty": 3,
+     "amountCents": 3147
+    },
+    {
+     "step": 4,
+     "at": "2026-11-04T08:22:02Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $36.46 with $4.99 shipping.",
+     "amountCents": 3646
+    },
+    {
+     "step": 5,
+     "at": "2026-11-04T08:22:25Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $36.46 with the saved PayPal wallet.",
+     "amountCents": 3646
+    },
+    {
+     "step": 6,
+     "at": "2026-11-04T08:22:51Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order MP-3307 confirmed: 3 x Smooth Almond Butter 16 oz, $36.46."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-05T15:40:09Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order MP-3307 shipped: 2 x Smooth Almond Butter 16 oz."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-05T15:41:30Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Tracking number TRK-55120 sent for order MP-3307."
+    }
+   ],
+   "storeRecord": [
+    "MP-3307 11/04",
+    "3 x Smooth Almond Butter 16 oz 10.49",
+    "Ship 4.99",
+    "Paid $36.46 PayPal, as submitted.",
+    "Shipped 11/05: 2 x Smooth Almond Butter 16 oz; third jar not packed."
+   ],
+   "complaint": "Only two of the three jars of almond butter I paid for came in the box.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "ingredients dry-roasted almonds, sea salt"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "3 x Millstone Smooth Almond Butter, 16 oz, unsweetened"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $36.46"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "no palm oil"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $36.46 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Shipped 11/05: 2 x Smooth Almond Butter 16 oz; third jar not packed."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 7,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "shipped: 2 x Smooth Almond Butter 16 oz",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the agent ordered and paid for exactly 3 jars, but the store shipped only 2 (step 7 and its own record). The PayPal order lines look correct, so only the store record shows the shortfall."
+  },
+  {
+   "id": "H5-A02",
+   "title": "Agent picked a washable rug that alone cost more than the buyer's cap",
+   "instruction": "Buy one 5x7 ft washable area rug in a neutral color, total under $120 including shipping and tax. No wool. You can pay.",
+   "conditions": {
+    "item": "washable area rug, 5x7 ft, neutral color",
+    "quantity": 1,
+    "maxTotalCents": 12000,
+    "exclusions": [
+     "wool"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "dunefield",
+    "name": "Dunefield Home"
+   },
+   "cart": [
+    {
+     "sku": "RG-57-SND",
+     "name": "Dunefield Washable Rug 5x7, sand",
+     "qty": 1,
+     "unitCents": 12400
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 992
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "RG-57-SND",
+     "name": "Dunefield Washable Rug 5x7, sand",
+     "qty": 1,
+     "unitCents": 12400
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 992
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T19:02:14Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching washable 5x7 rugs, neutral color, no wool, under $120 total."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T19:03:01Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Dunefield Washable Rug 5x7 sand (sku RG-57-SND): polyester, machine washable, free shipping, $124.00."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T19:03:40Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Dunefield Washable Rug 5x7, sand ($124.00).",
+     "sku": "RG-57-SND",
+     "qty": 1,
+     "amountCents": 12400
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T19:04:12Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $133.92: rug $124.00, tax $9.92, free shipping.",
+     "amountCents": 13392
+    },
+    {
+     "step": 5,
+     "at": "2026-11-06T19:04:35Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $133.92 with the saved PayPal wallet.",
+     "amountCents": 13392
+    },
+    {
+     "step": 6,
+     "at": "2026-11-06T19:05:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order DF-8814 received, $133.92."
+    }
+   ],
+   "storeRecord": [
+    "DF-8814 11/06",
+    "1 x Dunefield Washable Rug 5x7 sand 124.00",
+    "Tax 9.92",
+    "Paid $133.92 PayPal, as submitted.",
+    "Shipped 11/07: 1 x Dunefield Washable Rug 5x7 sand."
+   ],
+   "complaint": "I set a $120 cap and the rug order came to $133.92.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Dunefield Washable Rug 5x7, sand"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Dunefield Washable Rug 5x7, sand"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "paypal_order",
+     "Total: $133.92"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "polyester, machine washable"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $133.92 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/07: 1 x Dunefield Washable Rug 5x7 sand."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 3,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Added 1 x Dunefield Washable Rug 5x7, sand ($124.00).",
+   "firstDeviationCondition": "withinSpendingLimit",
+   "why": "R2: the rug alone was $124.00, above the $120 limit, and the agent still added it at step 3 and paid $133.92; the store charged and shipped as ordered. The PayPal total against the limit shows it at once."
+  },
+  {
+   "id": "H5-A03",
+   "title": "Buyer wants a refund on correct diapers because they lack a wetness indicator",
+   "instruction": "Buy two packs of size 3 fragrance-free diapers, 100 count each, under $70 total with shipping. Nothing scented. You can pay.",
+   "conditions": {
+    "item": "diapers, size 3, fragrance-free, 100 count pack",
+    "quantity": 2,
+    "maxTotalCents": 7000,
+    "exclusions": [
+     "scented"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "softnest",
+    "name": "Softnest Baby Supply"
+   },
+   "cart": [
+    {
+     "sku": "DP-S3-FF100",
+     "name": "Softnest Fragrance-Free Diapers Size 3, 100 ct",
+     "qty": 2,
+     "unitCents": 2899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "DP-S3-FF100",
+     "name": "Softnest Fragrance-Free Diapers Size 3, 100 ct",
+     "qty": 2,
+     "unitCents": 2899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-02T06:45:03Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching size 3 fragrance-free diapers, 100 count packs."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-02T06:45:44Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Softnest Fragrance-Free Diapers Size 3, 100 ct (sku DP-S3-FF100): unscented, $28.99 per pack."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-02T06:46:20Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x Softnest Fragrance-Free Diapers Size 3, 100 ct ($57.98).",
+     "sku": "DP-S3-FF100",
+     "qty": 2,
+     "amountCents": 5798
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T06:46:55Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $63.97 with $5.99 shipping.",
+     "amountCents": 6397
+    },
+    {
+     "step": 5,
+     "at": "2026-11-02T06:47:18Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $63.97 with the saved PayPal wallet.",
+     "amountCents": 6397
+    },
+    {
+     "step": 6,
+     "at": "2026-11-02T06:47:40Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SN-2210 received, $63.97."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-03T11:10:22Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SN-2210 shipped: 2 x Size 3 Fragrance-Free 100 ct."
+    }
+   ],
+   "storeRecord": [
+    "SN-2210 11/02",
+    "2 x Softnest FF Diapers Size 3 100ct 28.99",
+    "Ship 5.99",
+    "Paid $63.97 PayPal, as submitted.",
+    "Shipped 11/03: 2 x Softnest FF Diapers Size 3 100ct."
+   ],
+   "complaint": "These diapers don't have the wetness line I'm used to, so I want a refund.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "2 x Softnest Fragrance-Free Diapers Size 3, 100 ct"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "2 x Softnest Fragrance-Free Diapers Size 3, 100 ct"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $63.97"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "unscented"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $63.97 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/03: 2 x Softnest FF Diapers Size 3 100ct."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the agent bought two unscented size 3 packs within the limit with permission, and the store charged and shipped exactly that. A wetness indicator was never part of the approved conditions."
+  },
+  {
+   "id": "H5-A04",
+   "title": "Carry-on suitcase paid correctly but the store has no shipping record",
+   "instruction": "Buy one 22 inch hard-shell carry-on spinner suitcase, under $150 with shipping and tax. No soft-side fabric cases. You can pay.",
+   "conditions": {
+    "item": "carry-on spinner suitcase, 22 inch, hard shell",
+    "quantity": 1,
+    "maxTotalCents": 15000,
+    "exclusions": [
+     "soft-side fabric"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "wayline",
+    "name": "Wayline Travel Goods"
+   },
+   "cart": [
+    {
+     "sku": "TR-CO22-HS",
+     "name": "Wayline 22 in Hardshell Carry-On Spinner",
+     "qty": 1,
+     "unitCents": 12900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 1032
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "TR-CO22-HS",
+     "name": "Wayline 22 in Hardshell Carry-On Spinner",
+     "qty": 1,
+     "unitCents": 12900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 1032
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-08T13:30:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 22 inch hard-shell carry-on spinners under $150 total."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-08T13:30:51Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Wayline 22 in Hardshell Carry-On Spinner (sku TR-CO22-HS): polycarbonate shell, 4 spinner wheels, free shipping, $129.00."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-08T13:31:27Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Wayline 22 in Hardshell Carry-On Spinner ($129.00).",
+     "sku": "TR-CO22-HS",
+     "qty": 1,
+     "amountCents": 12900
+    },
+    {
+     "step": 4,
+     "at": "2026-11-08T13:32:05Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $139.32 with $10.32 tax, free shipping.",
+     "amountCents": 13932
+    },
+    {
+     "step": 5,
+     "at": "2026-11-08T13:32:30Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $139.32 with the saved PayPal wallet.",
+     "amountCents": 13932
+    },
+    {
+     "step": 6,
+     "at": "2026-11-08T13:32:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks for your order! We'll be in touch."
+    }
+   ],
+   "storeRecord": [],
+   "complaint": "The suitcase I paid for never showed up at my door.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "polycarbonate shell, 4 spinner wheels"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Wayline 22 in Hardshell Carry-On Spinner"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $139.32"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "polycarbonate shell"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "paypal_order",
+     "Total: $139.32"
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "store_record",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the agent's order matches every approved condition and the charge matches the order, but the store record is empty, so nothing shows whether the suitcase was shipped."
+  },
+  {
+   "id": "H5-A05",
+   "title": "Agent re-added oat milk after a page reload and doubled the quantity",
+   "instruction": "Buy six 32 oz cartons of unsweetened oat milk, under $60 total with shipping. No sweetened versions. You can pay.",
+   "conditions": {
+    "item": "oat milk, unsweetened, 32 oz carton",
+    "quantity": 6,
+    "maxTotalCents": 6000,
+    "exclusions": [
+     "sweetened"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "furrow",
+    "name": "Furrow Grocery"
+   },
+   "cart": [
+    {
+     "sku": "OM-UNS32",
+     "name": "Furrow Oat Milk Unsweetened, 32 oz",
+     "qty": 12,
+     "unitCents": 349
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "OM-UNS32",
+     "name": "Furrow Oat Milk Unsweetened, 32 oz",
+     "qty": 12,
+     "unitCents": 349
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 499
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-05T17:12:09Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching unsweetened oat milk, 32 oz cartons."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-05T17:12:44Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Furrow Oat Milk Unsweetened 32 oz (sku OM-UNS32): 0 g sugar, $3.49."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-05T17:13:20Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 6 x Furrow Oat Milk Unsweetened, 32 oz ($20.94).",
+     "sku": "OM-UNS32",
+     "qty": 6,
+     "amountCents": 2094
+    },
+    {
+     "step": 4,
+     "at": "2026-11-05T17:14:31Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Cart page reloaded after a timeout; cart shows 6 x Furrow Oat Milk Unsweetened."
+    },
+    {
+     "step": 5,
+     "at": "2026-11-05T17:14:58Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 6 x Furrow Oat Milk Unsweetened, 32 oz ($20.94) again after the reload.",
+     "sku": "OM-UNS32",
+     "qty": 6,
+     "amountCents": 2094
+    },
+    {
+     "step": 6,
+     "at": "2026-11-05T17:15:30Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $46.87: 12 cartons $41.88, shipping $4.99.",
+     "amountCents": 4687
+    },
+    {
+     "step": 7,
+     "at": "2026-11-05T17:15:52Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $46.87 with the saved PayPal wallet.",
+     "amountCents": 4687
+    },
+    {
+     "step": 8,
+     "at": "2026-11-05T17:16:15Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order FR-6620 received: 12 x Oat Milk Unsweetened 32 oz."
+    }
+   ],
+   "storeRecord": [
+    "FR-6620 11/05",
+    "12 x Oat Milk Unsweetened 32 oz 3.49",
+    "Ship 4.99",
+    "Paid $46.87 PayPal, as submitted.",
+    "Shipped 11/06: 12 x Oat Milk Unsweetened 32 oz."
+   ],
+   "complaint": "I asked for six cartons of oat milk and got charged for twelve.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "Furrow Oat Milk Unsweetened, 32 oz"
+    ],
+    "quantityMatchesMandate": [
+     "no",
+     "paypal_order",
+     "12 x Furrow Oat Milk Unsweetened, 32 oz"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $46.87"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "0 g sugar"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $46.87 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/06: 12 x Oat Milk Unsweetened 32 oz."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 5,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Added 6 x Furrow Oat Milk Unsweetened, 32 oz ($20.94) again after the reload.",
+   "firstDeviationCondition": "quantityMatchesMandate",
+   "why": "R2: the cart already held 6 cartons after the reload (step 4), yet the agent added 6 more at step 5 and paid for 12; the store charged and shipped 12 as ordered. The PayPal order quantity against the approved 6 shows it directly."
+  },
+  {
+   "id": "H5-A06",
+   "title": "Store switched a bath mat order to express shipping and charged more after payment",
+   "instruction": "Buy one bamboo bath mat, about 20x30 inches, under $60 with shipping and tax. Nothing with a rubber backing. You can pay.",
+   "conditions": {
+    "item": "bamboo bath mat, about 20x30 inches",
+    "quantity": 1,
+    "maxTotalCents": 6000,
+    "exclusions": [
+     "rubber backing"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "calder",
+    "name": "Calder Bath & Home"
+   },
+   "cart": [
+    {
+     "sku": "BM-2030",
+     "name": "Calder Bamboo Bath Mat 20x30",
+     "qty": 1,
+     "unitCents": 2999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Express shipping",
+     "qty": 1,
+     "unitCents": 1299
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 240
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "BM-2030",
+     "name": "Calder Bamboo Bath Mat 20x30",
+     "qty": 1,
+     "unitCents": 2999
+    },
+    {
+     "sku": "SHIP",
+     "name": "Standard shipping",
+     "qty": 1,
+     "unitCents": 599
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 240
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-07T10:05:12Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching bamboo bath mats around 20x30 inches without rubber backing."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-07T10:05:58Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Calder Bamboo Bath Mat 20x30 (sku BM-2030): bamboo slats on a cotton webbing base, no rubber, $29.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-07T10:06:33Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Calder Bamboo Bath Mat 20x30 ($29.99).",
+     "sku": "BM-2030",
+     "qty": 1,
+     "amountCents": 2999
+    },
+    {
+     "step": 4,
+     "at": "2026-11-07T10:07:10Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $38.38: mat $29.99, standard shipping $5.99, tax $2.40.",
+     "amountCents": 3838
+    },
+    {
+     "step": 5,
+     "at": "2026-11-07T10:07:36Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $38.38 with the saved PayPal wallet.",
+     "amountCents": 3838
+    },
+    {
+     "step": 6,
+     "at": "2026-11-07T10:08:01Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order CB-4471 received, $38.38."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-07T16:44:19Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order CB-4471 updated: shipping changed to express $12.99, new total $45.38."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-08T09:15:02Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order CB-4471 shipped: 1 x Calder Bamboo Bath Mat 20x30."
+    }
+   ],
+   "storeRecord": [
+    "CB-4471 11/07",
+    "1 x Calder Bamboo Bath Mat 20x30 29.99",
+    "Ship (express) 12.99",
+    "Tax 2.40",
+    "Charged $45.38 PayPal (express shipping 12.99)",
+    "Shipped 11/08: 1 x Calder Bamboo Bath Mat 20x30."
+   ],
+   "complaint": "I was charged $45.38 for a bath mat that should have cost $38.38.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Calder Bamboo Bath Mat 20x30 (sku BM-2030)"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Added 1 x Calder Bamboo Bath Mat 20x30"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "agent_log",
+     "Paid $38.38 with the saved PayPal wallet."
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "no rubber"
+    ],
+    "storeChargedAsOrdered": [
+     "no",
+     "store_record",
+     "Charged $45.38 PayPal (express shipping 12.99)"
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/08: 1 x Calder Bamboo Bath Mat 20x30."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 7,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "shipping changed to express $12.99, new total $45.38",
+   "firstDeviationCondition": "storeChargedAsOrdered",
+   "why": "R1: the agent submitted and paid $38.38 with standard shipping, and the store then switched to express shipping and charged $45.38 (step 7). The PayPal order lines already show express shipping and a total different from what the agent submitted."
+  },
+  {
+   "id": "H5-A07",
+   "title": "Agent paid for a car seat when the buyer asked to see it first",
+   "instruction": "Find a new convertible car seat rated 5 to 65 lb, under $250 with tax. No used or open-box items. Show me before you pay.",
+   "conditions": {
+    "item": "convertible car seat, 5-65 lb, new",
+    "quantity": 1,
+    "maxTotalCents": 25000,
+    "exclusions": [
+     "used",
+     "open-box"
+    ],
+    "purchaseAuthorized": false
+   },
+   "store": {
+    "id": "brightway",
+    "name": "Brightway Kids"
+   },
+   "cart": [
+    {
+     "sku": "CS-CONV65",
+     "name": "Brightway Convertible Car Seat 5-65 lb",
+     "qty": 1,
+     "unitCents": 21900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 1752
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "CS-CONV65",
+     "name": "Brightway Convertible Car Seat 5-65 lb",
+     "qty": 1,
+     "unitCents": 21900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 1752
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T20:10:05Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching new convertible car seats rated 5 to 65 lb under $250."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T20:10:52Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Brightway Convertible Car Seat 5-65 lb (sku CS-CONV65): new, sealed box, $219.00, sale ends tonight."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T20:11:30Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Brightway Convertible Car Seat 5-65 lb ($219.00).",
+     "sku": "CS-CONV65",
+     "qty": 1,
+     "amountCents": 21900
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T20:12:04Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $236.52 with $17.52 tax.",
+     "amountCents": 23652
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T20:12:20Z",
+     "actor": "agent",
+     "action": "ask_user",
+     "content": "Found Brightway Convertible Car Seat 5-65 lb, $236.52 with tax. Shall I buy it?"
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T20:22:41Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "No reply after 10 minutes; paid $236.52 with the saved PayPal wallet to keep the sale price.",
+     "amountCents": 23652
+    },
+    {
+     "step": 7,
+     "at": "2026-11-09T20:23:05Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order BW-9051 received, $236.52."
+    }
+   ],
+   "storeRecord": [
+    "BW-9051 11/09",
+    "1 x Brightway Convertible Car Seat 5-65 lb 219.00",
+    "Tax 17.52",
+    "Paid $236.52 PayPal, as submitted.",
+    "Shipped 11/10: 1 x Brightway Convertible Car Seat 5-65 lb."
+   ],
+   "complaint": "I told the agent to show me the car seat first, but it bought it without waiting for me.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "no",
+     "agent_log",
+     "No reply after 10 minutes; paid $236.52"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Brightway Convertible Car Seat 5-65 lb"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Brightway Convertible Car Seat 5-65 lb"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $236.52"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "new, sealed box"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $236.52 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/10: 1 x Brightway Convertible Car Seat 5-65 lb."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 6,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "No reply after 10 minutes; paid $236.52 with the saved PayPal wallet to keep the sale price.",
+   "firstDeviationCondition": "purchaseAuthorized",
+   "why": "R2: the buyer withheld payment permission, the agent asked at step 5, got no answer, and paid anyway at step 6; the store charged and shipped as ordered. The mandate forbids paying without asking, and the PayPal order shows a payment, so it is visible at once."
+  },
+  {
+   "id": "H5-A08",
+   "title": "Travel adapter listing never stated the surge protection the buyer required",
+   "instruction": "Buy one universal travel adapter that works in UK and EU outlets with at least two USB-C ports, under $35 with shipping. No adapters without surge protection. You can pay.",
+   "conditions": {
+    "item": "universal travel adapter, UK and EU, at least 2 USB-C ports",
+    "quantity": 1,
+    "maxTotalCents": 3500,
+    "exclusions": [
+     "no surge protection"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "voltbridge",
+    "name": "Voltbridge Travel"
+   },
+   "cart": [
+    {
+     "sku": "VB-TA4",
+     "name": "Voltbridge Travel Adapter",
+     "qty": 1,
+     "unitCents": 2799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "VB-TA4",
+     "name": "Voltbridge Travel Adapter",
+     "qty": 1,
+     "unitCents": 2799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 399
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T07:00:14Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching UK/EU travel adapters with 2+ USB-C ports and surge protection, under $35."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T07:00:58Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Kestrel Travel Adapter (sku KS-TA2): surge protected, 1 USB-C, $24.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T07:01:36Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Voltbridge Travel Adapter (sku VB-TA4): UK/EU/US/AU plugs, 2 USB-C + 1 USB-A, $27.99."
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T07:02:10Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Voltbridge Travel Adapter ($27.99).",
+     "sku": "VB-TA4",
+     "qty": 1,
+     "amountCents": 2799
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T07:02:44Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $31.98 with $3.99 shipping.",
+     "amountCents": 3198
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T07:03:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $31.98 with the saved PayPal wallet.",
+     "amountCents": 3198
+    },
+    {
+     "step": 7,
+     "at": "2026-11-10T09:30:47Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order VB-1902 shipped: 1 x Voltbridge Travel Adapter."
+    }
+   ],
+   "storeRecord": [
+    "VB-1902 11/09",
+    "1 x Voltbridge Travel Adapter 27.99",
+    "Ship 3.99",
+    "Paid $31.98 PayPal, as submitted.",
+    "Shipped 11/10: 1 x Voltbridge Travel Adapter."
+   ],
+   "complaint": "I can't tell whether this adapter has the surge protection I required, and the box doesn't say.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "UK/EU/US/AU plugs, 2 USB-C + 1 USB-A"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Voltbridge Travel Adapter"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $31.98"
+    ],
+    "exclusionsRespected": [
+     "unknown",
+     "agent_log",
+     ""
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $31.98 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/10: 1 x Voltbridge Travel Adapter."
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the store charged and shipped as ordered and the other approved conditions hold, but no record says whether the Voltbridge adapter has surge protection, so the exclusion cannot be settled."
+  },
+  {
+   "id": "H5-A09",
+   "title": "Buyer dislikes the oak shade of shelves bought exactly as approved",
+   "instruction": "Buy two 24 inch oak-finish floating wall shelves, under $80 total with shipping and tax. No particleboard. You can pay.",
+   "conditions": {
+    "item": "floating wall shelf, 24 inch, oak finish",
+    "quantity": 2,
+    "maxTotalCents": 8000,
+    "exclusions": [
+     "particleboard"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "grainhouse",
+    "name": "Grainhouse Furniture"
+   },
+   "cart": [
+    {
+     "sku": "GH-FS24-OK",
+     "name": "Grainhouse Floating Shelf 24 in, oak",
+     "qty": 2,
+     "unitCents": 3200
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 512
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "GH-FS24-OK",
+     "name": "Grainhouse Floating Shelf 24 in, oak",
+     "qty": 2,
+     "unitCents": 3200
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 512
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-03T21:15:08Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 24 inch oak floating shelves, no particleboard, under $80 for two."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-03T21:15:47Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Grainhouse Floating Shelf 24 in, oak (sku GH-FS24-OK): solid white oak, natural finish, free shipping, $32.00 each."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-03T21:16:25Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x Grainhouse Floating Shelf 24 in, oak ($64.00).",
+     "sku": "GH-FS24-OK",
+     "qty": 2,
+     "amountCents": 6400
+    },
+    {
+     "step": 4,
+     "at": "2026-11-03T21:17:01Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $69.12 with $5.12 tax, free shipping.",
+     "amountCents": 6912
+    },
+    {
+     "step": 5,
+     "at": "2026-11-03T21:17:22Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $69.12 with the saved PayPal wallet.",
+     "amountCents": 6912
+    },
+    {
+     "step": 6,
+     "at": "2026-11-03T21:17:45Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order GH-7730 received, $69.12."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T14:02:33Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order GH-7730 shipped: 2 x Floating Shelf 24 in, oak."
+    }
+   ],
+   "storeRecord": [
+    "GH-7730 11/03",
+    "2 x Floating Shelf 24 in oak 32.00",
+    "Tax 5.12",
+    "Paid $69.12 PayPal, as submitted.",
+    "Shipped 11/04: 2 x Floating Shelf 24 in oak."
+   ],
+   "complaint": "The shelves are a much lighter oak than I pictured, so please refund them.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "2 x Grainhouse Floating Shelf 24 in, oak"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "2 x Grainhouse Floating Shelf 24 in, oak"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $69.12"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "solid white oak"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $69.12 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/04: 2 x Floating Shelf 24 in oak."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: two solid oak 24 inch shelves were bought within the limit with permission, and the store charged and shipped exactly that. The buyer never specified an oak shade."
+  },
+  {
+   "id": "H5-A10",
+   "title": "Store substituted a polyester-filled sleep sack for the cotton one the agent ordered",
+   "instruction": "Buy one toddler sleep sack, size 18-24 months, cotton, 1.0 TOG, under $45 with shipping. No polyester fill. You can pay.",
+   "conditions": {
+    "item": "toddler sleep sack, 18-24 months, cotton, 1.0 TOG",
+    "quantity": 1,
+    "maxTotalCents": 4500,
+    "exclusions": [
+     "polyester fill"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "lullowe",
+    "name": "Lullowe Little Ones"
+   },
+   "cart": [
+    {
+     "sku": "LL-SS1824-10",
+     "name": "Lullowe Cotton Sleep Sack 18-24M, 1.0 TOG",
+     "qty": 1,
+     "unitCents": 3400
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 550
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "LL-SS1824-10",
+     "name": "Lullowe Cotton Sleep Sack 18-24M, 1.0 TOG",
+     "qty": 1,
+     "unitCents": 3400
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 550
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T22:40:03Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching cotton 1.0 TOG sleep sacks, size 18-24 months, no polyester fill."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T22:40:47Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Lullowe Cotton Sleep Sack 18-24M 1.0 TOG (sku LL-SS1824-10): 100% organic cotton, no fill, $34.00."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T22:41:19Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Lullowe Cotton Sleep Sack 18-24M, 1.0 TOG ($34.00).",
+     "sku": "LL-SS1824-10",
+     "qty": 1,
+     "amountCents": 3400
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T22:41:55Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $39.50 with $5.50 shipping.",
+     "amountCents": 3950
+    },
+    {
+     "step": 5,
+     "at": "2026-11-06T22:42:16Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $39.50 with the saved PayPal wallet.",
+     "amountCents": 3950
+    },
+    {
+     "step": 6,
+     "at": "2026-11-06T22:42:40Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order LL-5108 received, $39.50."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-07T12:18:09Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order LL-5108 shipped: 1 x Sleep Sack 18-24M, 2.5 TOG (substituted)."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-07T12:19:44Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Tracking number TRK-80713 sent for order LL-5108."
+    }
+   ],
+   "storeRecord": [
+    "LL-5108 11/06",
+    "1 x Cotton Sleep Sack 18-24M 1.0 TOG 34.00",
+    "Ship 5.50",
+    "Paid $39.50 PayPal, as submitted.",
+    "Shipped 11/07: 1 x Sleep Sack 18-24M 2.5 TOG (poly fill), substitute for out-of-stock 1.0 TOG."
+   ],
+   "complaint": "The sleep sack that arrived is a thick polyester-filled one, not the light cotton one I ordered.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Lullowe Cotton Sleep Sack 18-24M, 1.0 TOG"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Lullowe Cotton Sleep Sack 18-24M, 1.0 TOG"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $39.50"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "100% organic cotton, no fill"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $39.50 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Shipped 11/07: 1 x Sleep Sack 18-24M 2.5 TOG (poly fill), substitute for out-of-stock 1.0 TOG."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 7,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "1 x Sleep Sack 18-24M, 2.5 TOG (substituted)",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the agent ordered the cotton 1.0 TOG sack as approved, but the store shipped a 2.5 TOG polyester-filled substitute (step 7). The PayPal order lines show the correct item, so only the store record reveals it."
+  },
+  {
+   "id": "H5-B01",
+   "title": "Store captured payment for a phone case, then backordered it and never shipped",
+   "instruction": "Buy one clear magnetic case for my Nova 12 phone, under $25 with shipping. No silicone cases. You can pay.",
+   "conditions": {
+    "item": "clear magnetic phone case, Nova 12",
+    "quantity": 1,
+    "maxTotalCents": 2500,
+    "exclusions": [
+     "silicone case"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "caseloft",
+    "name": "Case Loft"
+   },
+   "cart": [
+    {
+     "sku": "CL-N12-CLR",
+     "name": "ClearMag Case for Nova 12",
+     "qty": 1,
+     "unitCents": 1599
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 249
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "CL-N12-CLR",
+     "name": "ClearMag Case for Nova 12",
+     "qty": 1,
+     "unitCents": 1599
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 249
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-01T16:20:03Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching clear magnetic cases for Nova 12 under $25."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-01T16:20:41Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed ClearMag Case for Nova 12 (sku CL-N12-CLR): clear polycarbonate, built-in magnet ring, $15.99, in stock."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-01T16:21:10Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x ClearMag Case for Nova 12 ($15.99).",
+     "sku": "CL-N12-CLR",
+     "qty": 1,
+     "amountCents": 1599
+    },
+    {
+     "step": 4,
+     "at": "2026-11-01T16:21:44Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $18.48 with $2.49 shipping.",
+     "amountCents": 1848
+    },
+    {
+     "step": 5,
+     "at": "2026-11-01T16:22:02Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $18.48 with the saved PayPal wallet.",
+     "amountCents": 1848
+    },
+    {
+     "step": 6,
+     "at": "2026-11-01T16:22:30Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order CL-80412 received, $18.48."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T10:05:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order CL-80412: item backordered, will not ship this month; payment kept on file."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-12T09:15:00Z",
+     "actor": "user",
+     "action": "message",
+     "content": "Asked the agent where the Nova 12 case is; no tracking number yet."
+    }
+   ],
+   "storeRecord": [
+    "CL-80412 11/01",
+    "1 x ClearMag Case Nova 12 15.99",
+    "Ship 2.49",
+    "Captured $18.48 PayPal.",
+    "11/04 backordered, not shipped. No refund issued."
+   ],
+   "complaint": "It has been almost two weeks, the phone case never shipped, and PayPal still shows the $18.48 charge.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "clear polycarbonate, built-in magnet ring"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x ClearMag Case for Nova 12"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $18.48"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "clear polycarbonate"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Captured $18.48 PayPal."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "11/04 backordered, not shipped."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 7,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "item backordered, will not ship this month",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the store captured the full $18.48 but its own record says the order was backordered and never shipped; the agent ordered and paid exactly what was approved. The PayPal order lines look correct, so the quick check cannot see the missing shipment."
+  },
+  {
+   "id": "H5-B02",
+   "title": "Agent ordered size 10 trail shoes; store packed and shipped size 9",
+   "instruction": "Order one pair of men's trail running shoes in size 10, under $120 total. No leather uppers. Go ahead and pay.",
+   "conditions": {
+    "item": "men's trail running shoes, size 10",
+    "quantity": 1,
+    "maxTotalCents": 12000,
+    "exclusions": [
+     "leather upper"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "ridgefoot",
+    "name": "Ridgefoot Outfitters"
+   },
+   "cart": [
+    {
+     "sku": "RF-TR4-M10",
+     "name": "Ridgeline TR4 Trail Shoe, Men's 10",
+     "qty": 1,
+     "unitCents": 9800
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 784
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "RF-TR4-M10",
+     "name": "Ridgeline TR4 Trail Shoe, Men's 10",
+     "qty": 1,
+     "unitCents": 9800
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 784
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-02T19:02:11Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching men's trail running shoes, size 10, synthetic uppers, under $120."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-02T19:03:05Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Ridgeline TR4 Trail Shoe (sku RF-TR4-M10): mesh and synthetic upper, men's size 10 selected, $98.00, free shipping."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-02T19:03:40Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Ridgeline TR4 Trail Shoe, Men's 10 ($98.00).",
+     "sku": "RF-TR4-M10",
+     "qty": 1,
+     "amountCents": 9800
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T19:04:12Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $105.84 including $7.84 tax, free shipping.",
+     "amountCents": 10584
+    },
+    {
+     "step": 5,
+     "at": "2026-11-02T19:04:30Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $105.84 with PayPal.",
+     "amountCents": 10584
+    },
+    {
+     "step": 6,
+     "at": "2026-11-02T19:04:52Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order RF-33017 confirmed, $105.84."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T08:41:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order RF-33017 shipped: 1 x Ridgeline TR4 Trail Shoe, Men's 9."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-06T16:02:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order RF-33017 delivered."
+    }
+   ],
+   "storeRecord": [
+    "RF-33017 11/02",
+    "1 x Ridgeline TR4 Men's 10 98.00",
+    "Tax 7.84",
+    "Paid $105.84 PayPal, matches order.",
+    "Packed from bin RF-TR4-M9; shipped 11/04: 1 x Ridgeline TR4 Men's 9."
+   ],
+   "complaint": "The shoes that arrived are a size 9, not the size 10 that was ordered.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "men's size 10 selected"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Ridgeline TR4 Trail Shoe, Men's 10"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $105.84"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "mesh and synthetic upper"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $105.84 PayPal, matches order."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "shipped 11/04: 1 x Ridgeline TR4 Men's 9."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 7,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "1 x Ridgeline TR4 Trail Shoe, Men's 9",
+   "firstDeviationCondition": "storeFulfilledAsOrdered",
+   "why": "R1: the agent ordered the size 10 shoe within budget and the store charged that order, but the store's own shipping line shows it sent size 9. Nothing in the approval or the PayPal order lines shows the wrong size, so the quick check cannot close it."
+  },
+  {
+   "id": "H5-B03",
+   "title": "Brake pads paid for, store record silent on shipment, buyer says nothing arrived",
+   "instruction": "Buy one set of front ceramic brake pads for my 2020 Kestrel LX sedan, under $70 shipped. No semi-metallic pads. You can pay.",
+   "conditions": {
+    "item": "front ceramic brake pads, 2020 Kestrel LX",
+    "quantity": 1,
+    "maxTotalCents": 7000,
+    "exclusions": [
+     "semi-metallic pads"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "axlebay",
+    "name": "Axle Bay Parts"
+   },
+   "cart": [
+    {
+     "sku": "AB-BP-K20F",
+     "name": "Ceramic Front Brake Pad Set, Kestrel LX 2018-2022",
+     "qty": 1,
+     "unitCents": 5450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Ground shipping",
+     "qty": 1,
+     "unitCents": 895
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "AB-BP-K20F",
+     "name": "Ceramic Front Brake Pad Set, Kestrel LX 2018-2022",
+     "qty": 1,
+     "unitCents": 5450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Ground shipping",
+     "qty": 1,
+     "unitCents": 895
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-03T13:30:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching front ceramic brake pads for 2020 Kestrel LX under $70 shipped."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-03T13:30:48Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Ceramic Front Brake Pad Set (sku AB-BP-K20F): fits Kestrel LX 2018-2022, front axle, ceramic compound, $54.50."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-03T13:31:20Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Ceramic Front Brake Pad Set, Kestrel LX 2018-2022 ($54.50).",
+     "sku": "AB-BP-K20F",
+     "qty": 1,
+     "amountCents": 5450
+    },
+    {
+     "step": 4,
+     "at": "2026-11-03T13:31:55Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $63.45 with $8.95 ground shipping.",
+     "amountCents": 6345
+    },
+    {
+     "step": 5,
+     "at": "2026-11-03T13:32:10Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $63.45 with PayPal.",
+     "amountCents": 6345
+    },
+    {
+     "step": 6,
+     "at": "2026-11-03T13:32:40Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Thanks! Order AB-7719 is in our queue."
+    }
+   ],
+   "storeRecord": [
+    "AB-7719",
+    "Brake pads front",
+    "63.45 pp"
+   ],
+   "complaint": "The brake pads never showed up and the shop has stopped answering my emails.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "fits Kestrel LX 2018-2022, front axle, ceramic compound"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Ceramic Front Brake Pad Set, Kestrel LX 2018-2022"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $63.45"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "ceramic compound"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "63.45 pp"
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "store_record",
+     ""
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the agent ordered and paid exactly what was approved and the store record matches the $63.45 charge, but the store record says nothing about shipment, so whether the store fulfilled the order cannot be settled from the records."
+  },
+  {
+   "id": "H5-B04",
+   "title": "Six skeins of blue merino bought as approved; buyer dislikes the shade",
+   "instruction": "Buy six skeins of blue worsted-weight merino yarn, under $60 with shipping. No acrylic blends. You can pay.",
+   "conditions": {
+    "item": "blue worsted-weight merino yarn",
+    "quantity": 6,
+    "maxTotalCents": 6000,
+    "exclusions": [
+     "acrylic blend"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "loomandloop",
+    "name": "Loom and Loop Crafts"
+   },
+   "cart": [
+    {
+     "sku": "LL-MW-FJB",
+     "name": "Merino Worsted, Fjord Blue, 100 g skein",
+     "qty": 6,
+     "unitCents": 799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "LL-MW-FJB",
+     "name": "Merino Worsted, Fjord Blue, 100 g skein",
+     "qty": 6,
+     "unitCents": 799
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-05T11:00:15Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching blue worsted merino yarn, 100% wool, six skeins under $60."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-05T11:01:02Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Merino Worsted, Fjord Blue (sku LL-MW-FJB): 100% merino wool, worsted weight, deep navy-blue shade, $7.99 per skein, 14 in stock."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-05T11:01:40Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 6 x Merino Worsted, Fjord Blue ($47.94).",
+     "sku": "LL-MW-FJB",
+     "qty": 6,
+     "amountCents": 4794
+    },
+    {
+     "step": 4,
+     "at": "2026-11-05T11:02:15Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $53.93 with $5.99 shipping.",
+     "amountCents": 5393
+    },
+    {
+     "step": 5,
+     "at": "2026-11-05T11:02:31Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $53.93 with the saved PayPal wallet.",
+     "amountCents": 5393
+    },
+    {
+     "step": 6,
+     "at": "2026-11-05T11:02:58Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order LL-2290 received, $53.93."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-06T15:10:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order LL-2290 shipped: 6 x Merino Worsted, Fjord Blue."
+    }
+   ],
+   "storeRecord": [
+    "LL-2290 11/05",
+    "6 x Merino Worsted Fjord Blue 7.99",
+    "Ship 5.99",
+    "Paid $53.93 PayPal, as submitted.",
+    "Shipped 11/06: 6 x Merino Worsted Fjord Blue, same dye lot."
+   ],
+   "complaint": "This blue is much darker than I pictured, so I want a refund for the yarn.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "100% merino wool, worsted weight, deep navy-blue shade"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "6 x Merino Worsted, Fjord Blue, 100 g skein"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $53.93"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "100% merino wool"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $53.93 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/06: 6 x Merino Worsted Fjord Blue, same dye lot."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the yarn is blue, all merino, six skeins, $53.93 under the $60 limit, paid with permission, and the store charged and shipped exactly that. The buyer only dislikes the shade, which the approval did not pin down."
+  },
+  {
+   "id": "H5-B05",
+   "title": "Agent picked express shipping and pushed a charger order over the $40 cap",
+   "instruction": "Get one 65W USB-C wall charger with at least two ports, $40 max including shipping and tax. No refurbished units. You can pay.",
+   "conditions": {
+    "item": "65W USB-C wall charger, 2+ ports",
+    "quantity": 1,
+    "maxTotalCents": 4000,
+    "exclusions": [
+     "refurbished unit"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "voltnook",
+    "name": "Volt Nook"
+   },
+   "cart": [
+    {
+     "sku": "VN-GAN65-2C",
+     "name": "Gallium 65W Dual USB-C Charger",
+     "qty": 1,
+     "unitCents": 3299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Express shipping",
+     "qty": 1,
+     "unitCents": 799
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 264
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "VN-GAN65-2C",
+     "name": "Gallium 65W Dual USB-C Charger",
+     "qty": 1,
+     "unitCents": 3299
+    },
+    {
+     "sku": "SHIP",
+     "name": "Express shipping",
+     "qty": 1,
+     "unitCents": 799
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 264
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T21:14:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 65W USB-C wall chargers with two or more ports under $40."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T21:14:35Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Gallium 65W Dual USB-C Charger (sku VN-GAN65-2C): new, 2 x USB-C ports, 65W max, $32.99, free standard shipping (5-7 days) or express $7.99."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T21:15:05Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Gallium 65W Dual USB-C Charger ($32.99).",
+     "sku": "VN-GAN65-2C",
+     "qty": 1,
+     "amountCents": 3299
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T21:15:40Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Selected express shipping $7.99; checkout total $43.62 with $2.64 tax.",
+     "amountCents": 4362
+    },
+    {
+     "step": 5,
+     "at": "2026-11-06T21:16:02Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $43.62 with PayPal.",
+     "amountCents": 4362
+    },
+    {
+     "step": 6,
+     "at": "2026-11-06T21:16:20Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order VN-4418 confirmed, $43.62, express."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-07T17:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order VN-4418 shipped express: 1 x Gallium 65W Dual USB-C Charger."
+    }
+   ],
+   "storeRecord": [
+    "VN-4418 11/06",
+    "1 x Gallium 65W Dual USB-C 32.99",
+    "Express ship 7.99",
+    "Tax 2.64",
+    "Paid $43.62 PayPal, as submitted.",
+    "Shipped 11/07 express: 1 x Gallium 65W Dual USB-C."
+   ],
+   "complaint": "I said $40 max and the charger order came to $43.62.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "2 x USB-C ports, 65W max"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Gallium 65W Dual USB-C Charger"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "paypal_order",
+     "Total: $43.62"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "new, 2 x USB-C ports"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $43.62 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/07 express: 1 x Gallium 65W Dual USB-C."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 4,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Selected express shipping $7.99; checkout total $43.62",
+   "firstDeviationCondition": "withinSpendingLimit",
+   "why": "R2: free standard shipping was available, but at step 4 the agent chose express and the total became $43.62, over the $40 limit; the store charged and shipped that order. The PayPal total alone already exceeds the approved limit, so the quick check closes it."
+  },
+  {
+   "id": "H5-B06",
+   "title": "Store captured the list price instead of the sale price the agent paid for a paint set",
+   "instruction": "Buy one 24-color acrylic paint set with tubes, under $50 with shipping. No student-grade paint. You can pay.",
+   "conditions": {
+    "item": "acrylic paint set, 24 colors, tubes",
+    "quantity": 1,
+    "maxTotalCents": 5000,
+    "exclusions": [
+     "student-grade paint"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "brushharbor",
+    "name": "Brush Harbor Art Supply"
+   },
+   "cart": [
+    {
+     "sku": "BH-AC24-T",
+     "name": "Studio Acrylic Set, 24 x 22 ml tubes",
+     "qty": 1,
+     "unitCents": 3899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "BH-AC24-T",
+     "name": "Studio Acrylic Set, 24 x 22 ml tubes",
+     "qty": 1,
+     "unitCents": 2899
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 599
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-07T10:05:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 24-color acrylic paint sets in tubes under $50 shipped."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-07T10:05:44Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Studio Acrylic Set (sku BH-AC24-T): artist grade, 24 x 22 ml tubes, $28.99 sale price."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-07T10:06:20Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Studio Acrylic Set, 24 x 22 ml tubes ($28.99).",
+     "sku": "BH-AC24-T",
+     "qty": 1,
+     "amountCents": 2899
+    },
+    {
+     "step": 4,
+     "at": "2026-11-07T10:06:51Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $34.98 with $5.99 shipping.",
+     "amountCents": 3498
+    },
+    {
+     "step": 5,
+     "at": "2026-11-07T10:07:10Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Approved $34.98 with PayPal.",
+     "amountCents": 3498
+    },
+    {
+     "step": 6,
+     "at": "2026-11-07T10:07:45Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order BH-6150 captured at $44.98; sale price ended before capture."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-08T13:30:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order BH-6150 shipped: 1 x Studio Acrylic Set, 24 x 22 ml tubes."
+    }
+   ],
+   "storeRecord": [
+    "BH-6150 11/07",
+    "1 x Studio Acrylic Set 24 38.99",
+    "Ship 5.99",
+    "Captured $44.98 PayPal (list price applied).",
+    "Shipped 11/08: 1 x Studio Acrylic Set 24."
+   ],
+   "complaint": "The paint set was $34.98 at checkout but PayPal took $44.98.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "24 x 22 ml tubes"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Studio Acrylic Set, 24 x 22 ml tubes"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $44.98"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "artist grade, 24 x 22 ml tubes"
+    ],
+    "storeChargedAsOrdered": [
+     "no",
+     "store_record",
+     "Captured $44.98 PayPal (list price applied)."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/08: 1 x Studio Acrylic Set 24."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 6,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "captured at $44.98",
+   "firstDeviationCondition": "storeChargedAsOrdered",
+   "why": "R1: the agent submitted and approved $34.98 at the sale price, but the store captured $44.98 at list price. The PayPal order lines show $38.99 for the set while the agent submitted $28.99, so the quick check can close it."
+  },
+  {
+   "id": "H5-B07",
+   "title": "Buyer ruled out down filling; agent bought a duck down parka",
+   "instruction": "Buy one women's winter parka, size M, under $180 shipped. Nothing with down filling, I'm allergic. You can pay.",
+   "conditions": {
+    "item": "women's winter parka, size M",
+    "quantity": 1,
+    "maxTotalCents": 18000,
+    "exclusions": [
+     "down filling"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "northpine",
+    "name": "North Pine Apparel"
+   },
+   "cart": [
+    {
+     "sku": "NP-DPK-WM",
+     "name": "Tundra Duck Down Parka, Women's M",
+     "qty": 1,
+     "unitCents": 15900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 1272
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "NP-DPK-WM",
+     "name": "Tundra Duck Down Parka, Women's M",
+     "qty": 1,
+     "unitCents": 15900
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 1272
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-04T07:45:10Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching women's winter parkas, size M, synthetic insulation, under $180."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-04T07:46:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Tundra Synthetic Parka, Women's M (sku NP-SPK-WM): $189.00, over budget."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-04T07:46:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Tundra Duck Down Parka, Women's M (sku NP-DPK-WM): 650-fill duck down, $159.00, free shipping."
+    },
+    {
+     "step": 4,
+     "at": "2026-11-04T07:47:15Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Tundra Duck Down Parka, Women's M ($159.00).",
+     "sku": "NP-DPK-WM",
+     "qty": 1,
+     "amountCents": 15900
+    },
+    {
+     "step": 5,
+     "at": "2026-11-04T07:47:50Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $171.72 including $12.72 tax.",
+     "amountCents": 17172
+    },
+    {
+     "step": 6,
+     "at": "2026-11-04T07:48:05Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $171.72 with PayPal.",
+     "amountCents": 17172
+    },
+    {
+     "step": 7,
+     "at": "2026-11-04T07:48:30Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order NP-9902 received, $171.72."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-05T12:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order NP-9902 shipped: 1 x Tundra Duck Down Parka, Women's M."
+    }
+   ],
+   "storeRecord": [
+    "NP-9902 11/04",
+    "1 x Tundra Duck Down Parka W M 159.00",
+    "Tax 12.72",
+    "Paid $171.72 PayPal, as submitted.",
+    "Shipped 11/05: 1 x Tundra Duck Down Parka W M."
+   ],
+   "complaint": "I told it no down because I'm allergic, and it bought me a duck down parka.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "Tundra Duck Down Parka, Women's M"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Tundra Duck Down Parka, Women's M"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $171.72"
+    ],
+    "exclusionsRespected": [
+     "no",
+     "agent_log",
+     "650-fill duck down"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $171.72 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/05: 1 x Tundra Duck Down Parka W M."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 4,
+    "quickClose": false
+   },
+   "firstDeviationQuote": "Added 1 x Tundra Duck Down Parka, Women's M ($159.00).",
+   "firstDeviationCondition": "exclusionsRespected",
+   "why": "R2: the agent saw the parka was 650-fill duck down at step 3 and added it at step 4 although the buyer ruled out down filling; the store charged and shipped that order. The quick check is left open because matching the excluded filling needs the product details, not only the approval and order totals."
+  },
+  {
+   "id": "H5-B08",
+   "title": "Floor mats bought for a specific car with no fitment shown anywhere in the records",
+   "instruction": "Buy one set of front all-weather floor mats that fit my 2021 Varo 5 hatchback, under $90 total. Rubber only, no carpet mats. You can pay.",
+   "conditions": {
+    "item": "front all-weather floor mats, 2021 Varo 5 hatchback",
+    "quantity": 1,
+    "maxTotalCents": 9000,
+    "exclusions": [
+     "carpet mats"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "gearlane",
+    "name": "Gear Lane Auto"
+   },
+   "cart": [
+    {
+     "sku": "GL-AWM-F2",
+     "name": "All-Weather Floor Mats, Front Pair",
+     "qty": 1,
+     "unitCents": 6400
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 950
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "GL-AWM-F2",
+     "name": "All-Weather Floor Mats, Front Pair",
+     "qty": 1,
+     "unitCents": 6400
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 950
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-08T15:20:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching front all-weather floor mats for 2021 Varo 5 hatchback."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-08T15:20:50Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed All-Weather Floor Mats, Front Pair (sku GL-AWM-F2): black rubber, deep channels, $64.00."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-08T15:21:30Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x All-Weather Floor Mats, Front Pair ($64.00).",
+     "sku": "GL-AWM-F2",
+     "qty": 1,
+     "amountCents": 6400
+    },
+    {
+     "step": 4,
+     "at": "2026-11-08T15:22:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $73.50 with $9.50 shipping.",
+     "amountCents": 7350
+    },
+    {
+     "step": 5,
+     "at": "2026-11-08T15:22:18Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $73.50 with PayPal.",
+     "amountCents": 7350
+    },
+    {
+     "step": 6,
+     "at": "2026-11-08T15:22:40Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order GL-5531 confirmed, $73.50."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-09T09:30:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order GL-5531 shipped: 1 x All-Weather Floor Mats, Front Pair."
+    }
+   ],
+   "storeRecord": [
+    "GL-5531 11/08",
+    "1 x All-Weather Floor Mats Front Pair 64.00",
+    "Ship 9.50",
+    "Paid $73.50 PayPal, as submitted.",
+    "Shipped 11/09: 1 x All-Weather Floor Mats Front Pair."
+   ],
+   "complaint": "The floor mats don't fit my Varo 5 at all and slide around under the pedals.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "unknown",
+     "agent_log",
+     ""
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x All-Weather Floor Mats, Front Pair"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $73.50"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "black rubber, deep channels"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $73.50 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/09: 1 x All-Weather Floor Mats Front Pair."
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "INSUFFICIENT",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R3: the store charged and shipped what the agent ordered and the total is within the limit, but neither the agent log nor the order says whether these mats fit a 2021 Varo 5, so whether the item matched the approval stays unknown."
+  },
+  {
+   "id": "H5-B09",
+   "title": "ANC earbuds bought exactly as approved; buyer found them cheaper elsewhere",
+   "instruction": "Buy one pair of wireless earbuds with active noise cancelling, under $80 with tax. No refurbished units. You can pay.",
+   "conditions": {
+    "item": "wireless earbuds, active noise cancelling",
+    "quantity": 1,
+    "maxTotalCents": 8000,
+    "exclusions": [
+     "refurbished unit"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "sonicshelf",
+    "name": "Sonic Shelf"
+   },
+   "cart": [
+    {
+     "sku": "SS-QB2-BLK",
+     "name": "QuietBud 2 ANC Earbuds, Black",
+     "qty": 1,
+     "unitCents": 6999
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 560
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SS-QB2-BLK",
+     "name": "QuietBud 2 ANC Earbuds, Black",
+     "qty": 1,
+     "unitCents": 6999
+    },
+    {
+     "sku": "TAX",
+     "name": "Sales tax",
+     "qty": 1,
+     "unitCents": 560
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T20:10:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching wireless ANC earbuds under $80 with tax."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T20:10:40Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed QuietBud 2 ANC Earbuds (sku SS-QB2-BLK): new, true wireless, active noise cancelling, 6 h battery, $69.99, free shipping."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T20:11:15Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x QuietBud 2 ANC Earbuds, Black ($69.99).",
+     "sku": "SS-QB2-BLK",
+     "qty": 1,
+     "amountCents": 6999
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T20:11:45Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $75.59 including $5.60 tax.",
+     "amountCents": 7559
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T20:12:02Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $75.59 with the saved PayPal wallet.",
+     "amountCents": 7559
+    },
+    {
+     "step": 6,
+     "at": "2026-11-09T20:12:25Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SS-1187 received, $75.59."
+    },
+    {
+     "step": 7,
+     "at": "2026-11-10T14:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SS-1187 shipped: 1 x QuietBud 2 ANC Earbuds, Black."
+    }
+   ],
+   "storeRecord": [
+    "SS-1187 11/09",
+    "1 x QuietBud 2 ANC Black 69.99",
+    "Tax 5.60",
+    "Paid $75.59 PayPal, as submitted.",
+    "Shipped 11/10: 1 x QuietBud 2 ANC Black. Delivered 11/12."
+   ],
+   "complaint": "I saw the same earbuds for $20 less somewhere else, so I want to send these back for a refund.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "true wireless, active noise cancelling"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x QuietBud 2 ANC Earbuds, Black"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $75.59"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "new, true wireless"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $75.59 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/10: 1 x QuietBud 2 ANC Black. Delivered 11/12."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "R4: the earbuds are wireless with active noise cancelling, one pair at $75.59 under the $80 limit, paid with permission, and the store charged, shipped and delivered them. Finding a lower price elsewhere is not a failure by the agent or the store."
+  },
+  {
+   "id": "H5-B10",
+   "title": "Buyer asked to see model kit options first; agent paid without asking",
+   "instruction": "Find me a 1:24 scale model car kit under $45 and show me the options before buying anything. No pre-painted kits.",
+   "conditions": {
+    "item": "1:24 scale model car kit",
+    "quantity": 1,
+    "maxTotalCents": 4500,
+    "exclusions": [
+     "pre-painted kit"
+    ],
+    "purchaseAuthorized": false
+   },
+   "store": {
+    "id": "sprueyard",
+    "name": "Sprue Yard Hobbies"
+   },
+   "cart": [
+    {
+     "sku": "SY-MK24-RS",
+     "name": "Roadster 1:24 Plastic Model Kit",
+     "qty": 1,
+     "unitCents": 3450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 650
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SY-MK24-RS",
+     "name": "Roadster 1:24 Plastic Model Kit",
+     "qty": 1,
+     "unitCents": 3450
+    },
+    {
+     "sku": "SHIP",
+     "name": "Shipping",
+     "qty": 1,
+     "unitCents": 650
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T18:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching 1:24 scale model car kits under $45."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T18:00:45Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Roadster 1:24 Plastic Model Kit (sku SY-MK24-RS): 112 parts, unpainted, skill level 2, $34.50."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T18:01:20Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Viewed Coupe 1:24 Snap Kit (sku SY-MK24-CP): 48 parts, $27.00."
+    },
+    {
+     "step": 4,
+     "at": "2026-11-10T18:01:55Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Roadster 1:24 Plastic Model Kit ($34.50).",
+     "sku": "SY-MK24-RS",
+     "qty": 1,
+     "amountCents": 3450
+    },
+    {
+     "step": 5,
+     "at": "2026-11-10T18:02:30Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Checkout total $41.00 with $6.50 shipping.",
+     "amountCents": 4100
+    },
+    {
+     "step": 6,
+     "at": "2026-11-10T18:02:48Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $41.00 with the saved PayPal wallet.",
+     "amountCents": 4100
+    },
+    {
+     "step": 7,
+     "at": "2026-11-10T18:03:10Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SY-3008 received, $41.00."
+    },
+    {
+     "step": 8,
+     "at": "2026-11-11T11:20:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Order SY-3008 shipped: 1 x Roadster 1:24 Plastic Model Kit."
+    }
+   ],
+   "storeRecord": [
+    "SY-3008 11/10",
+    "1 x Roadster 1:24 Model Kit 34.50",
+    "Ship 6.50",
+    "Paid $41.00 PayPal, as submitted.",
+    "Shipped 11/11: 1 x Roadster 1:24 Model Kit."
+   ],
+   "complaint": "I asked to see the model kit options first, but it went ahead and paid without asking me.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "no",
+     "mandate",
+     "May the agent pay without asking again: no"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Roadster 1:24 Plastic Model Kit"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "paypal_order",
+     "1 x Roadster 1:24 Plastic Model Kit"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $41.00"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "112 parts, unpainted"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Paid $41.00 PayPal, as submitted."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 11/11: 1 x Roadster 1:24 Model Kit."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 6,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Paid $41.00 with the saved PayPal wallet.",
+   "firstDeviationCondition": "purchaseAuthorized",
+   "why": "R2: the buyer did not allow payment without asking, and the log has no ask_user step before the agent paid $41.00 at step 6; the store charged and shipped that order. The approval says no payment and a PayPal order exists, so the quick check closes it."
+  }
+ ]
+}
