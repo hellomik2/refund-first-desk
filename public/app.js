@@ -364,7 +364,7 @@ function stations({ order, kase: k }, working) {
     else if (v.rule === 'OPERATOR') st.keys = { state: 'done', tone: 'wait', sub: `differed; a person chose ${label(WHO_SHORT, v.liable)}` };
     else st.keys = { state: 'done', tone: 'go', sub: `both say ${label(WHO_SHORT, v.liable)}` };
   } else if (review) st.keys = { state: 'hold', sub: 'they differ: a person decides' };
-  else st.keys = { state: 'todo', sub: 'money moves only if they agree' };
+  else st.keys = { state: 'todo', sub: 'further money moves only if they agree' };
 
   const r = k?.recharge;
   if (k?.rechargeClosed) {
@@ -698,7 +698,7 @@ function movedList(lines) {
 function keysCard(k, order, working) {
   const inv = k.investigation;
   if (!inv?.codeKey || !inv?.aiKey) {
-    return `<div class="card stage-card"><h3>Two keys</h3><p class="sub">${working === 'investigate' ? '<span class="spinner"></span>' : ''}The rules key and the AI key each name who is responsible. Money moves only when they name the same party.</p></div>`;
+    return `<div class="card stage-card"><h3>Two keys</h3><p class="sub">${working === 'investigate' ? '<span class="spinner"></span>' : ''}The rules key and the AI key each name who is responsible. A re-charge, the store's payout or an agent invoice happens only when they name the same party.</p></div>`;
   }
   const v = k.verdict;
   let outcome = '';

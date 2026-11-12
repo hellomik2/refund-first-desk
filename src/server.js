@@ -192,7 +192,7 @@ const actions = {
     const { kase, duplicate } = await ctx.desk.reportProblem({ orderId, statement: String(statement).slice(0, 500) });
     return { caseId: kase.id, duplicate };
   },
-  /** Quick check, deep check, two keys; money moves only when the keys agree. Otherwise the case waits for a person. */
+  /** Quick check, deep check, two keys; a re-charge, store payout or agent invoice happens only when the keys agree. Otherwise the case waits for a person. */
   async investigate(ctx, { caseId }) {
     const kase = await ctx.desk.investigate(caseId);
     if (kase.verdict) await ctx.desk.settle(caseId);

@@ -571,7 +571,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     };
   }
 
-  /** Two keys: the rules over the checked fact table, and the AI's own verdict. Money moves only when they agree. */
+  /** Two keys: the rules over the checked fact table, and the AI's own verdict. A re-charge, store payout or agent invoice happens only when they agree. */
   function decide(kase) {
     const inv = kase.investigation;
     const { codeKey, aiKey } = inv;

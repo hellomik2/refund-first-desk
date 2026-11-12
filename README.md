@@ -7,17 +7,17 @@
 When an AI shopping agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Then the records are checked. Only if the check finds the buyer responsible does the buyer get a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never more than was refunded. In every other ending the buyer keeps the refund.
 
 1. **Refund first.** PayPal's refund status is COMPLETED before any check starts (within the limits; sandbox runs 1.99–3.19 s).
-2. **Then check.** The AI's verdict and fixed rules in code; money moves only when they agree.
+2. **Then check.** The AI's verdict and fixed rules in code; after the refund, any further money (a re-charge, the store's payout, an agent invoice) moves only when they agree.
 3. **Take it back, only if the buyer was responsible.** Notice, 5 business days to dispute, then the wallet that paid is charged again.
 
 - **A live agent that really shops:** Claude takes the buyer's instruction, shops a small catalog we wrote one tool call at a time, and pays from the saved sandbox wallet if it decides to; the investigator reads that numbered log as it reads the prepared cases ([more](#a-live-agent-that-really-shops)).
 - **A case book and a limit set by the buyer's own record:** every finished case lands in a case book that shows whoever runs the agent which conditions it broke at which step. The buyer's instant-refund limit moves with that buyer's own past cases, by fixed rules in code; the AI never sets it ([more](#the-case-book-what-to-fix-in-the-agent)).
 
-The refund can come first because it can be taken back: the buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and money moves only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies that pattern to purchases made by AI agents, by rule and before the check.
+The refund can come first because it can be taken back: the buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and any further money moves only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies that pattern to purchases made by AI agents, by rule and before the check.
 
 Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 entries we read, we did not find one that refunds before the check and has a step to take the money back from the buyer.
 
-Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) and Payouts, in the PayPal sandbox. Claude reads the purchase records, finds the first step where the agent went off what the buyer approved, and gives its own verdict. Fixed rules in code give a second verdict. Money moves only when the two agree; otherwise a person decides.
+Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) and Payouts, in the PayPal sandbox. Claude reads the purchase records, finds the first step where the agent went off what the buyer approved, and gives its own verdict. Fixed rules in code give a second verdict. A re-charge, the store's payout or an agent invoice happens only when the two agree; otherwise a person decides.
 
 ## Try the demo
 
@@ -107,7 +107,7 @@ All in the PayPal sandbox with live Claude calls (`claude-haiku-5-5`, no recorde
 | Over the limits, buyer not responsible: report → refund COMPLETED | ≤ 5 min | 4.1–13.6 s (3/3); the buyer-responsible case got no refund (1/1) |
 | Verdicts matching the answer key where both keys agreed | ≥ 27 of 30 | 28/30; S14 and S22 went to a person (keys disagreed), counted as wrong |
 | First step where the agent left the mandate, matching the answer key | ≥ 27 of 30 | 29/30 (S28 answered "no step off"); 30/30 in runs 2 and 3. All after tuning the prompt twice on these same 30 cases (27/30, 25/28 and 27/30 before); 10/10 on 10 new hold-out cases, see below |
-| Keys disagree: no money moves, case waits for a person | 0 money moves | 0 (2 cases in the person queue; 3 deliberate disagreements in the tests) |
+| Keys disagree: no re-charge, store payout or agent invoice; the refund stays; the case waits for a person | 0 such money moves | 0 (2 cases in the person queue; 3 deliberate disagreements in the tests) |
 | Quick check closes a buyer-responsible case | 0 | 0 of 6 |
 | Quick check closes the cases marked for it in the answer key | ≥ 90 %, all 7 that code alone can show | 12/12, 7/7 |
 | Refund completed → "you will not be charged again" notice | ≤ 10 s | median 1.0 s, max 3.2 s (12/12); in run 1 after tuning, one notice took 13.5 s because a single AI reply was slow |
