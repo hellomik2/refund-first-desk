@@ -1,0 +1,116 @@
+/* The desk's side: one proof block per check. Colours, type and spacing come from the variables in styles.css.
+   Nothing under 14px; one font; weights 400 and 700. */
+
+/* ---- a proof block: name, status, time on one line; one result line; the rest folded ------------------ */
+#desk .proof .ph { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+#desk .proof .ph h3 { margin: 0; }
+#desk .proof .pr { font-size: var(--f-base); line-height: 1.4; }
+#desk .proof.now { border-color: var(--c-border-em); box-shadow: var(--shadow-low); }
+#desk .chip { display: inline-flex; align-items: center; font-size: var(--f-sm); font-weight: 700; line-height: 1.3; padding: 2px 10px; border-radius: var(--r-full); white-space: nowrap; }
+#desk .chip.c-go { background: var(--c-success-muted); color: var(--c-text-green); }
+#desk .chip.c-wait { background: var(--c-warning-muted); color: var(--c-text-yellow); }
+#desk .chip.c-stop { background: var(--c-error-muted); color: var(--c-error); }
+#desk .chip.c-grey { background: #00000010; color: var(--c-text-2); }
+#desk .chip .spinner { width: 12px; height: 12px; margin-right: 6px; }
+/* the deep check's one number: the step that went off, in red; full size only while it is the latest */
+#desk .pbig { font-size: var(--f-lg); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin: var(--s1) 0 var(--s1); }
+#desk .proof.now .pbig { font-size: var(--f-xl); }
+#desk .pbig.stop { color: var(--c-error); }
+#desk q { font-style: italic; color: var(--c-text-2); }
+
+/* the facts the quick check read, folded */
+.facts { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: var(--s2); }
+.fx { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: var(--s2); font-size: var(--f-sm); align-items: start; }
+.fx .fl { display: block; font-weight: 700; }
+.fx q, .fx .by { display: block; }
+.fx .by { color: var(--c-text-3); }
+.ans { display: inline-block; text-align: center; min-width: 2.75rem; font-size: var(--f-sm); font-weight: 700; padding: 0 6px; border-radius: var(--r-inner); }
+.ans.yes { background: var(--go-bg); color: var(--c-text-green); }
+.ans.no { background: var(--c-error-muted); color: var(--c-error); }
+.ans.unknown { background: var(--wait-bg); color: var(--c-text-yellow); }
+
+/* ---- the agent's log: dots on a line, the step that went off in red. Shared with the buyer's live trace. ---- */
+.trace { list-style: none; margin: var(--s3) 0 var(--s2); padding: 0; }
+.trace > li { position: relative; padding-left: 36px; }
+.trace > li::before { content: ""; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: var(--c-accent-muted); }
+.trace > li:first-child::before { top: 13px; }
+.trace > li:last-child::before { bottom: calc(100% - 13px); }
+.trace > li.off::before { background: var(--c-error); }
+.trace > li.fork::before { top: 13px; }
+.trace > li.fork:not(:first-child)::after { content: ""; position: absolute; left: 11px; top: 0; height: 13px; width: 2px; background: var(--c-accent-muted); }
+.st-row { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: var(--s3); width: calc(100% + 36px); margin-left: -36px; text-align: left; background: transparent; border: 0; border-radius: var(--r-inner); padding: 1px 0; color: var(--c-text); font-size: var(--f-sm); line-height: 1.45; position: relative; }
+button.st-row:hover .act { text-decoration: underline; }
+.st .sn { width: 24px; height: 24px; margin-top: 1px; border-radius: 50%; display: grid; place-items: center; font-size: var(--f-sm); background: var(--c-surface); border: 2px solid var(--c-accent-muted); color: var(--c-text-2); position: relative; z-index: 2; font-variant-numeric: tabular-nums; }
+.st.off .sn { border-color: var(--c-error); color: var(--c-error); }
+.st.fork .sn { background: var(--c-error); border-color: var(--c-error); color: #fff; font-weight: 700; }
+.st.flagged .sn { box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 4px var(--c-take); }
+.st-body { min-width: 0; display: block; }
+.st-head { display: flex; flex-wrap: wrap; gap: 2px var(--s2); align-items: center; min-height: 26px; }
+.st-head .act { color: var(--c-text-2); }
+.st-head .actor { color: var(--c-text-3); }
+.st.fork .st-head .act, .st.open .st-head .act { color: var(--c-text); font-weight: 700; }
+.st-text { display: block; color: var(--c-text-2); }
+/* in the desk's log only the step that went off is written out; any step opens to its log line */
+.trace.tight .st:not(.fork) .st-text, .trace.tight .st.open .st-text { display: none; }
+.st.fork:not(.open) .st-text, .st.fork .st-open { background: var(--c-error-muted); border-left: 3px solid var(--c-error); border-radius: var(--r-inner); padding: var(--s2) var(--s3); color: var(--c-text); }
+.st-open { margin: var(--s1) 0 var(--s3); padding: var(--s2) var(--s3); background: var(--c-body); border-radius: var(--r-inner); }
+.st-open .raw { font-size: var(--f-base); line-height: 1.45; overflow-wrap: anywhere; color: var(--c-text); }
+.st-open mark { background: transparent; color: inherit; box-shadow: inset 0 -2px 0 var(--c-error); }
+.st-open .dl { font-size: var(--f-sm); margin-top: var(--s2); color: var(--c-text-2); }
+.mk { display: inline-block; font-size: var(--f-sm); font-weight: 700; line-height: 1.3; padding: 0 8px; border-radius: var(--r-full); white-space: nowrap; }
+.mk.ai { background: var(--c-info); color: #fff; }
+.mk.flag { color: var(--c-text-yellow); border: 1.5px dashed var(--c-take); padding: 0 7px; }
+q.struck { text-decoration: line-through; }
+.tag.flagtag { background: var(--c-warning-muted); color: var(--c-text-yellow); }
+.legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); align-items: center; font-size: var(--f-sm); color: var(--c-text-2); margin-top: var(--s2); }
+.legend .lg { display: inline-flex; gap: var(--s2); align-items: center; }
+
+/* ---- two keys: who each names, and = or ≠ between them ------------------------------------------- */
+.keys { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--s3); align-items: stretch; margin: var(--s3) 0; }
+.key { background: var(--c-surface); border: 1px solid var(--c-border-em); border-top: 4px solid var(--c-accent); border-radius: var(--r-element); padding: var(--s3) var(--s4); font-size: var(--f-sm); min-width: 0; }
+.keys.k-buyer .key { border-top-color: var(--c-take); }
+.key .kh, .key .kr { display: block; color: var(--c-text-2); }
+.key strong { display: block; font-size: var(--f-lg); line-height: 1.15; margin: var(--s1) 0; }
+.kreasons { list-style: none; padding: 0; margin: var(--s2) 0 0; display: grid; gap: var(--s1); }
+.gate { align-self: center; font-size: var(--f-xl); font-weight: 400; line-height: 1; text-align: center; min-width: 1ch; }
+#desk .proof.now .gate { font-size: var(--f-giant); }
+.gate.g-open { color: var(--c-success); }
+.keys.k-buyer .gate.g-open { color: var(--c-take); }
+.gate.g-shut { color: var(--c-take); }
+.moved { list-style: none; padding: 0; margin: var(--s1) 0 0; font-size: var(--f-sm); }
+.moved li { display: flex; justify-content: space-between; gap: var(--s3); padding: 2px 0; border-bottom: 1px solid var(--line); }
+@media (max-width: 520px) {
+  .keys { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
+  .gate, #desk .proof.now .gate { font-size: var(--f-xl); justify-self: center; transform: rotate(90deg); }
+}
+
+/* ---- a person decides -------------------------------------------------------------------------- */
+#desk .card.op { border: 2px solid var(--c-border-yellow); }
+.op-sub { font-size: var(--f-base); margin: var(--s4) 0 var(--s1); }
+.choose { border-top: 1px solid var(--line); margin-top: var(--s3); padding-top: var(--s3); }
+.choose label { display: block; font-size: var(--f-sm); color: var(--c-text-2); margin-bottom: var(--s1); }
+.choose .fine { margin: 0 0 var(--s2); }
+button.choice { background: var(--c-surface); border: 1.5px solid var(--c-accent); color: var(--c-text); border-radius: var(--r-element); padding: var(--s2) var(--s4); font-weight: 700; }
+button.choice:hover:not(:disabled) { background: var(--c-accent); color: #fff; }
+
+/* the money column's "held while a person decides" card (view-money.js) still uses these two */
+.card.held { border: 2px solid var(--wait); }
+.card.held h3 { color: var(--wait); }
+
+/* ---- after the decision: what happened, with times ---------------------------------------------- */
+.steps { list-style: none; margin: 0; padding: 0; }
+.steps li { position: relative; padding: 0 0 var(--s3) 26px; font-size: var(--f-sm); }
+.steps li::before { content: ""; position: absolute; left: 3px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--c-accent); }
+.steps li::after { content: ""; position: absolute; left: 7px; top: 19px; bottom: 0; width: 2px; background: var(--c-accent-muted); }
+.steps li:last-child { padding-bottom: 0; }
+.steps li:last-child::after { display: none; }
+.steps li.money::before { background: var(--c-success); }
+.steps li.halt::before { background: var(--c-error); }
+.steps .when { float: right; margin-left: var(--s2); color: var(--c-text-3); font-variant-numeric: tabular-nums; }
+.steps .what { font-weight: 700; font-size: var(--f-base); }
+.steps .detail { color: var(--c-text-2); overflow-wrap: anywhere; }
+
+/* ---- the records, folded --------------------------------------------------------------------------- */
+.records .tbl { overflow-x: auto; }
+.records pre { white-space: pre-wrap; overflow-wrap: anywhere; font: var(--f-sm)/1.5 var(--font); background: var(--c-body); border-radius: var(--r-inner); padding: var(--s3); margin: var(--s1) 0 var(--s3); }
+.records h4 { margin: var(--s2) 0 0; font-size: var(--f-sm); color: var(--c-text-2); }

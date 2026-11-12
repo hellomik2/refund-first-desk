@@ -23,6 +23,8 @@ const OUTCOME = [
   ['HUMAN_REVIEW', 'a person decides'],
   ['OPEN', 'not finished'],
 ];
+const outcomeName = (k) => OUTCOME.find(([o]) => o === k)?.[1] || k;
+const caseName = (x) => x.scenarioId || x.caseId;
 
 let data = null;
 let view = null; // 'workspace' | 'measured'
@@ -52,36 +54,44 @@ export function refreshCaseBook(state, cases) {
     });
 }
 
+/** Length = count against the longest row; colour = who was finally found responsible. */
 function bar(byOutcome, count, max) {
   const segs = OUTCOME.filter(([k]) => byOutcome[k])
     .map(([k, name]) => `<span class="seg o-${k}" style="flex:${byOutcome[k]}" title="${byOutcome[k]} ${esc(name)}"></span>`)
     .join('');
-  return `<span class="cb-bar" style="width:${Math.max(4, (count / max) * 100)}%">${segs}</span>`;
+  return `<span class="cb-track"><span class="cb-bar" style="width:${Math.max(3, (count / max) * 100)}%">${segs}</span></span>`;
 }
 
+/** One row per condition. Opening a row shows the line in the log where the agent first left the mandate. */
 function rows(group, max, actorWord) {
   if (!group.conditions.length) return `<p class="sub">No first deviation at the ${actorWord}'s own steps.</p>`;
   return `<ol class="cb-rows">${group.conditions
-    .map((c) => {
+    .map((c, i) => {
       const ex = c.example;
-      const ids = c.cases.map((x) => x.scenarioId || x.caseId);
-      return `<li>
-        <div class="cb-row"><span class="cb-k">${esc(CONDITION[c.condition] || c.condition)}</span><span class="cb-track">${bar(c.byOutcome, c.count, max)}</span><span class="cb-n num">${c.count}</span></div>
-        <details class="cb-ex"><summary><span class="cb-at">${esc(ex.scenarioId || ex.caseId)} step ${ex.step}</span> “${esc(ex.quote)}”${ex.verified ? '' : ' <span class="tag sim">quote not verified</span>'}</summary>
-          <p class="sub">${ids.length > 1 ? `All ${ids.length}: ` : ''}${c.cases.map((x) => `${esc(x.scenarioId || x.caseId)} (${esc(OUTCOME.find(([k]) => k === x.outcome)?.[1] || x.outcome)})`).join(', ')}</p></details>
-      </li>`;
+      return `<li><details class="cb-cond"${i === 0 ? ' open' : ''}>
+        <summary><span class="cb-k">${esc(CONDITION[c.condition] || c.condition)}</span>${bar(c.byOutcome, c.count, max)}<span class="cb-n num">${c.count}</span></summary>
+        <p class="cb-quote"><span class="cb-at">${esc(caseName(ex))} step ${ex.step}</span> “${esc(ex.quote)}”${ex.verified ? '' : ' <span class="tag sim">quote not verified</span>'}</p>
+        ${c.cases.length > 1 ? `<p class="sub">All ${c.cases.length}: ${c.cases.map((x) => `${esc(caseName(x))} (${esc(outcomeName(x.outcome))})`).join(', ')}</p>` : ''}
+      </details></li>`;
     })
     .join('')}</ol>`;
 }
 
-function outcomesStrip(book) {
+/** All cases as one strip, split by who was found responsible, with the counts. */
+function strip(book) {
   const total = book.cases || 1;
-  const segs = OUTCOME.filter(([k]) => book.outcomes[k]).map(([k]) => `<span class="seg o-${k}" style="flex:${book.outcomes[k]}"></span>`).join('');
-  const legend = OUTCOME.filter(([k]) => book.outcomes[k])
-    .map(([k, name]) => `<li><span class="sw o-${k}"></span>${esc(name)} <b class="num">${book.outcomes[k]}</b></li>`)
+  const shown = OUTCOME.filter(([k]) => book.outcomes[k]);
+  const segs = shown.map(([k, name]) => `<span class="seg o-${k}" style="flex:${book.outcomes[k]}" title="${book.outcomes[k]} ${esc(name)}">${book.outcomes[k] / total >= 0.08 ? book.outcomes[k] : ''}</span>`).join('');
+  const legend = shown.map(([k, name]) => `<li><span class="sw o-${k}"></span>${esc(name)} <b class="num">${book.outcomes[k]}</b></li>`).join('');
+  return `<div class="cb-strip" aria-hidden="true">${segs}</div><ul class="cb-legend">${legend}</ul>`;
+}
+
+function agentCards(book, max) {
+  return book.agents
+    .map((a) => `<article class="card cb-agent"><h3>${esc(a.name)}</h3>
+      <p class="sub"><b class="num">${a.cases}</b> case${a.cases === 1 ? '' : 's'} · left the mandate at its own step in <b class="num">${a.deviations}</b> · at fault in <b class="num">${a.outcomes.AGENT}</b></p>
+      ${rows(a, max, 'agent')}</article>`)
     .join('');
-  return `<div class="cb-total"><p class="cb-total-h"><b class="num">${book.cases}</b> finished or open case${book.cases === 1 ? '' : 's'}, by who was found responsible</p>
-    <div class="cb-strip" aria-hidden="true" style="--n:${total}">${segs}</div><ul class="cb-legend">${legend}</ul></div>`;
 }
 
 function storesPanel(book, max) {
@@ -89,34 +99,45 @@ function storesPanel(book, max) {
   const rest = book.stores.length - found.length;
   const list = found
     .map((s) => {
+      const n = s.outcomes.STORE + s.outcomes.HUMAN_REVIEW;
       const fd = s.conditions[0]?.example;
       const head = [s.outcomes.STORE ? `${s.outcomes.STORE} store's fault` : '', s.outcomes.HUMAN_REVIEW ? `${s.outcomes.HUMAN_REVIEW} waiting for a person` : ''].filter(Boolean).join(' · ');
-      return `<li><div class="cb-row"><span class="cb-k">${esc(s.name)}</span><span class="cb-track">${bar({ STORE: s.outcomes.STORE, HUMAN_REVIEW: s.outcomes.HUMAN_REVIEW }, s.outcomes.STORE + s.outcomes.HUMAN_REVIEW || 0.0001, max)}</span><span class="cb-n num">${s.outcomes.STORE + s.outcomes.HUMAN_REVIEW}</span></div>
-        <p class="sub">${esc(head || 'no verdict against the store')}${fd ? `; at its own step: ${esc(CONDITION[s.conditions[0].condition])}, ${esc(fd.scenarioId || fd.caseId)} step ${fd.step} “${esc(fd.quote)}”` : s.outcomes.STORE ? '; the first step off the mandate was not the store\'s own' : ''}</p></li>`;
+      return `<li><details class="cb-cond"><summary><span class="cb-k">${esc(s.name)}</span>${bar({ STORE: s.outcomes.STORE, HUMAN_REVIEW: s.outcomes.HUMAN_REVIEW }, n || 0.0001, max)}<span class="cb-n num">${n}</span></summary>
+        <p class="sub">${esc(head || 'no verdict against the store')}${fd ? '' : s.outcomes.STORE ? '; the first step off the mandate was not the store\'s own' : ''}</p>
+        ${fd ? `<p class="cb-quote"><span class="cb-at">${esc(caseName(fd))} step ${fd.step}</span> ${esc(CONDITION[s.conditions[0].condition])}: “${esc(fd.quote)}”</p>` : ''}</details></li>`;
     })
     .join('');
   return `<article class="card cb-stores"><h3>Stores</h3>
     ${found.length ? `<ol class="cb-rows">${list}</ol>` : '<p class="sub">No store-side finding yet.</p>'}
-    ${rest > 0 ? `<p class="sub">${rest} other store${rest === 1 ? '' : 's'}: no store-side finding.${book.stores.length >= 20 ? ' The prepared cases use a different store each, so a store has one case here.' : ''}</p>` : ''}</article>`;
+    ${rest > 0 ? `<p class="sub">${rest} other store${rest === 1 ? '' : 's'}: no finding.${book.stores.length >= 20 ? ' Each prepared case uses its own store.' : ''}</p>` : ''}</article>`;
 }
 
-/** A number line from $0 to $100: where the next purchase's limit sits against the starting $50. */
+/** The next purchase's instant-refund limit as one big number, and where it sits on $0 to $100 against the start. */
 function limitPanel(state, cases) {
   const l = state.buyerLimits;
   if (!l) return '';
-  const max = Math.max(10000, l.start.perCaseCapCents * 2, l.perCaseCapCents);
+  const start = l.start.perCaseCapCents;
+  const now = l.perCaseCapCents;
+  const dir = now > start ? 'up' : now < start ? 'dn' : '';
+  const max = Math.max(10000, start * 2, now);
   const pos = (c) => `${(c / max) * 100}%`;
   const scenarioOf = (orderId) => state.orders.find((x) => x.id === orderId)?.scenarioId || null;
   const titleOf = (orderId) => cases.find((c) => c.id === scenarioOf(orderId))?.title || '';
   const basis = l.basis
-    .map((b) => `<li class="${b.effect === 'DOWN' ? 'dn' : 'up'}"><b class="num">${b.effect === 'DOWN' ? '−' : '+'}${usd(Math.abs(b.cents))}, ${b.refunds > 0 ? '+1' : '−1'} refund</b> ${esc(scenarioOf(b.orderId) || b.caseId)}${titleOf(b.orderId) ? ` “${esc(titleOf(b.orderId))}”` : ''}: ${b.effect === 'DOWN' ? 'this buyer was found responsible' : `the ${b.liable === 'AGENT' ? "agent's" : "store's"} fault`}${b.decidedBy === 'PERSON' ? ' (a person chose)' : ''}</li>`)
+    .map((b) => `<li class="${b.effect === 'DOWN' ? 'dn' : 'up'}"><b class="num">${b.effect === 'DOWN' ? '−' : '+'}${usd(Math.abs(b.cents))}, ${b.refunds > 0 ? '+1' : '−1'} refund</b> · ${esc(scenarioOf(b.orderId) || b.caseId)}${titleOf(b.orderId) ? ` “${esc(titleOf(b.orderId))}”` : ''}: ${b.effect === 'DOWN' ? 'this buyer was found responsible' : `the ${b.liable === 'AGENT' ? "agent's" : "store's"} fault`}${b.decidedBy === 'PERSON' ? ' (a person chose)' : ''}</li>`)
     .join('');
-  const moved = l.perCaseCapCents !== l.start.perCaseCapCents || l.refundsPer30Days !== l.start.refundsPer30Days;
-  return `<article class="card cb-limit"><h3>Next purchase for this buyer</h3>
-    <p class="cb-limit-v"><b class="num">${usd(l.perCaseCapCents)}</b> a case, <b class="num">${l.refundsPer30Days}</b> instant refund${l.refundsPer30Days === 1 ? '' : 's'} per 30 days${l.perCaseCapCents === 0 || l.refundsPer30Days === 0 ? ': every purchase is checked first' : ''}</p>
-    <div class="cb-line" aria-hidden="true"><span class="tick" style="left:${pos(l.start.perCaseCapCents)}"><i>start ${usd(l.start.perCaseCapCents)}</i></span><span class="dot ${moved ? (l.perCaseCapCents < l.start.perCaseCapCents ? 'dn' : 'up') : ''}" style="left:${pos(l.perCaseCapCents)}"></span><span class="end">${usd(0)}</span><span class="end r">${usd(max)}</span></div>
-    ${basis ? `<ul class="cb-basis">${basis}</ul>` : `<p class="sub">No earlier case of this buyer has been decided, so the starting limits apply.</p>`}
-    <p class="sub">Only this buyer's own decided cases from the last ${l.windowDays} days move it, ${usd(Math.abs(l.basis[0]?.cents || state.policy.trustStepCents || 0))} and one refund per case. Up: a case that was the agent's or store's fault (two at most). Down: a case where this buyer was found responsible and, with no dispute in the notice period, was charged again. Fixed on the order at purchase, with these reasons. Agents' and stores' records never move it. The numbers are assumptions, not measured.</p></article>`;
+  const p = state.policy || {};
+  return `<article class="card cb-limit">
+    <p class="cb-msg">Instant-refund limit for the next purchase</p>
+    <p class="cb-giant ${dir}">${usd(now)}<small> a case</small></p>
+    <p class="cb-msg"><b class="num">${l.refundsPer30Days}</b> instant refund${l.refundsPer30Days === 1 ? '' : 's'} per 30 days${now === 0 || l.refundsPer30Days === 0 ? ': every purchase is checked first' : ''}</p>
+    <div class="cb-scale" role="img" aria-label="Instant-refund limit ${usd(now)} a case, started at ${usd(start)}, on a ${usd(0)} to ${usd(max)} scale">
+      <span class="rail"></span>${dir ? `<span class="moved ${dir}" style="left:${pos(Math.min(start, now))};width:${pos(Math.abs(now - start))}"></span>` : ''}
+      <span class="mark" style="left:${pos(start)}">start ${usd(start)}</span><span class="dot ${dir}" style="left:${pos(now)}"></span>
+      <span class="end">${usd(0)}</span><span class="end r">${usd(max)}</span></div>
+    <h4>What moved it</h4>
+    ${basis ? `<ul class="cb-basis">${basis}</ul>` : `<p class="sub">No earlier case of this buyer is decided yet, so the starting limit applies.</p>`}
+    <p class="fine">Only this buyer's own decided cases from the last ${l.windowDays} days move it, ${usd(p.trustStepCents)} and one refund per case. Up: the agent's or store's fault (${p.trustMaxUp ?? 2} cases at most). Down: this buyer was responsible and charged again with no dispute. Fixed on the order at purchase. Agents' and stores' records never move it. <strong>The numbers are assumptions, not measured.</strong></p></article>`;
 }
 
 function draw() {
@@ -127,24 +148,36 @@ function draw() {
   const measured = view === 'measured';
   const book = measured ? data.measured.book : ws;
   const src = data.measured.source;
-  const max = Math.max(1, ...book.agents.flatMap((a) => a.conditions.map((c) => c.count)), ...book.stores.map((s) => s.outcomes.STORE + s.outcomes.HUMAN_REVIEW));
-  const agents = book.agents
-    .map((a) => `<article class="card cb-agent"><h3>${esc(a.name)}</h3>
-      <p class="sub"><b class="num">${a.cases}</b> case${a.cases === 1 ? '' : 's'} · first left the mandate at its own step in <b class="num">${a.deviations}</b> · found at fault in <b class="num">${a.outcomes.AGENT}</b></p>
-      ${rows(a, max, 'agent')}</article>`)
-    .join('');
-  const empty = !book.cases;
+  const empty = !book?.cases;
+  const max = empty ? 1 : Math.max(1, ...book.agents.flatMap((a) => a.conditions.map((c) => c.count)), ...book.stores.map((s) => s.outcomes.STORE + s.outcomes.HUMAN_REVIEW));
+  const rightLabel = `<p class="cb-label">Which condition the agent broke, how often</p>`;
+  let body;
+  if (measured) {
+    const left = book.agents.reduce((s, a) => s + a.deviations, 0);
+    body = `<div class="cb-grid">
+      <section class="cb-col"><p class="cb-label">${book.cases} cases, by who was found responsible</p>
+        <div class="card cb-hero"><p class="cb-giant">${left}<small> of ${book.cases}</small></p>
+          <p class="cb-msg">cases where the agent first left the mandate at its own step.</p>${strip(book)}</div>
+        <p class="cb-src"><span class="tag sim">written by us</span> One measured run of the 30 prepared cases: ${esc(src.environment)}, ${src.aiProvider === 'anthropic' ? 'live Claude calls' : esc(src.aiProvider)}, ${esc(new Date(src.ranAt).toISOString().slice(0, 10))}${src.engine ? `, desk ${esc(src.engine)}` : ''}. The cases, the agent logs and the answer key are written by us; the verdicts and quotes are what that run produced. Each case had its own buyer, so no limit moved in it.</p></section>
+      <section class="cb-col cb-right">${rightLabel}${agentCards(book, max)}${storesPanel(book, max)}</section></div>`;
+  } else if (empty) {
+    body = `<div class="cb-grid">
+      <section class="cb-col"><p class="cb-label">Next purchase for this buyer</p>${limitPanel(last.state, last.cases)}</section>
+      <section class="cb-col cb-right">${rightLabel}<p class="card sub">No case in this workspace yet. Run a case above, or open <button class="linkish" data-cb="measured">the 30 measured cases</button>.</p></section></div>`;
+  } else {
+    body = `<div class="cb-grid">
+      <section class="cb-col"><p class="cb-label">Next purchase for this buyer</p>${limitPanel(last.state, last.cases)}</section>
+      <section class="cb-col cb-right">${rightLabel}${agentCards(book, max)}
+        <div class="card cb-total"><p class="sub">${book.cases} case${book.cases === 1 ? '' : 's'}, by who was found responsible</p>${strip(book)}</div>
+        ${storesPanel(book, max)}</section></div>`;
+  }
   const html = `<div class="cb-head">
       <div><h2 id="cb-h">Case book: what to fix in the agent</h2>
-      <p class="hint">For the agent's operator. Every case the desk finishes lands here: which condition the agent broke, how often, and the line in its own log where it first left the mandate. Bars are counts, coloured by who was found responsible.</p></div>
+      <p class="hint">For the agent's operator. Bar length = cases, colour = who was found responsible.</p></div>
       <div class="cb-tabs" role="tablist">
         <button role="tab" class="ghost" data-cb="workspace" aria-selected="${!measured}">This workspace · ${ws?.cases ?? 0}</button>
-        <button role="tab" class="ghost" data-cb="measured" aria-selected="${measured}">After our 30 measured cases</button>
-      </div></div>
-    ${measured ? `<p class="cb-src"><span class="tag sim">written by us</span> One measured run of the 30 prepared cases: ${esc(src.environment)}, ${src.aiProvider === 'anthropic' ? 'live Claude calls' : esc(src.aiProvider)}, ${esc(new Date(src.ranAt).toISOString().slice(0, 10))}${src.engine ? `, desk ${esc(src.engine)}` : ''}. The cases, the agent logs and the answer key are written by us; the verdicts and quotes are what that run produced. Each case had its own buyer, so no limit moved in it.</p>` : ''}
-    ${empty ? `<p class="card sub">No case in this workspace yet. Run a case above, or open <button class="linkish" data-cb="measured">the 30 measured cases</button>.</p>` : `${outcomesStrip(book)}<div class="cb-grid"><div class="cb-main">${agents}</div><div class="cb-side">${measured ? '' : limitPanel(last.state, last.cases)}${storesPanel(book, max)}</div></div>`}
-    ${empty ? `<div class="cb-grid"><div class="cb-main"></div><div class="cb-side">${limitPanel(last.state, last.cases)}</div></div>` : ''}
-    <ul class="cb-legend cb-key">${OUTCOME.slice(0, 5).map(([k, name]) => `<li><span class="sw o-${k}"></span>${esc(name)}</li>`).join('')}</ul>`;
+        <button role="tab" class="ghost" data-cb="measured" aria-selected="${measured}">30 measured cases</button>
+      </div></div>${body}`;
   // The page redraws often (every state read while an action runs); an unchanged book is left alone so an opened quote stays open.
   if (html === drawn) return;
   drawn = html;
@@ -157,8 +190,10 @@ export function limitCard(order, state) {
   if (!p?.limits) return '';
   const l = p.limits;
   const nameOf = (b) => state.orders.find((o) => o.id === b.orderId)?.scenarioId || b.caseId;
-  const moved = l.basis.length ? l.basis.map((b) => `${b.effect === 'DOWN' ? '−' : '+'}${usd(Math.abs(b.cents))} from case ${esc(nameOf(b))} (${b.effect === 'DOWN' ? 'buyer found responsible' : `${b.liable === 'AGENT' ? "agent's" : "store's"} fault`})`).join('; ') : 'no earlier case of this buyer moved it';
-  return `<p class="sub cb-fixed">Limit fixed at purchase: <b>${usd(p.perCaseCapCents)}</b> a case, <b>${p.refundsPer30Days}</b> per 30 days (start ${usd(l.start.perCaseCapCents)}, ${l.start.refundsPer30Days}; ${moved}).</p>`;
+  const moved = l.basis.length
+    ? `Start ${usd(l.start.perCaseCapCents)}, ${l.start.refundsPer30Days}; ${l.basis.map((b) => `${b.effect === 'DOWN' ? '−' : '+'}${usd(Math.abs(b.cents))} from ${esc(nameOf(b))} (${b.effect === 'DOWN' ? 'buyer responsible' : `${b.liable === 'AGENT' ? "agent's" : "store's"} fault`})`).join(', ')}.`
+    : 'No earlier case of this buyer moved it.';
+  return `<p class="sub cb-fixed">Instant-refund limit fixed on this order: <b>${usd(p.perCaseCapCents)}</b> a case, <b>${p.refundsPer30Days}</b> per 30 days. ${moved}</p>`;
 }
 
 document.addEventListener('click', (event) => {

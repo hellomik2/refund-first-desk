@@ -228,3 +228,5 @@ Measured on 2026-11-10 and 2026-11-12 with the scripts above. Each run writes a 
 ## License
 
 MIT
+
+The page's colour, spacing, corner and shadow values are copied by hand from [Astryx](https://github.com/meta/astryx) 0.7.14 (MIT); no Astryx file is loaded.

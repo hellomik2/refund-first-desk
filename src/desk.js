@@ -439,7 +439,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     kase.refund.secondsFromReport = Math.round((completedAtMs - kase.receivedAtMs) / 10) / 100;
     ledger.post({ orderId: order.id, caseId: kase.id, kind: 'REFUND', from: 'desk:purchase', to: 'buyer', cents: kase.refund.amountCents, paypal: { type: 'refund', id: kase.refund.id } });
     event(kase, 'REFUND_COMPLETED', { refundId: kase.refund.id, seconds: kase.refund.secondsFromReport });
-    notify(kase, 'REFUND_COMPLETED', `PayPal refund completed: $${fromCents(kase.refund.amountCents)} is back in your PayPal account. A card or bank statement can take a few days to show it.`);
+    notify(kase, 'REFUND_COMPLETED', `PayPal refund completed: $${fromCents(kase.refund.amountCents)} goes back to the way you paid. A card or bank statement can take a few days to show it.`);
   }
 
   /** Own funds set aside so an innocent store can still be paid once the purchase money is refunded. */

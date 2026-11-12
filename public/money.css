@@ -1,0 +1,26 @@
+/* The money: party by party, the check against PayPal, the ledger. Colours, type and spacing come from the variables in styles.css. */
+#money tr.zero td { color: var(--c-text-3); }
+#money tr.hl td { font-weight: 700; color: var(--c-text); font-size: var(--f-base); }
+.m-parties { padding-bottom: var(--s5); }
+.m-check { margin-top: var(--s3); }
+
+/* after a check: one status, then ledger against PayPal per party */
+.m-recon { margin-top: var(--s4); padding-top: var(--s4); border-top: 1px solid var(--c-border-em); }
+.m-recon table { margin: var(--s2) 0; }
+.m-recon .sub { line-height: 1.5; }
+.m-status { display: inline-block; font-size: var(--f-sm); font-weight: 700; padding: 3px 10px; border-radius: var(--r-full); background: var(--c-success-muted); color: var(--c-text-green); }
+.m-status.wait { background: var(--c-warning-muted); color: var(--c-text-yellow); }
+.m-status.no { background: var(--c-error-muted); color: var(--c-error); }
+
+/* held while a person decides */
+#money .card.held { border: 1px solid var(--c-border-yellow); background: var(--wait-bg); }
+#money .card.held h3 { color: var(--c-text-yellow); }
+
+/* the ledger: one line per movement, its tag, from whom to whom and the stage it happened in */
+.ledger td { padding-top: var(--s2); padding-bottom: var(--s2); }
+.ledger .src { display: block; margin-top: 2px; }
+.ledger tr.memo td, .ledger tr.memo b { color: var(--c-text-3); font-weight: 400; }
+.stagechip { display: inline-block; font-size: var(--f-sm); line-height: 1.3; padding: 0 8px; border-radius: var(--r-full); background: #0000000d; color: var(--c-text-2); white-space: nowrap; }
+.stagechip.go { background: var(--c-success-muted); color: var(--c-text-green); }
+.stagechip.keys { background: var(--c-accent); color: #fff; }
+.stagechip.wait { background: var(--c-warning-muted); color: var(--c-text-yellow); }

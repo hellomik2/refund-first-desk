@@ -101,6 +101,8 @@ test('notices, in the limits, quick check closes: refund requested -> refund com
   assert.deepEqual(types(kase), ['REFUND_REQUESTED', 'REFUND_COMPLETED']);
   assert.ok(kase.notices[0].atMs <= kase.refund.requestedAtMs, 'the request notice comes before the refund call');
   assert.match(kase.notices[1].text, /days/, 'the completed notice says card or bank statements take days');
+  assert.match(kase.notices[1].text, /goes back to the way you paid/, 'true for a card or bank payment too, not only a PayPal balance');
+  assert.doesNotMatch(kase.notices[1].text, /back in your PayPal account/);
   assert.equal(kase.quick, null, 'nothing is checked inside the report');
 
   await ctx.desk.investigate(kase.id);

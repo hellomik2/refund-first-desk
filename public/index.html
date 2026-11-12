@@ -5,20 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Refund-First Desk</title>
   <meta name="description" content="Trust the buyer first. If that was wrong, give notice and take it back. When an AI agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Only if the AI's verdict and fixed rules in code both find the buyer responsible does the buyer get notice and 5 business days to dispute before the wallet that paid is charged again. Built on PayPal Orders, Payments, Vault and Payouts (sandbox).">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%230c2340%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27white%27%3E%E2%86%A9%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231b1b1b%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27white%27%3E%E2%86%A9%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/home.css">
+  <link rel="stylesheet" href="/buyer.css">
+  <link rel="stylesheet" href="/desk.css">
+  <link rel="stylesheet" href="/money.css">
   <link rel="stylesheet" href="/casebook.css">
 </head>
 <body>
-  <header class="top">
-    <div class="brand">
-      <span class="mark" aria-hidden="true">↩</span>
-      <div>
-        <h1>Refund-First Desk</h1>
-        <p class="promise">Trust the buyer first. If that was wrong, give notice and take it back.</p>
-        <p class="tagline">For purchases made by AI shopping agents, on PayPal.</p>
-      </div>
-    </div>
+  <header class="top wrap">
+    <div class="brand"><span class="mark" aria-hidden="true">↩</span>Refund-First Desk</div>
     <div class="top-actions">
       <span class="pill" id="env-pill">PayPal sandbox</span>
       <span class="pill ai" id="ai-pill"></span>
@@ -26,71 +23,60 @@
     </div>
   </header>
 
-  <ol class="promise-steps" aria-label="The order this desk works in">
-    <li class="ps ps-first">
-      <span class="ps-n" aria-hidden="true">1</span>
-      <strong>Refund first</strong>
-      <span class="ps-t">The PayPal refund completes in seconds, before anything is checked.</span>
-      <span class="ps-f">Within the buyer's limits (start: $50 a case, 2 refunds per 30 days; the buyer's own record moves them). Sandbox runs: 1.99–3.19 s.</span>
-    </li>
-    <li class="ps ps-check">
-      <span class="ps-n" aria-hidden="true">2</span>
-      <strong>Then check</strong>
-      <span class="ps-t">The AI and fixed rules in code read the records. A re-charge, the store's payout or an agent invoice happens only when they give the same answer.</span>
-      <span class="ps-f">If they differ, a person decides and nothing is charged meanwhile.</span>
-    </li>
-    <li class="ps ps-back">
-      <span class="ps-n" aria-hidden="true">3</span>
-      <strong>Take it back only if the buyer was responsible</strong>
-      <span class="ps-t">Notice first, 5 business days to dispute, then the wallet that paid is charged again, never more than was refunded.</span>
-      <span class="ps-f">A dispute stops it. In every other ending the buyer keeps the refund.</span>
-    </li>
-  </ol>
-  <p class="overlap">Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 we read, we did not find one that refunds before the check and has a step to take the money back. PayPal's own buyer protection terms already allow a temporary refund that is recovered, after at least 5 business days' notice, if a dispute goes against the buyer; this desk applies that to agent purchases, by rule.</p>
-
-  <p class="disclosure" id="disclosure">
-    Sandbox money, real PayPal API calls. <strong>In the prepared cases, the agent logs and the answer key are written by us for this demo.</strong> In the live run below, a real AI agent writes its own log by shopping a small catalog we wrote. Shipping, the store's records and waiting periods are simulated; fast-forward moves the policy clock only.
-  </p>
-
-  <section class="picker live" aria-labelledby="live-h">
-    <div class="picker-head">
-      <h2 id="live-h">Watch a live AI agent shop <span class="tag real">live AI</span></h2>
-      <p class="hint">Claude shops a catalog we wrote (3 demo stores, 16 products), one tool call per step, and pays from the saved sandbox wallet if it decides to. Its log is its own; nothing is written in for it and there is no answer key. If it got it wrong, report it in one sentence: the same desk handles it.</p>
-    </div>
-    <div class="cases" id="live-prompts"></div>
-    <div class="live-own">
-      <label for="own-instruction" class="sub">Or write the instruction yourself. The AI turns it into condition slots, and you approve them before the agent starts.</label>
-      <div class="row"><input id="own-instruction" maxlength="300" placeholder="e.g. Buy a white 2 m USB-C to USB-C cable, under $20, you can pay."><button class="ghost" data-act="liveOwn">Use my words</button></div>
-    </div>
-    <details class="live-how">
-      <summary>How the careful and the hasty agent differ, and what is in the catalog</summary>
-      <p>Same model (claude-haiku-5-5) and settings. Two things differ, and nothing else:</p>
-      <ul>
-        <li><strong>What it is told.</strong> Careful: the approved conditions bind; open the product page of anything it adds; compare the cart total with the limit before paying; do not pay without permission. Hasty: it is an express-checkout agent graded on speed; pick from the top of the results and finish with payment.</li>
-        <li><strong>What it can see.</strong> Careful: the buyer's words and the approved condition slots; search results with store, variant (scent, connector, size) and shipping; a product page and a cart view with shipping and tax. Hasty: the buyer's words only; search results with product number, listing title and price; no product page and no cart view.</li>
-      </ul>
-      <p>Neither is told to make a mistake, and no mistake is written in by code: whatever it buys, it chose. It is a live model, so the same instruction can end differently on another run: in our runs the hasty agent sometimes bought the wrong thing and sometimes stopped without paying. Before measuring we changed the hasty agent once: product numbers became plain numbers (they used to spell out the scent or size) and it lost the product page and cart tools. The catalog is made so a mistake is possible: a cheaper copy whose shipping and tax push the total over the limit, listing titles that do not show the scent or the connector, multi-packs, and sponsored listings shown first.</p>
-      <div id="catalog-list"></div>
-    </details>
+  <section class="hero wrap" aria-labelledby="hero-h">
+    <h1 id="hero-h">Trust the buyer first. If that was wrong, give notice and take it back.</h1>
+    <p class="tagline">For purchases made by AI shopping agents, on PayPal.</p>
+    <ol class="promise-steps" aria-label="The order this desk works in">
+      <li class="ps ps-first"><span class="ps-n" aria-hidden="true">1</span><strong>Refund first</strong><span class="ps-t">Back in seconds, before any check.</span></li>
+      <li class="ps ps-check"><span class="ps-n" aria-hidden="true">2</span><strong>Then check</strong><span class="ps-t">A re-charge, the store's payout or an agent invoice happens only when AI and code rules give the same answer.</span></li>
+      <li class="ps ps-back"><span class="ps-n" aria-hidden="true">3</span><strong>Take it back only if the buyer was responsible</strong><span class="ps-t">Notice first, 5 business days to dispute.</span></li>
+    </ol>
+    <p class="disclosure" id="disclosure">Sandbox money, real PayPal API calls. <strong>Prepared cases and their answer key are written by us.</strong></p>
   </section>
 
-  <section class="picker" aria-labelledby="picker-h">
-    <div class="picker-head">
-      <h2 id="picker-h">Or pick a prepared case: what the buyer asked, and what the agent did</h2>
-      <p class="hint">Each case runs a real sandbox payment from a saved PayPal wallet. A buyer starts with $50 a case and 2 instant refunds per 30 days. Each case found to be the agent's or store's fault adds $25 and one refund (two cases at most); each case where the buyer was responsible and charged again after the notice period takes $25 and one away. The case book below shows why. To start over, press <strong>Start a fresh workspace</strong>.</p>
-    </div>
-    <div class="cases" id="cases"></div>
-  </section>
+  <div class="starts wrap">
+    <section class="picker" aria-labelledby="picker-h">
+      <div class="picker-head">
+        <h2 id="picker-h">Run a prepared case</h2>
+        <p class="hint">Agent logs and answer key written by us. Each case makes a real sandbox payment.</p>
+      </div>
+      <div class="cases" id="cases"></div>
+    </section>
 
-  <main class="stage" id="stage" hidden>
+    <section class="picker live" aria-labelledby="live-h">
+      <div class="picker-head">
+        <h2 id="live-h">Watch a live AI agent shop <span class="tag real">live AI</span></h2>
+        <p class="hint">Claude shops a catalog we wrote. Its log is its own; there is no answer key.</p>
+      </div>
+      <div class="cases" id="live-prompts"></div>
+      <div class="live-own">
+        <label for="own-instruction">Or write your own instruction. You approve the conditions before the agent starts.</label>
+        <div class="row"><input id="own-instruction" maxlength="300" placeholder="e.g. Buy a white 2 m USB-C to USB-C cable, under $20, you can pay."><button class="ghost" data-act="liveOwn">Use my words</button></div>
+      </div>
+      <details class="live-how">
+        <summary>How the careful and the hasty agent differ, and the catalog</summary>
+        <p>Same model (claude-haiku-5-5), same settings. Only two things differ:</p>
+        <ul>
+          <li><strong>What it is told.</strong> Careful: the approved conditions bind; open the product page of anything it adds; compare the cart total with the spending limit before paying; never pay without permission. Hasty: an express-checkout agent graded on speed; pick from the top of the results and finish with payment.</li>
+          <li><strong>What it can see.</strong> Careful: the buyer's words and the approved conditions; search results with store, variant (scent, connector, size) and shipping; a product page and a cart view with shipping and tax. Hasty: the buyer's words only; search results with product number, listing title and price; no product page, no cart view.</li>
+        </ul>
+        <p>Neither is told to make a mistake, and no mistake is written in by code: whatever it buys, it chose. A live model can end differently on another run. Before measuring we changed the hasty agent once: product numbers became plain numbers, and it lost the product page and cart tools.</p>
+        <p>The catalog is made so a mistake is possible: a cheaper copy whose shipping and tax push the total over the spending limit, titles that hide the scent or connector, multi-packs, and sponsored listings shown first.</p>
+        <p>Live runs are capped per day and per workspace, and AI spending is capped. The caps count while the server is awake and reset after a restart.</p>
+        <div id="catalog-list"></div>
+      </details>
+    </section>
+  </div>
+
+  <main class="stage wrap" id="stage" hidden>
     <div class="rail-wrap" id="rail"></div>
     <div class="cols" id="cols" hidden>
       <section class="col buyer" aria-labelledby="buyer-h">
-        <h2 id="buyer-h"><span class="who">Buyer</span> what the person sees</h2>
+        <h2 id="buyer-h"><span class="who">Buyer</span> sees</h2>
         <div id="buyer"></div>
       </section>
       <section class="col desk" aria-labelledby="desk-h">
-        <h2 id="desk-h"><span class="who">Desk</span> each check, with the record lines it used</h2>
+        <h2 id="desk-h"><span class="who">Desk</span> does</h2>
         <div id="desk"></div>
       </section>
       <section class="col money" aria-labelledby="money-h">
@@ -100,15 +86,36 @@
     </div>
   </main>
 
-  <section class="casebook" id="casebook" aria-labelledby="cb-h"></section>
+  <section class="casebook wrap" id="casebook" aria-labelledby="cb-h"></section>
 
-  <footer class="foot">
-    <p><strong>Who runs this.</strong> An operator of AI shopping agents can run this desk on PayPal today: it receives the payment, refunds from it, and makes an innocent store whole from its own funds. If PayPal ran it itself, it would hold the store's funds for the disputed order instead (delayed disbursement exists for approved partners).</p>
-    <p><strong>What the AI does and does not do.</strong> The quick check can only close a case in the buyer's favour. The investigator names the first step where the agent left the mandate and quotes it; code checks the quote against that step. Its verdict is one of two keys: a re-charge, the store's payout or an agent invoice happens only when the rules key gives the same answer. When they differ, a person decides.</p>
-    <p><strong>What is only true in the sandbox.</strong> Charging a saved wallet again without the buyer present needs PayPal's approval on live accounts. "Refunded" here means PayPal's refund status is COMPLETED; when the money shows up depends on the buyer's funding source.</p>
-    <p><strong>What this screen has checked.</strong> The "Pay at PayPal and save the wallet" path was checked here as far as PayPal's sign-in page and back through Cancel. Approving, capturing and saving the wallet were checked with the same PayPal calls in a separate test script, not on this screen.</p>
+  <footer class="foot wrap">
+    <details>
+      <summary>What is simulated or written by us</summary>
+      <ul>
+        <li>PayPal sandbox: sandbox money, real PayPal API calls.</li>
+        <li>In the prepared cases, the agent logs, the store records and the answer key are written by us for this demo.</li>
+        <li>In a live run, a real AI agent (Claude) writes its own log by shopping a small catalog we wrote. There is no answer key.</li>
+        <li>Prepared cases replay the answers Claude gave in an earlier live run ("recorded answer replayed"). Editing the buyer's sentence calls the AI live.</li>
+        <li>Shipping, the store's records and waiting periods are simulated. "Fast-forward the notice period" moves the policy clock only.</li>
+        <li>"Refunded" means PayPal's refund status is COMPLETED. When the money shows up depends on how the buyer paid.</li>
+        <li>The desk holds the store's money for 7 days before paying it out: a setting for this demo.</li>
+        <li>The instant-refund limit ($50 a case, 2 refunds per 30 days, $25 and one refund up or down per decided case) is an assumption, not a measured value.</li>
+        <li>Live agent runs are capped per day and per workspace, and AI spending is capped. The caps are counted while the server is awake and start again after a restart.</li>
+      </ul>
+    </details>
+    <details>
+      <summary>Who runs this, and what only works in the sandbox</summary>
+      <ul>
+        <li>An operator of AI shopping agents can run this desk on PayPal today: it receives the payment, refunds from it, and pays an innocent store from its own funds. If PayPal ran it itself, it would hold the store's funds for the disputed order instead (delayed disbursement exists for approved partners).</li>
+        <li>The quick check can only close a case in the buyer's favour. The investigator names the first step where the agent left the mandate and quotes it; code checks the quote against that step. Its verdict is one of two keys. When the keys differ, a person decides.</li>
+        <li>Charging a saved wallet again without the buyer present needs PayPal's approval on live accounts.</li>
+        <li>"Pay at PayPal and save the wallet" was checked on this screen as far as PayPal's sign-in page and back through Cancel. Approving, capturing and saving the wallet were checked with the same PayPal calls in a separate test script.</li>
+        <li>Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 we read, we did not find one that refunds before the check and has a step to take the money back. PayPal's own buyer protection terms already allow a temporary refund that is recovered, after at least 5 business days' notice, if a dispute goes against the buyer.</li>
+      </ul>
+    </details>
   </footer>
 
+  <div class="gone" id="gone" role="alert" hidden><p id="gone-text"></p><button class="primary" id="gone-restart">Start a fresh workspace</button></div>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <script src="/app.js" type="module"></script>
 </body>
