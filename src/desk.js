@@ -93,19 +93,36 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     if (!buyer.wallet) return buyer;
     buyer.wallet.consent = 'REVOKED';
     buyer.wallet.revokedAt = new Date().toISOString();
-    if (buyer.wallet.source === 'OWN') {
-      // The buyer's own wallet token is deleted at PayPal. The shared demo wallet is only switched off here.
-      await paypal.deletePaymentToken(buyer.wallet.vaultId).catch(() => {});
-    }
+    db.save(); // the withdrawal stands even if PayPal cannot be reached below
     for (const kase of Object.values(S.cases)) {
       if (kase.buyerId === buyerId && kase.recharge?.status === 'SCHEDULED') {
         await haltRecharge(kase, 'NO_ACTIVE_CONSENT');
       } else if (kase.buyerId === buyerId && ['UNCONFIRMED', 'RETURNING'].includes(kase.recharge?.status)) {
-        await recharge(kase.id); // asked about now; a charge PayPal took is given back, never kept
+        // asked about now, while the wallet token still works; a charge PayPal took is given back, never kept.
+        // If PayPal cannot be reached, it is asked again on the next fast-forward or ledger check.
+        await recharge(kase.id).catch(() => {});
       }
     }
+    await deleteRevokedToken(buyer);
     db.save();
     return buyer;
+  }
+
+  /**
+   * The buyer's own wallet token is deleted at PayPal once no re-charge of this buyer is left without PayPal's answer.
+   * Deleting it earlier makes asking again under the same request id fail, and a charge PayPal took would be kept.
+   * The shared demo wallet is only switched off here.
+   */
+  async function deleteRevokedToken(buyer) {
+    const w = buyer?.wallet;
+    if (w?.source !== 'OWN' || w.consent !== 'REVOKED' || w.tokenDeletedAt) return;
+    if (Object.values(S.cases).some((c) => c.buyerId === buyer.id && ['PENDING', 'UNCONFIRMED'].includes(c.recharge?.status))) return;
+    try {
+      await paypal.deletePaymentToken(w.vaultId);
+      w.tokenDeletedAt = new Date().toISOString();
+    } catch {
+      // tried again on the next fast-forward or ledger check
+    }
   }
 
   // ---- mandate ----------------------------------------------------------------------------------
@@ -1124,6 +1141,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
         if (r.charged) done.recharged.push(kase.id);
       }
     }
+    for (const buyer of Object.values(S.buyers)) await deleteRevokedToken(buyer); // a withdrawal waiting on a re-charge's answer
     const caseOf = new Map(Object.values(S.cases).map((c) => [c.orderId, c]));
     for (const order of Object.values(S.orders)) {
       if (order.storePayable.status === 'HELD' && !caseOf.has(order.id) && now >= new Date(order.storePayable.releaseAt).getTime()) {
@@ -1144,7 +1162,10 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const order = must(S.orders, orderId, 'order');
     const kase = Object.values(S.cases).find((c) => c.orderId === orderId) || null;
     if (['PAYOUT_PENDING', 'PAYOUT_UNCONFIRMED'].includes(order.storePayable.status)) await followStorePayout(order, kase); // a payout still on its way is looked up first, so the ledger is current
-    if (['UNCONFIRMED', 'RETURNING'].includes(kase?.recharge?.status)) await recharge(kase.id); // so is a re-charge PayPal has not answered about, or one being given back
+    if (['UNCONFIRMED', 'RETURNING'].includes(kase?.recharge?.status)) {
+      await recharge(kase.id); // so is a re-charge PayPal has not answered about, or one being given back
+      await deleteRevokedToken(S.buyers[kase.buyerId]);
+    }
     const fromPayPal = { buyer: 0, store: 0, 'paypal:fees': 0 };
     const lookups = [];
     const cap = readCapture((await paypal.getCapture(order.paypal.captureId)).body);

@@ -803,6 +803,53 @@ for (const [stopName, stop, reason] of [
   });
 }
 
+// The buyer's own wallet (not the shared demo one): withdrawing consent also deletes the wallet token at PayPal. The re-charge
+// with no answer is asked about while the token still works, so a charge PayPal took is found and given back; the token is
+// deleted once no re-charge of this buyer is left without an answer. Without that order the resend is refused for good.
+async function ownWalletWithUnansweredRecharge(lose) {
+  const { ctx, order, kase } = await dueForRecharge();
+  const buyer = ctx.db.data.buyers[kase.buyerId];
+  buyer.wallet.source = 'OWN';
+  const restore = lose(ctx, 2);
+  await ctx.desk.recharge(kase.id);
+  assert.equal(kase.recharge.status, 'UNCONFIRMED');
+  restore();
+  return { ctx, order, kase, buyer, vaultId: buyer.wallet.vaultId };
+}
+for (const [what, lose] of [['PayPal had taken the charge', loseAnswers], ['the first request never reached PayPal', notReached]]) {
+  test(`own wallet: re-charge with no answer, then consent withdrawn; ${what}: nothing is kept and the token is deleted`, async () => {
+    const { ctx, order, kase, buyer, vaultId } = await ownWalletWithUnansweredRecharge(lose);
+    await ctx.desk.revokeConsent(buyer.id);
+    assert.equal(buyer.wallet.consent, 'REVOKED');
+    await stoppedWithNothingTaken(ctx, order, kase, 'NO_ACTIVE_CONSENT');
+    assert.ok(ctx.paypal.state.deletedTokens.includes(vaultId), 'the wallet token is deleted at PayPal in the end');
+  });
+}
+test('own wallet: the resend fails while consent is withdrawn; the withdrawal stands and the token is deleted once PayPal answers', async () => {
+  const { ctx, order, kase, buyer, vaultId } = await ownWalletWithUnansweredRecharge(loseAnswers);
+  const restore = notReached(ctx, 4); // the resends during the withdrawal and the ledger check never reach PayPal
+  await ctx.desk.revokeConsent(buyer.id);
+  assert.equal(buyer.wallet.consent, 'REVOKED', 'the withdrawal is recorded even though PayPal could not be asked');
+  assert.equal(kase.recharge.status, 'UNCONFIRMED');
+  assert.equal((await ctx.desk.reconcile(order.id)).ok, false, 'never a match while the re-charge has no answer');
+  assert.ok(!ctx.paypal.state.deletedTokens.includes(vaultId), 'the token is kept until PayPal answers about the re-charge');
+  restore();
+  await assert.rejects(buy(ctx, { buyer }), /NO_ACTIVE_CONSENT|active consent/, 'no new purchase with the withdrawn wallet');
+  await stoppedWithNothingTaken(ctx, order, kase, 'NO_ACTIVE_CONSENT');
+  assert.ok(ctx.paypal.state.deletedTokens.includes(vaultId));
+});
+test('own wallet: a charge taken after consent was withdrawn is not closed while its refund is still pending', async () => {
+  const { ctx, order, kase, buyer } = await ownWalletWithUnansweredRecharge(loseAnswers);
+  ctx.paypal.refundsPending = true;
+  await ctx.desk.revokeConsent(buyer.id);
+  await ctx.desk.processDue();
+  assert.equal(kase.recharge.status, 'RETURNING');
+  assert.ok(!halted(kase));
+  assert.equal((await ctx.desk.reconcile(order.id)).ok, false, 'not a match while the charge is being given back');
+  ctx.paypal.completePendingRefunds();
+  await stoppedWithNothingTaken(ctx, order, kase, 'NO_ACTIVE_CONSENT');
+});
+
 // ---- fund table -----------------------------------------------------------------------------------------
 
 test('desk funds: refund-first is refused when own funds cannot cover the store', async () => {
