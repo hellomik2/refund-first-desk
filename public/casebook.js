@@ -174,7 +174,7 @@ function draw() {
       <section class="cb-col"><p class="cb-label">${book.cases} cases, by who was found responsible</p>
         <div class="card cb-hero"><p class="cb-giant">${left}<small> of ${book.cases}</small></p>
           <p class="cb-msg">cases where the agent first left the mandate at its own step.</p>${strip(book)}</div>
-        <p class="cb-src"><span class="tag sim">written by us</span> One measured run of the 30 prepared cases (run 3 in the README; its table shows run 4): ${esc(src.environment)}, ${src.aiProvider === 'anthropic' ? 'live Claude calls' : esc(src.aiProvider)}, ${esc(new Date(src.ranAt).toISOString().slice(0, 10))}${src.engine ? `, desk ${esc(src.engine)}` : ''}. The cases, the agent logs and the answer key are written by us; the verdicts and quotes are what that run produced. Each case had its own buyer, so no limit moved in it.</p></section>
+        <p class="cb-src"><span class="tag sim">written by us</span> One measured run of the 30 prepared cases (run 3 in the README; its table shows run 7): ${esc(src.environment)}, ${src.aiProvider === 'anthropic' ? 'live Claude calls' : esc(src.aiProvider)}, ${esc(new Date(src.ranAt).toISOString().slice(0, 10))}${src.engine ? `, desk ${esc(src.engine)}` : ''}. The cases, the agent logs and the answer key are written by us; the verdicts and quotes are what that run produced. Each case had its own buyer, so no limit moved in it.</p></section>
       <section class="cb-col cb-right">${rightLabel}${agentCards(book, max)}${storesPanel(book, max)}</section></div>`;
   } else if (empty) {
     body = `<div class="cb-grid">
