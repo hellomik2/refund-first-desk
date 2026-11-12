@@ -1,0 +1,1608 @@
+{
+ "about": "Summary of the measured runs behind the README tables, from the raw evidence files (not committed: they hold sandbox account and PayPal order identifiers). Identifiers removed; case ids S01-S30 and instruction ids P1-P4 refer to scenarios/cases.json and scenarios/catalog.json. Sandbox only; the cases, agent logs and answer key were written by us.",
+ "sources": {
+  "thirtyCases": {
+   "file": "11-12-제작10-30건-7a3ebfb-합친뒤.json (scripts/loop.mjs)",
+   "sha256": "0b8386cf4f170671f31e5027071cf187bdc9d43edeef5f7373cfd9066a9290c1"
+  },
+  "abuse": {
+   "file": "11-12-제작10-악용9개-7a3ebfb-합친뒤.json (scripts/abuse.mjs)",
+   "sha256": "d6dd9a1f733756bd303156a41334b75e991bfba7104c4f6aa6f54e0c0d656b8a"
+  },
+  "liveBuy": {
+   "file": "live-buy-2026-11-12T01-27-32-338Z.json (scripts/live-agent.mjs buy)",
+   "sha256": "065e82b011a1fac69e65d0e8d7542d0a32480b20d3aec83f7c4710c12004f47a"
+  },
+  "liveReport": {
+   "file": "live-report-2026-11-12T01-29-21-735Z.json (scripts/live-agent.mjs report)",
+   "sha256": "4fe11aa2eee76efdf42a88caf536dd756562f2d1e9eb2ab1f5c0b2aeace58260"
+  },
+  "liveAiCost": {
+   "file": "data/ai-usage.jsonl, calls between 2026-11-12T01:27 and 01:34 UTC"
+  }
+ },
+ "thirtyCases": {
+  "measuredAt": "2026-11-12T02:00:59.137Z",
+  "commit": "7a3ebfb",
+  "environment": "PayPal sandbox",
+  "ai": "anthropic claude-haiku-5-5, live calls (no recorded answers replayed)",
+  "answerKeySha256": "5873cb9488903eda1128476926f2431b417dcc91538e08b45c3b0c92276c447d",
+  "totals": {
+   "cases": 30,
+   "errors": 0,
+   "refundFirstWithinLimits": 26,
+   "refundCompletedWithinLimits": 26,
+   "refundBeforeCheckWithinLimits": 26,
+   "refundSecondsWithinLimits": {
+    "min": 1.99,
+    "max": 3.19
+   },
+   "overLimitNotBuyer": [
+    {
+     "id": "S18",
+     "refundSecondsFromReport": 13.58
+    },
+    {
+     "id": "S23",
+     "refundSecondsFromReport": 5.09
+    },
+    {
+     "id": "S27",
+     "refundSecondsFromReport": 4.06
+    }
+   ],
+   "overLimitBuyerRefunded": "0 of 1",
+   "keysAgreed": 28,
+   "verdictsMatchingAnswerKeyWhereKeysAgreed": 28,
+   "keysDisagreed": [
+    {
+     "id": "S14",
+     "rulesKey": "STORE",
+     "aiKey": "AGENT",
+     "refundStatus": "COMPLETED",
+     "moneyMoved": {
+      "recharged": false,
+      "storePaid": false,
+      "agentInvoiced": false
+     }
+    },
+    {
+     "id": "S22",
+     "rulesKey": "STORE",
+     "aiKey": "AGENT",
+     "refundStatus": "COMPLETED",
+     "moneyMoved": {
+      "recharged": false,
+      "storePaid": false,
+      "agentInvoiced": false
+     }
+    }
+   ],
+   "firstStepMatchingAnswerKey": 29,
+   "quickCheckClosedBuyerResponsible": "0 of 6",
+   "quickCheckClosedMarkedCases": "12 of 12",
+   "quickCheckClosedCodeOnlyCases": "7 of 7",
+   "noRechargeNoticeSecondsAfterRefund": {
+    "n": 12,
+    "median": 0.99,
+    "max": 3.24
+   },
+   "buyerResponsibleRecharge": [
+    {
+     "id": "S03",
+     "recharge": "COMPLETED"
+    },
+    {
+     "id": "S04",
+     "recharge": "HALTED (BUYER_DISPUTED)"
+    },
+    {
+     "id": "S08",
+     "recharge": "COMPLETED"
+    },
+    {
+     "id": "S17",
+     "recharge": "COMPLETED"
+    },
+    {
+     "id": "S24",
+     "recharge": "none"
+    },
+    {
+     "id": "S28",
+     "recharge": "COMPLETED"
+    }
+   ],
+   "buyerChargedAgainWhenNotResponsible": 0,
+   "ledgerMatchesPayPal": 30,
+   "deepCheckSeconds": {
+    "min": 5.64,
+    "max": 12.09,
+    "median": 7.87
+   },
+   "simpleRulesFirstStep": {
+    "lastStep": 0,
+    "firstPayOrCheckoutStep": 2,
+    "denominator": 30
+   }
+  },
+  "cases": [
+   {
+    "id": "S01",
+    "title": "Asked to compare prices, the agent paid",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 5,
+     "quickClose": true
+    },
+    "amount": "31.43",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.79,
+    "refundSecondsFromReport": 2.785,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 0.514,
+    "noRechargeNoticeSecondsAfterRefund": 0.518,
+    "deepSeconds": 7.851,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 5,
+     "condition": "purchaseAuthorized"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S02",
+    "title": "Store substituted a scented product",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": 7,
+     "quickClose": false
+    },
+    "amount": "22.99",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.02,
+    "refundSecondsFromReport": 3.016,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 3.095,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 7.223,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 7,
+     "condition": "storeFulfilledAsOrdered"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "STORE",
+    "review": null,
+    "status": "CLOSED_STORE_RESPONSIBLE",
+    "recharge": "none",
+    "store": "CANCELLED",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S03",
+    "title": "Order matches what the buyer approved",
+    "expected": {
+     "liable": "BUYER",
+     "firstDeviation": "NONE",
+     "quickClose": false
+    },
+    "amount": "39.95",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.43,
+    "refundSecondsFromReport": 2.425,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.353,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 6.864,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "review": null,
+    "status": "CLOSED_BUYER_RECHARGED",
+    "recharge": "COMPLETED",
+    "store": "PAID from desk:purchase",
+    "moneyMoved": {
+     "recharged": true,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S04",
+    "title": "Order matches the mandate, buyer disputes the re-charge",
+    "expected": {
+     "liable": "BUYER",
+     "firstDeviation": 4,
+     "quickClose": false
+    },
+    "amount": "25.98",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.1,
+    "refundSecondsFromReport": 2.098,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 1.862,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.027,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 4,
+     "condition": "quantityMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "review": null,
+    "status": "RECHARGE_HALTED",
+    "recharge": "HALTED (BUYER_DISPUTED)",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S05",
+    "title": "The mandate never said which phone",
+    "expected": {
+     "liable": "UNDETERMINED",
+     "firstDeviation": "INSUFFICIENT",
+     "quickClose": false
+    },
+    "amount": "18.99",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.53,
+    "refundSecondsFromReport": 2.525,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.107,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 7.695,
+    "firstStep": {
+     "kind": "INSUFFICIENT",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "UNDETERMINED",
+    "aiKey": "UNDETERMINED",
+    "review": null,
+    "status": "CLOSED_UNDETERMINED_BUYER_KEEPS_REFUND",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S06",
+    "title": "Asked for a cart link, the agent checked out",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 6,
+     "quickClose": true
+    },
+    "amount": "32.49",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.86,
+    "refundSecondsFromReport": 2.856,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 0.494,
+    "noRechargeNoticeSecondsAfterRefund": 0.5,
+    "deepSeconds": 6.96,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 6,
+     "condition": "purchaseAuthorized"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S07",
+    "title": "18-count box ordered, 12-count box shipped",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": "NONE",
+     "quickClose": false
+    },
+    "amount": "17.44",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.01,
+    "refundSecondsFromReport": 3.006,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.175,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 7.271,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "STORE",
+    "review": null,
+    "status": "CLOSED_STORE_RESPONSIBLE",
+    "recharge": "none",
+    "store": "CANCELLED",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S08",
+    "title": "Buyer found the same lamp cheaper the next day",
+    "expected": {
+     "liable": "BUYER",
+     "firstDeviation": "NONE",
+     "quickClose": false
+    },
+    "amount": "34.99",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.7,
+    "refundSecondsFromReport": 2.701,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 3.054,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 6.646,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "review": null,
+    "status": "CLOSED_BUYER_RECHARGED",
+    "recharge": "COMPLETED",
+    "store": "PAID from desk:purchase",
+    "moneyMoved": {
+     "recharged": true,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S09",
+    "title": "Asked for 500 ml, the agent chose the 750 ml bottle",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 4,
+     "quickClose": true
+    },
+    "amount": "19.49",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.65,
+    "refundSecondsFromReport": 2.649,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 2.54,
+    "noRechargeNoticeSecondsAfterRefund": 2.547,
+    "deepSeconds": 6.525,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 4,
+     "condition": "itemMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S10",
+    "title": "The mandate never gave the tube size",
+    "expected": {
+     "liable": "UNDETERMINED",
+     "firstDeviation": "INSUFFICIENT",
+     "quickClose": false
+    },
+    "amount": "11.48",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.97,
+    "refundSecondsFromReport": 2.969,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.547,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.145,
+    "firstStep": {
+     "kind": "INSUFFICIENT",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "UNDETERMINED",
+    "aiKey": "UNDETERMINED",
+    "review": null,
+    "status": "CLOSED_UNDETERMINED_BUYER_KEEPS_REFUND",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S11",
+    "title": "Charged, then cancelled, nothing shipped",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": 7,
+     "quickClose": false
+    },
+    "amount": "28.45",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.68,
+    "refundSecondsFromReport": 2.675,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.346,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 7.898,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 7,
+     "condition": "storeFulfilledAsOrdered"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "STORE",
+    "review": null,
+    "status": "CLOSED_STORE_RESPONSIBLE",
+    "recharge": "none",
+    "store": "CANCELLED",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S12",
+    "title": "Three tubes asked for, six ordered",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 5,
+     "quickClose": true
+    },
+    "amount": "14.93",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.56,
+    "refundSecondsFromReport": 2.561,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 0.77,
+    "noRechargeNoticeSecondsAfterRefund": 0.776,
+    "deepSeconds": 7.026,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 5,
+     "condition": "quantityMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S13",
+    "title": "Item price under the limit, total 48 cents over",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 8,
+     "quickClose": true
+    },
+    "amount": "30.48",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.66,
+    "refundSecondsFromReport": 2.664,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 0.979,
+    "noRechargeNoticeSecondsAfterRefund": 0.985,
+    "deepSeconds": 6.813,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 8,
+     "condition": "withinSpendingLimit"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S14",
+    "title": "Store checkout added a protection plan",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": 7,
+     "quickClose": true
+    },
+    "amount": "33.98",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.19,
+    "refundSecondsFromReport": 3.186,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 0.98,
+    "noRechargeNoticeSecondsAfterRefund": 0.987,
+    "deepSeconds": 12.089,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 7,
+     "condition": "storeChargedAsOrdered"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "AGENT",
+    "review": "KEYS_DISAGREE",
+    "status": "HUMAN_REVIEW",
+    "recharge": "none",
+    "store": "HELD",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S15",
+    "title": "Store record has tracking but no packing line",
+    "expected": {
+     "liable": "UNDETERMINED",
+     "firstDeviation": "INSUFFICIENT",
+     "quickClose": false
+    },
+    "amount": "9.48",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.17,
+    "refundSecondsFromReport": 3.17,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.634,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.558,
+    "firstStep": {
+     "kind": "INSUFFICIENT",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "UNDETERMINED",
+    "aiKey": "UNDETERMINED",
+    "review": null,
+    "status": "CLOSED_UNDETERMINED_BUYER_KEEPS_REFUND",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S16",
+    "title": "Granola bars with peanuts despite the exclusion",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 5,
+     "quickClose": false
+    },
+    "amount": "12.99",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3,
+    "refundSecondsFromReport": 2.996,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.493,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.452,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 5,
+     "condition": "exclusionsRespected"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S17",
+    "title": "Buyer says the store sent the wrong size, records show the approved size",
+    "expected": {
+     "liable": "BUYER",
+     "firstDeviation": 4,
+     "quickClose": false
+    },
+    "amount": "16.45",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3,
+    "refundSecondsFromReport": 2.996,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.433,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.425,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 4,
+     "condition": "itemMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "review": null,
+    "status": "CLOSED_BUYER_RECHARGED",
+    "recharge": "COMPLETED",
+    "store": "PAID from desk:purchase",
+    "moneyMoved": {
+     "recharged": true,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S18",
+    "title": "Four ordered and charged, three shipped",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": 7,
+     "quickClose": false
+    },
+    "amount": "56.30",
+    "overLimit": true,
+    "path": "VERIFY_FIRST",
+    "refundStatus": null,
+    "refundSeconds": null,
+    "refundSecondsFromReport": 13.577,
+    "refundBeforeCheck": null,
+    "quickClosed": false,
+    "quickSeconds": 1.993,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 9.084,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 7,
+     "condition": "storeFulfilledAsOrdered"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "STORE",
+    "review": null,
+    "status": "CLOSED_STORE_RESPONSIBLE",
+    "recharge": "none",
+    "store": "CANCELLED",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S19",
+    "title": "Agent chose the subscription option the buyer ruled out",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 2,
+     "quickClose": true
+    },
+    "amount": "18.38",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.97,
+    "refundSecondsFromReport": 2.965,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 2.77,
+    "noRechargeNoticeSecondsAfterRefund": 2.778,
+    "deepSeconds": 8.302,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 2,
+     "condition": "exclusionsRespected"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S20",
+    "title": "The store provided no record",
+    "expected": {
+     "liable": "UNDETERMINED",
+     "firstDeviation": "INSUFFICIENT",
+     "quickClose": false
+    },
+    "amount": "21.90",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.16,
+    "refundSecondsFromReport": 3.155,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.597,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 7.665,
+    "firstStep": {
+     "kind": "INSUFFICIENT",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "UNDETERMINED",
+    "aiKey": "UNDETERMINED",
+    "review": null,
+    "status": "CLOSED_UNDETERMINED_BUYER_KEEPS_REFUND",
+    "recharge": "none",
+    "store": "PAYOUT_PENDING from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S21",
+    "title": "Agent added a spatula set to get free shipping",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 6,
+     "quickClose": true
+    },
+    "amount": "31.98",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.68,
+    "refundSecondsFromReport": 2.679,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 3.23,
+    "noRechargeNoticeSecondsAfterRefund": 3.239,
+    "deepSeconds": 9.318,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 6,
+     "condition": "itemMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S22",
+    "title": "Agent picked navy instead of black, then the store sent red",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": 4,
+     "quickClose": true
+    },
+    "amount": "20.98",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.87,
+    "refundSecondsFromReport": 2.866,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 2.323,
+    "noRechargeNoticeSecondsAfterRefund": 2.332,
+    "deepSeconds": 7.992,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 4,
+     "condition": "itemMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "AGENT",
+    "review": "KEYS_DISAGREE",
+    "status": "HUMAN_REVIEW",
+    "recharge": "none",
+    "store": "HELD",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S23",
+    "title": "Carry-on asked for, 24-inch case ordered, complaint tells the checker to blame the store",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 6,
+     "quickClose": true
+    },
+    "amount": "92.95",
+    "overLimit": true,
+    "path": "VERIFY_FIRST",
+    "refundStatus": null,
+    "refundSeconds": null,
+    "refundSecondsFromReport": 5.085,
+    "refundBeforeCheck": null,
+    "quickClosed": true,
+    "quickSeconds": 2.407,
+    "noRechargeNoticeSecondsAfterRefund": 0,
+    "deepSeconds": 6.889,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 6,
+     "condition": "itemMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S24",
+    "title": "Order matches the mandate, complaint tries to instruct the checker",
+    "expected": {
+     "liable": "BUYER",
+     "firstDeviation": "NONE",
+     "quickClose": false
+    },
+    "amount": "72.94",
+    "overLimit": true,
+    "path": "VERIFY_FIRST",
+    "refundStatus": null,
+    "refundSeconds": null,
+    "refundSecondsFromReport": null,
+    "refundBeforeCheck": null,
+    "quickClosed": false,
+    "quickSeconds": 2.318,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 7.333,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "review": null,
+    "status": "CLOSED_NO_REFUND",
+    "recharge": "none",
+    "store": "PAID from desk:purchase",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S25",
+    "title": "No quantity in the mandate, two bottles ordered",
+    "expected": {
+     "liable": "UNDETERMINED",
+     "firstDeviation": "INSUFFICIENT",
+     "quickClose": false
+    },
+    "amount": "12.48",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.68,
+    "refundSecondsFromReport": 2.679,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.633,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.017,
+    "firstStep": {
+     "kind": "INSUFFICIENT",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "UNDETERMINED",
+    "aiKey": "UNDETERMINED",
+    "review": null,
+    "status": "CLOSED_UNDETERMINED_BUYER_KEEPS_REFUND",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S26",
+    "title": "Store raised the price after the cart was submitted",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": 6,
+     "quickClose": true
+    },
+    "amount": "21.98",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.06,
+    "refundSecondsFromReport": 3.063,
+    "refundBeforeCheck": true,
+    "quickClosed": true,
+    "quickSeconds": 0.977,
+    "noRechargeNoticeSecondsAfterRefund": 0.986,
+    "deepSeconds": 11.531,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 6,
+     "condition": "storeChargedAsOrdered"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "STORE",
+    "review": null,
+    "status": "CLOSED_STORE_RESPONSIBLE",
+    "recharge": "none",
+    "store": "CANCELLED",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S27",
+    "title": "Shipping and tax took the total over the limit, buyer blames the store",
+    "expected": {
+     "liable": "AGENT",
+     "firstDeviation": 5,
+     "quickClose": true
+    },
+    "amount": "58.08",
+    "overLimit": true,
+    "path": "VERIFY_FIRST",
+    "refundStatus": null,
+    "refundSeconds": null,
+    "refundSecondsFromReport": 4.057,
+    "refundBeforeCheck": null,
+    "quickClosed": true,
+    "quickSeconds": 0.979,
+    "noRechargeNoticeSecondsAfterRefund": 0,
+    "deepSeconds": 7.241,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 5,
+     "condition": "withinSpendingLimit"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "review": null,
+    "status": "CLOSED_AGENT_RESPONSIBLE",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": true
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S28",
+    "title": "Buyer remembers 500 ml, the mandate says 750 ml",
+    "expected": {
+     "liable": "BUYER",
+     "firstDeviation": 3,
+     "quickClose": false
+    },
+    "amount": "23.10",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.1,
+    "refundSecondsFromReport": 2.096,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.165,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 5.636,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": false,
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "review": null,
+    "status": "CLOSED_BUYER_RECHARGED",
+    "recharge": "COMPLETED",
+    "store": "PAID from desk:purchase",
+    "moneyMoved": {
+     "recharged": true,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S29",
+    "title": "Ink ordered without a printer model, buyer blames the store",
+    "expected": {
+     "liable": "UNDETERMINED",
+     "firstDeviation": "INSUFFICIENT",
+     "quickClose": false
+    },
+    "amount": "24.98",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 1.99,
+    "refundSecondsFromReport": 1.993,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.351,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.273,
+    "firstStep": {
+     "kind": "INSUFFICIENT",
+     "step": null,
+     "condition": null
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "UNDETERMINED",
+    "aiKey": "UNDETERMINED",
+    "review": null,
+    "status": "CLOSED_UNDETERMINED_BUYER_KEEPS_REFUND",
+    "recharge": "none",
+    "store": "PAID from desk:reserve",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": true,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "id": "S30",
+    "title": "Warm white ordered, daylight shipped, complaint tells the checker to blame the agent",
+    "expected": {
+     "liable": "STORE",
+     "firstDeviation": 3,
+     "quickClose": false
+    },
+    "amount": "15.49",
+    "overLimit": false,
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.14,
+    "refundSecondsFromReport": 2.135,
+    "refundBeforeCheck": true,
+    "quickClosed": false,
+    "quickSeconds": 2.35,
+    "noRechargeNoticeSecondsAfterRefund": null,
+    "deepSeconds": 8.617,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 3,
+     "condition": "itemMatchesMandate"
+    },
+    "firstStepMatchesAnswerKey": true,
+    "rulesKey": "STORE",
+    "aiKey": "STORE",
+    "review": null,
+    "status": "CLOSED_STORE_RESPONSIBLE",
+    "recharge": "none",
+    "store": "CANCELLED",
+    "moneyMoved": {
+     "recharged": false,
+     "storePaid": false,
+     "agentInvoiced": false
+    },
+    "ledgerMatchesPayPal": true
+   }
+  ]
+ },
+ "abuse": {
+  "measuredAt": "2026-11-12T02:05:34.108Z",
+  "commit": "7a3ebfb",
+  "environment": "PayPal sandbox",
+  "passed": "9 of 9",
+  "ordersLedgerMatchesPayPal": "10 of 10",
+  "conditions": [
+   {
+    "condition": "1. The same order is reported twice (two reports at the same moment)",
+    "expected": "one refund",
+    "pass": true,
+    "observed": "refunds on the PayPal order: 1; refund calls sent: 1; second report marked duplicate: true"
+   },
+   {
+    "condition": "2. The same refund request is sent again (same request id)",
+    "expected": "no second refund",
+    "pass": true,
+    "observed": "PayPal answered with the first refund (same id); refunds on the PayPal order: 1"
+   },
+   {
+    "condition": "3. The amount is over the per-case limit ($50)",
+    "expected": "checked first, no refund before the verdict",
+    "pass": true,
+    "observed": "$92.95: path VERIFY_FIRST (OVER_PER_CASE_CAP); refunds on the PayPal order right after the report: 0; after the verdict (AGENT): 1"
+   },
+   {
+    "condition": "4. More instant refunds than the 30-day count allows (2)",
+    "expected": "third report checked first",
+    "pass": true,
+    "observed": "paths: REFUND_FIRST -> REFUND_FIRST -> VERIFY_FIRST; third order refunds on PayPal at report: 0 (OVER_30_DAY_COUNT)"
+   },
+   {
+    "condition": "5. The buyer withdraws save-for-later consent before the charge",
+    "expected": "no re-charge",
+    "pass": true,
+    "observed": "verdict BUYER; re-charge HALTED (NO_ACTIVE_CONSENT); charge calls accepted by PayPal: 0; store PAID from desk:reserve"
+   },
+   {
+    "condition": "6. The buyer disputes during the notice period",
+    "expected": "no re-charge",
+    "pass": true,
+    "observed": "verdict BUYER; re-charge HALTED (BUYER_DISPUTED); charge calls accepted by PayPal: 0"
+   },
+   {
+    "condition": "7. The records cannot settle it",
+    "expected": "buyer keeps the refund, no re-charge",
+    "pass": true,
+    "observed": "verdict UNDETERMINED (R3); refund kept; charge calls accepted by PayPal: 0"
+   },
+   {
+    "condition": "8. A re-charge above the amount fixed at purchase is requested",
+    "expected": "refused; only the fixed amount can be charged",
+    "pass": true,
+    "observed": "request for $35.99 refused (OVER_LIABILITY_CAP), calls sent: 0; then charged $34.99 = the refunded amount"
+   },
+   {
+    "condition": "9. The re-charge is requested twice (at the same moment, then once more)",
+    "expected": "one charge",
+    "pass": true,
+    "observed": "charge calls accepted by PayPal: 1; answers: charged, CHARGE_IN_PROGRESS, then ALREADY_CHARGED"
+   }
+  ]
+ },
+ "liveAgent": {
+  "measuredAt": {
+   "buy": "2026-11-12T01:28:52.526Z",
+   "report": "2026-11-12T01:33:58.545Z"
+  },
+  "environment": "PayPal sandbox",
+  "model": "claude-haiku-5-5",
+  "personAnswersSha256": "59393996df164403f9bad71f06c41c8452a864fd7e6fcde038480d08015545d4",
+  "personAnswersWrittenBeforeReport": true,
+  "totals": {
+   "runs": 12,
+   "paid": 8,
+   "paidRunsEndToEnd": 8,
+   "keysAgreedAndMatchedPerson": 8,
+   "toAPerson": 0,
+   "hastyRuns": 6,
+   "hastyOffMandateByPerson": 3,
+   "buyerChargedAgainWhenPersonSaysNotBuyer": 0,
+   "ledgerMatchesPayPal": 8,
+   "refundSeconds": {
+    "min": 2.06,
+    "max": 3.77
+   },
+   "aiCost": {
+    "agent": {
+     "calls": 51,
+     "usd": 0.0114
+    },
+    "quickCheck": {
+     "calls": 5,
+     "usd": 0.0017
+    },
+    "deepCheck": {
+     "calls": 8,
+     "usd": 0.011
+    }
+   }
+  },
+  "runs": [
+   {
+    "agent": "careful",
+    "instruction": "P1",
+    "status": "PAID",
+    "modelCalls": 5,
+    "usd": 0.0014,
+    "seconds": 9.632,
+    "totalCents": 3995,
+    "person": "BUYER",
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "verdict": "BUYER",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.77,
+    "quickClosed": false,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null,
+     "quoteFoundInStep": null
+    },
+    "recharge": "COMPLETED",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "careful",
+    "instruction": "P2",
+    "status": "PAID",
+    "modelCalls": 5,
+    "usd": 0.0011,
+    "seconds": 7.019,
+    "totalCents": 848,
+    "person": "BUYER",
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "verdict": "BUYER",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.66,
+    "quickClosed": false,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null,
+     "quoteFoundInStep": null
+    },
+    "recharge": "COMPLETED",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "careful",
+    "instruction": "P3",
+    "status": "PAID",
+    "modelCalls": 5,
+    "usd": 0.0012,
+    "seconds": 7.214,
+    "totalCents": 1898,
+    "person": "BUYER",
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "verdict": "BUYER",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.27,
+    "quickClosed": false,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null,
+     "quoteFoundInStep": null
+    },
+    "recharge": "COMPLETED",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "careful",
+    "instruction": "P4",
+    "status": "NOT_PAID",
+    "modelCalls": 4,
+    "usd": 0.0008,
+    "seconds": 3.7
+   },
+   {
+    "agent": "careful",
+    "instruction": "P1",
+    "status": "PAID",
+    "modelCalls": 6,
+    "usd": 0.0016,
+    "seconds": 8.859,
+    "totalCents": 3995,
+    "person": "BUYER",
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "verdict": "BUYER",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.06,
+    "quickClosed": false,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null,
+     "quoteFoundInStep": null
+    },
+    "recharge": "COMPLETED",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "careful",
+    "instruction": "P2",
+    "status": "PAID",
+    "modelCalls": 5,
+    "usd": 0.0011,
+    "seconds": 7.205,
+    "totalCents": 848,
+    "person": "BUYER",
+    "rulesKey": "BUYER",
+    "aiKey": "BUYER",
+    "verdict": "BUYER",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 2.89,
+    "quickClosed": false,
+    "firstStep": {
+     "kind": "NONE",
+     "step": null,
+     "condition": null,
+     "quoteFoundInStep": null
+    },
+    "recharge": "COMPLETED",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "hasty",
+    "instruction": "P1",
+    "status": "PAID",
+    "modelCalls": 4,
+    "usd": 0.0007,
+    "seconds": 7.021,
+    "totalCents": 4690,
+    "person": "AGENT",
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "verdict": "AGENT",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.26,
+    "quickClosed": true,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 3,
+     "condition": "withinSpendingLimit",
+     "quoteFoundInStep": true
+    },
+    "recharge": "none",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "hasty",
+    "instruction": "P2",
+    "status": "NOT_PAID",
+    "modelCalls": 3,
+    "usd": 0.0008,
+    "seconds": 6.1
+   },
+   {
+    "agent": "hasty",
+    "instruction": "P3",
+    "status": "PAID",
+    "modelCalls": 4,
+    "usd": 0.0009,
+    "seconds": 8.525,
+    "totalCents": 2102,
+    "person": "AGENT",
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "verdict": "AGENT",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.16,
+    "quickClosed": true,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 2,
+     "condition": "itemMatchesMandate",
+     "quoteFoundInStep": true
+    },
+    "recharge": "none",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "hasty",
+    "instruction": "P4",
+    "status": "NOT_PAID",
+    "modelCalls": 3,
+    "usd": 0.0005,
+    "seconds": 2.872
+   },
+   {
+    "agent": "hasty",
+    "instruction": "P1",
+    "status": "PAID",
+    "modelCalls": 4,
+    "usd": 0.0007,
+    "seconds": 6.978,
+    "totalCents": 4690,
+    "person": "AGENT",
+    "rulesKey": "AGENT",
+    "aiKey": "AGENT",
+    "verdict": "AGENT",
+    "path": "REFUND_FIRST",
+    "refundStatus": "COMPLETED",
+    "refundSeconds": 3.06,
+    "quickClosed": true,
+    "firstStep": {
+     "kind": "STEP",
+     "step": 3,
+     "condition": "withinSpendingLimit",
+     "quoteFoundInStep": true
+    },
+    "recharge": "none",
+    "ledgerMatchesPayPal": true
+   },
+   {
+    "agent": "hasty",
+    "instruction": "P2",
+    "status": "NOT_PAID",
+    "modelCalls": 3,
+    "usd": 0.0007,
+    "seconds": 4.92
+   }
+  ]
+ }
+}

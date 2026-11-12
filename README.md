@@ -19,6 +19,8 @@
 3. Press **Report it**. The refund completes in seconds, then the quick check, the deep check and the two keys run.
 4. Both keys name the buyer, so a notice comes first. Press **Fast-forward the notice period**: the saved sandbox wallet is charged again, never for more than was refunded.
 
+**To watch a live AI agent instead** (live Claude, no recorded answers): under **Watch a live AI agent shop**, pick *Coffee maker, $45 limit*, press **Approve these conditions**, then **Run the hasty agent**. If it pays, press **Report it**. It is a live model, so the same instruction can end differently from run to run, including not paying at all. Live runs have a daily cap shared by all visitors ([limits](#a-live-agent-that-really-shops)).
+
 When an AI shopping agent buys the wrong thing, PayPal refunds the buyer within seconds, before the purchase is checked. The records are checked afterwards. If the check finds the buyer responsible, the buyer gets a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never for more than was refunded. In every other outcome the buyer keeps the refund.
 
 1. **Refund first.** PayPal's refund status is COMPLETED before the purchase is checked (within the limits; sandbox runs 1.99–3.19 s).
@@ -132,7 +134,7 @@ On the hosted demo the live agent has limits: 15 runs a day for all visitors, 3 
 
 ### The 30 prepared cases
 
-All runs used the PayPal sandbox and live Claude calls (`claude-haiku-5-5`, no recorded answers replayed). The table shows run 4, measured on 2026-11-12 at commit `7a3ebfb`. The demo page's "30 measured cases" view shows run 3 (2026-11-10, commit `8daedd6`, one case to a person), whose recorded answers the prepared cases replay. **We wrote the 30 cases, the agents' action logs and the answer key for this demo.** The answer key was fixed before the live AI first ran on these cases (SHA-256 of `scenarios/cases.json`: `5873cb94…447d`). Targets were written down before measuring.
+All runs used the PayPal sandbox and live Claude calls (`claude-haiku-5-5`, no recorded answers replayed). The table shows run 4, measured on 2026-11-12 at commit `7a3ebfb`. The demo page's "30 measured cases" view shows run 3 (2026-11-10, commit `8daedd6`, one case to a person), whose recorded answers the prepared cases replay. **We wrote the 30 cases, the agents' action logs and the answer key for this demo.** The answer key was fixed before the live AI first ran on these cases (SHA-256 of `scenarios/cases.json`: `5873cb94…447d`). Targets were written down before measuring. The per-case results behind this table, the abuse run and the live-agent run below are in [`docs/measurements/2026-11-12-summary.json`](docs/measurements/2026-11-12-summary.json), without account or order identifiers.
 
 | What | Target | Result |
 |---|---|---|
@@ -239,7 +241,7 @@ Live AI calls are capped per day and in total (`src/ai/budget.js`); on the hoste
 
 ## Evidence
 
-Measured on 2026-11-10 and 2026-11-12 with the scripts above. Each run writes a JSON file with every PayPal call, the ledger and the case records to `data/evidence/` (not committed, because it holds sandbox account identifiers). Recorded answers from the live AI runs are in `scenarios/recorded/`, keyed by a hash of the records the AI read.
+Measured on 2026-11-10 and 2026-11-12 with the scripts above. Each run writes a JSON file with every PayPal call, the ledger and the case records to `data/evidence/` (not committed, because it holds sandbox account identifiers). A summary of the 2026-11-12 runs without identifiers, with the SHA-256 of each source file, is committed as [`docs/measurements/2026-11-12-summary.json`](docs/measurements/2026-11-12-summary.json). Recorded answers from the live AI runs are in `scenarios/recorded/`, keyed by a hash of the records the AI read.
 
 ## License
 
