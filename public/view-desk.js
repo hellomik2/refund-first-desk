@@ -21,6 +21,8 @@ export function deskColumn({ order, kase: k }, working) {
   const inv = k.investigation;
   const now = inv?.codeKey && inv?.aiKey ? 'keys' : inv?.finishedAt ? 'deep' : k.quick?.finishedAtMs ? 'quick' : '';
   if (k.status === 'HUMAN_REVIEW') return operatorPanel(k, working) + quickCard(k, false, false) + afterCard(k, order);
+  // once both keys are in, the answer comes first and the checks that led to it follow (still open to read)
+  if (now === 'keys') return keysCard(k, order, working, true) + afterCard(k, order) + quickCard(k, checking, false) + deepCard(k, checking, false);
   return quickCard(k, checking, now === 'quick') + deepCard(k, checking, now === 'deep') + keysCard(k, order, working, now === 'keys') + afterCard(k, order);
 }
 

@@ -73,7 +73,6 @@ q.struck { text-decoration: line-through; }
 .key strong { display: block; font-size: var(--f-lg); line-height: 1.15; margin: var(--s1) 0; }
 .kreasons { list-style: none; padding: 0; margin: var(--s2) 0 0; display: grid; gap: var(--s1); }
 .gate { align-self: center; font-size: var(--f-xl); font-weight: 400; line-height: 1; text-align: center; min-width: 1ch; }
-#desk .proof.now .gate { font-size: var(--f-giant); }
 .gate.g-open { color: var(--c-success); }
 .keys.k-buyer .gate.g-open { color: var(--c-text-yellow); }
 .gate.g-shut { color: var(--c-text-yellow); }

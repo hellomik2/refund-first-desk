@@ -15,7 +15,7 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&a
 export const usd = (cents) => `${cents < 0 ? '-' : ''}$${(Math.abs(cents || 0) / 100).toFixed(2)}`;
 export const signed = (cents) => (!cents ? '$0.00' : `${cents > 0 ? '+' : '-'}$${(Math.abs(cents) / 100).toFixed(2)}`);
 export const time = (iso) => (iso ? new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '');
-export const day = (iso) => (iso ? new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : '');
+export const day = (iso) => (iso ? new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).replace(/ /g, ' ') : ''); // a date never breaks across lines
 /** Escaped text with one sentence per line: a headline of two sentences breaks between them, never inside one. */
 export const sentences = (s) => {
   const parts = String(s ?? '').split(/(?<=[.!?])\s+(?=[A-Z"“$])/);

@@ -4,9 +4,9 @@
 
 **Demo: https://refund-first-desk.onrender.com** (PayPal sandbox)
 
-When an AI shopping agent buys the wrong thing, PayPal refunds the buyer within seconds, before anything is checked. The records are checked afterwards. If the check finds the buyer responsible, the buyer gets a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never for more than was refunded. In every other outcome the buyer keeps the refund.
+When an AI shopping agent buys the wrong thing, PayPal refunds the buyer within seconds, before the purchase is checked. The records are checked afterwards. If the check finds the buyer responsible, the buyer gets a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never for more than was refunded. In every other outcome the buyer keeps the refund.
 
-1. **Refund first.** PayPal's refund status is COMPLETED before any check starts (within the limits; sandbox runs 1.99–3.19 s).
+1. **Refund first.** PayPal's refund status is COMPLETED before the purchase is checked (within the limits; sandbox runs 1.99–3.19 s).
 2. **Then check.** The AI's verdict and fixed rules in code; after the refund, any further money (a re-charge, the store's payout, an agent invoice) moves only when they agree.
 3. **Take it back, only if the buyer was responsible.** Notice, 5 business days to dispute, then the wallet that paid is charged again.
 
@@ -123,7 +123,7 @@ All runs used the PayPal sandbox and live Claude calls (`claude-haiku-5-5`, no r
 |---|---|---|
 | What the buyer has to do | one sentence | one sentence |
 | Report → PayPal refund status COMPLETED, within the limits | every run ≤ 60 s | 1.99–3.19 s (26/26) |
-| Refund completed before any check started, within the limits | every case | 26/26 |
+| Refund completed before the purchase was checked, within the limits | every case | 26/26 |
 | Over the limits, buyer not responsible: report → refund COMPLETED | ≤ 5 min | 4.1–13.6 s (3/3); the buyer-responsible case got no refund (1/1) |
 | Verdicts matching the answer key where both keys agreed | ≥ 27 of 30 | 28/30; S14 and S22 went to a person (keys disagreed), counted as wrong |
 | First step where the agent left the mandate, matching the answer key | ≥ 27 of 30 | 29/30 (S28 answered "no step off"); 30/30 in runs 2 and 3. All after tuning the prompt twice on these same 30 cases (27/30, 25/28 and 27/30 before); 10/10 on 10 new hold-out cases, see below |

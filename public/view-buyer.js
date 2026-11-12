@@ -42,7 +42,7 @@ function moment({ mandate, order, kase: k }, working) {
   if (k.status === 'HUMAN_REVIEW') {
     return {
       label: 'A person is checking',
-      giant: big('Held'),
+      giant: big('Review'),
       tone: 'yellow',
       line: refunded ? `Your ${usd(k.refund.amountCents)} refund stays with you. Nothing is charged until a person decides.` : 'The refund waits for a person. Nothing is charged meanwhile.',
       quote,
@@ -122,6 +122,9 @@ function outcome(k) {
 
 const orderOf = (k) => S.state.orders.find((o) => o.id === k.orderId);
 
+/** A line of two or more sentences gets one sentence per line; a line already made of spans is left alone. */
+const lineBreaks = (html) => (html.includes('class="ln"') ? html : html.split(/(?<=[.!?])\s+(?=[A-Z"“$<])/).map((t) => `<span class="ln">${t}</span>`).join(' '));
+
 function momentHtml(m) {
   if (!m) return '';
   const g = m.giant;
@@ -129,7 +132,7 @@ function momentHtml(m) {
   const head = m.stamp ? `<p class="big">${esc(m.label)}</p>` : `<p class="m-label">${esc(m.label)}</p>`;
   return `<div class="moment${m.stamp ? ` stamp ${m.stamp}` : ''}${m.point ? ' point' : ''}">${head}
     <p class="giant${m.tone ? ` ${m.tone}` : ''}${long}">${esc(g.value)}${g.unit ? `<small> ${esc(g.unit)}</small>` : ''}</p>
-    ${m.line ? `<p class="m-line">${m.line}</p>` : ''}${m.extra || ''}${m.quote || ''}${m.act || ''}</div>`;
+    ${m.line ? `<p class="m-line">${lineBreaks(m.line)}</p>` : ''}${m.extra || ''}${m.quote || ''}${m.act || ''}</div>`;
 }
 
 // ---- the live agent ------------------------------------------------------------------------------------

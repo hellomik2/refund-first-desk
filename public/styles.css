@@ -120,6 +120,7 @@ p { max-width: 65ch; }
 .ps-back .ps-n { color: var(--c-text-yellow); }
 .disclosure { margin-top: var(--s8); color: var(--c-text-2); font-size: var(--f-sm); }
 .disclosure strong { color: var(--c-text); }
+.jump { display: none; } /* on a phone: a way to the cases without scrolling past everything */
 
 /* ---- shared controls ---------------------------------------------------------------------------- */
 /* buttons: Primary is filled black, Secondary is outlined, Danger is outlined red; all 48px tall, 12px / 20px inside, text centred */
@@ -223,6 +224,7 @@ summary { cursor: pointer; color: var(--c-text-2); font-size: var(--f-sm); }
   .hero h1 { font-size: 1.875rem; }
   .promise-steps { grid-template-columns: minmax(0, 1fr); gap: var(--s10); margin-top: var(--s10); }
   .ps { padding-right: 0; }
+  .jump { display: flex; margin-top: var(--s6); min-height: 48px; padding: 11px var(--s5); border: 1px solid var(--c-accent); border-radius: var(--r-element); background: var(--c-accent); color: #fff; font-weight: 700; text-decoration: none; justify-content: center; align-items: center; }
   .rail { gap: 3px; }
   .stn { padding-top: 0; }
   /* on a phone the step names are read from the one line under the bar, so they are kept for screen readers only */

@@ -26,12 +26,13 @@
   <section class="hero wrap" aria-labelledby="hero-h">
     <p class="tagline">For purchases made by AI shopping agents, on PayPal.</p>
     <h1 id="hero-h"><span class="ln">Trust the buyer first.</span> <span class="ln">If that was wrong, give notice and take it back.</span></h1>
+    <a class="jump" href="#picker-h">Run a prepared case</a>
     <ol class="promise-steps" aria-label="The order this desk works in">
       <li class="ps ps-first"><span class="ps-n" aria-hidden="true">1</span><strong>Refund first</strong><span class="ps-t">Back in seconds, <span class="nw">before the purchase is checked.</span></span><span class="ps-f">Within the buyer's instant-refund limit: $50 a case and 2 refunds per 30 days to start.</span></li>
       <li class="ps ps-check"><span class="ps-n" aria-hidden="true">2</span><strong>Then check</strong><span class="ps-t">A re-charge, the store's payout or an invoice entry for the agent happens on its own only when AI and code rules agree.</span><span class="ps-f">If they differ, a person decides and nothing is charged meanwhile.</span></li>
       <li class="ps ps-back"><span class="ps-n" aria-hidden="true">3</span><strong>Take it back only if the buyer was responsible</strong><span class="ps-t">Notice first, 5 business days to dispute.</span><span class="ps-f"><span class="ln">A dispute stops it.</span> <span class="ln">Never more than was refunded.</span></span></li>
     </ol>
-    <p class="disclosure" id="disclosure">Sandbox money, real PayPal API calls. <strong>Prepared cases and their answer key are written by us.</strong> Shipping, store records and waiting periods are simulated; fast-forward moves the policy clock only. More in "What is simulated or written by us" at the bottom.</p>
+    <p class="disclosure" id="disclosure">Sandbox money, real PayPal API calls. <strong>Prepared cases and their answer key are written by us.</strong> Shipping, store records and waiting periods are simulated; fast-forward moves the policy clock only. Refund times are sandbox seconds; PayPal's "about 14 days" is its guidance for real disputes, so the two are not directly comparable. More in "What is simulated or written by us" at the bottom.</p>
   </section>
 
   <div class="starts wrap">
@@ -98,6 +99,7 @@
         <li>Prepared cases replay the answers Claude gave in an earlier live run ("recorded answer replayed"). Editing the buyer's sentence calls the AI live.</li>
         <li>Shipping, the store's records and waiting periods are simulated. "Fast-forward the notice period" moves the policy clock only.</li>
         <li>"Refunded" means PayPal's refund status is COMPLETED. When the money shows up depends on how the buyer paid.</li>
+        <li>Not comparable side by side: PayPal's "about 14 days" is its published guidance for real disputes; the seconds here are sandbox measurements.</li>
         <li>The desk holds the store's money for 7 days before paying it out: a setting for this demo.</li>
         <li>The instant-refund limit ($50 a case, 2 refunds per 30 days, $25 and one refund up or down per decided case) is an assumption, not a measured value.</li>
         <li>Live agent runs are capped per day and per workspace, and AI spending is capped. The caps are counted while the server is awake and start again after a restart.</li>
@@ -106,7 +108,7 @@
     <details>
       <summary>Who runs this, and what only works in the sandbox</summary>
       <ul>
-        <li>An operator of AI shopping agents can run this desk on PayPal today: it receives the payment, refunds from it, and pays an innocent store from its own funds. If PayPal ran it itself, it would hold the store's funds for the disputed order instead (delayed disbursement exists for approved partners).</li>
+        <li>An operator of AI shopping agents could run this desk on PayPal. In the sandbox it receives the payment, refunds from it, and pays an innocent store from its own funds. If PayPal ran it itself, it would hold the store's funds for the disputed order instead (delayed disbursement exists for approved partners).</li>
         <li>The quick check can only close a case in the buyer's favour. The investigator names the first step where the agent left the mandate and quotes it; code checks the quote against that step. Its verdict is one of two keys. When the keys differ, a person decides.</li>
         <li>Charging a saved wallet again without the buyer present needs PayPal's approval on live accounts.</li>
         <li>"Pay at PayPal and save the wallet" was checked on this screen as far as PayPal's sign-in page and back through Cancel. Approving, capturing and saving the wallet were checked with the same PayPal calls in a separate test script.</li>
