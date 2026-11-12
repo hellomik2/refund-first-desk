@@ -8,7 +8,7 @@ import { AGENTS, runShoppingAgent } from './agent.js';
 /**
  * @param {object} o
  * @param {() => Promise<{agentTurn: Function}>} o.provider  the live model (created on first use)
- * @param {{agentBlockedBy: Function, releaseRun: Function, runUsd: Function}} o.budget
+ * @param {{agentBlockedBy: Function, releaseRun: Function, spendBlockedBy: Function, runUsd: Function}} o.budget
  * @param {{dailyRunCap: number, runsPerWorkspace: number, maxCalls: number}} o.caps
  */
 export function createLiveShopper({ desk, db, catalog, provider, budget, caps, beforePay = () => {} }) {
@@ -64,6 +64,7 @@ export function createLiveShopper({ desk, db, catalog, provider, budget, caps, b
         turn,
         pay,
         maxCalls: caps.maxCalls,
+        blockedBy: budget.spendBlockedBy,
         onStep: (_step, steps) => {
           live.steps = steps.map((s) => ({ ...s }));
           db.save();

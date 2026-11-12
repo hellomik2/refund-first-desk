@@ -598,8 +598,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       kase,
       'HUMAN_REVIEW',
       kase.refund?.completedAt
-        ? 'Two independent checks of this order disagree, so a person will look at it. Your refund stays where it is meanwhile.'
-        : 'Two independent checks of this order disagree, so a person will decide. That can take longer than 5 minutes. Nothing is charged or paid out meanwhile.',
+        ? 'Two checks of this order disagree, so a person will look at it. Your refund stays where it is meanwhile.'
+        : 'Two checks of this order disagree, so a person will decide. That can take longer than 5 minutes. Nothing is charged or paid out meanwhile.',
     );
   }
 

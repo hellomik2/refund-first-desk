@@ -59,8 +59,9 @@ const money = (c) => `$${fromCents(c)}`;
  * @param {(params: object) => Promise<{content: object[], stop_reason: string}>} o.turn  one model call (system, tools, messages)
  * @param {({store, cart, priced}) => Promise<{orderId: string, paypalOrderId?: string}>} o.pay  the desk purchase
  * @param {(step: object, steps: object[]) => void} [o.onStep]  called as each step is recorded
+ * @param {() => string|null} [o.blockedBy]  checked before every model call; a reason stops the run there
  */
-export async function runShoppingAgent({ catalog, instruction, conditions, kind, turn, pay, onStep = () => {}, maxCalls = 16 }) {
+export async function runShoppingAgent({ catalog, instruction, conditions, kind, turn, pay, onStep = () => {}, maxCalls = 16, blockedBy = () => null }) {
   const agent = AGENTS[kind];
   if (!agent) throw new Error(`Unknown agent ${kind}`);
   const steps = [];
@@ -151,6 +152,11 @@ export async function runShoppingAgent({ catalog, instruction, conditions, kind,
   for (;;) {
     if (calls >= maxCalls) {
       stopReason = 'CALL_CAP';
+      break;
+    }
+    const blocked = blockedBy(); // checked before every call: runs going at once all count toward the same cap
+    if (blocked) {
+      stopReason = blocked;
       break;
     }
     calls += 1;

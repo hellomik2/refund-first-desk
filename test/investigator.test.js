@@ -221,6 +221,7 @@ test('over the limit, keys disagree: the notice says the checks disagree and tha
   assert.doesNotMatch(n.text, /could not finish/);
   assert.match(n.text, /disagree/);
   assert.match(n.text, /longer than 5 minutes/);
+  assert.doesNotMatch(n.text, /independent/i); // the two keys share facts (README, How separate the two keys are)
 });
 
 test('two checks of the same over-limit case at the same moment refund it once', async () => {

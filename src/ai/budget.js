@@ -58,6 +58,8 @@ export function createAiBudget({ file, dailyCallCap, spendCapUsd }) {
       return null;
     },
     releaseRun: (runId) => held.delete(runId),
+    /** @returns {string|null} 'AI_SPEND_CAP' once the total spend has reached the cap, checked before each agent call */
+    spendBlockedBy: () => (calls().reduce((sum, c) => sum + c.usd, 0) >= spendCapUsd ? 'AI_SPEND_CAP' : null),
     runUsd: (runId) => calls().filter((c) => c.runId === runId).reduce((sum, c) => sum + c.usd, 0),
   };
 }

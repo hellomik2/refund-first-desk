@@ -171,7 +171,7 @@ test('a live run through the shopper names the agent on the order (the case book
     m.live = { promptId: 'P1' };
     desk.approveMandate(m.id);
     const { turn } = scripted([[['search_products', { query: 'aeropress go' }]], [['add_to_cart', { sku: '31074', quantity: 1 }]], [['checkout_and_pay', {}]], 'Done.']);
-    const shopper = createLiveShopper({ desk, db, catalog, provider: async () => ({ agentTurn: turn }), budget: { agentBlockedBy: () => null, releaseRun: () => {}, runUsd: () => 0 }, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
+    const shopper = createLiveShopper({ desk, db, catalog, provider: async () => ({ agentTurn: turn }), budget: { agentBlockedBy: () => null, releaseRun: () => {}, spendBlockedBy: () => null, runUsd: () => 0 }, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
     await shopper.shop({ mandateId: m.id, kind });
     return db.data.orders[m.live.orderId];
   };
@@ -198,7 +198,7 @@ test('after the merge: a live purchase fixes the buyer-record limit, and the cas
     m.live = { promptId: 'P1' };
     desk.approveMandate(m.id);
     const { turn } = scripted([[['search_products', { query: 'aeropress go' }]], [['add_to_cart', { sku: '31074', quantity: 1 }]], [['checkout_and_pay', {}]], 'Done.']);
-    const shopper = createLiveShopper({ desk, db, catalog, provider: async () => ({ agentTurn: turn }), budget: { agentBlockedBy: () => null, releaseRun: () => {}, runUsd: () => 0 }, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
+    const shopper = createLiveShopper({ desk, db, catalog, provider: async () => ({ agentTurn: turn }), budget: { agentBlockedBy: () => null, releaseRun: () => {}, spendBlockedBy: () => null, runUsd: () => 0 }, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
     await shopper.shop({ mandateId: m.id, kind });
     return db.data.orders[m.live.orderId];
   };
@@ -318,4 +318,23 @@ test('code counts the quantity when the order also has a tax line (the only prod
   const facts = codeFacts({ mandate: { conditions: { purchaseAuthorized: true, maxTotalCents: null, quantity: 1 } }, paypalOrder: { totalCents: priced.totalCents, items: priced.paypalCart } });
   assert.equal(facts.quantityMatchesMandate?.value, 'no');
   assert.match(facts.quantityMatchesMandate.quote, /quantity 2 vs mandate quantity 1/);
+});
+
+test('the spend cap is checked before every model call of a run, not only at its start', async () => {
+  const { createLiveShopper } = await import('../src/shop/run.js');
+  const { db, desk, mandates } = liveDesk(1);
+  const budget = createAiBudget({ file: join(mkdtempSync(join(tmpdir(), 'rfd-agent-')), 'ai-usage.jsonl'), dailyCallCap: 40, spendCapUsd: 0.5 });
+  let calls = 0;
+  const provider = async () => ({
+    agentTurn: async ({ runId }) => {
+      calls += 1;
+      budget.record({ at: new Date().toISOString(), purpose: 'agent', runId, model: 'claude-haiku-5-5', inputTokens: 0, outputTokens: 1_000_000 }); // $0.50: the cap
+      return { stop_reason: 'tool_use', content: [{ type: 'tool_use', id: `tu_${calls}`, name: 'search_products', input: { query: 'soap' } }] };
+    },
+  });
+  const shopper = createLiveShopper({ desk, db, catalog, provider, budget, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
+  const { mandate, run } = await shopper.shop({ mandateId: mandates[0].id, kind: 'careful' });
+  assert.equal(calls, 1);
+  assert.equal(run.stopReason, 'AI_SPEND_CAP');
+  assert.equal(mandate.live.status, 'NOT_PAID');
 });

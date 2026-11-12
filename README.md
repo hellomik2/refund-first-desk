@@ -91,7 +91,7 @@ Every case the desk finishes lands in a case book below the cases on screen, wri
 The record also moves the next purchase's instant-refund limit, by fixed rules in code (`src/domain/trust.js`); the AI never sets it:
 
 - **Up:** each earlier case of the same buyer that was the agent's or the store's fault (both keys agreed, or a person chose): +$25 a case and +1 refund, for at most two cases.
-- **Down, the only way down:** each earlier case where this buyer was found responsible and, with no dispute during the notice period, was charged again: −$25 and −1 refund, to a floor of $0 (every purchase checked first). A verdict still inside its notice period does not count yet, because the buyer can still dispute it.
+- **Down, the only way down:** each earlier case where this buyer was found responsible and, with no dispute during the notice period, was charged again: −$25 and −1 refund, to a floor of $0 (every purchase checked first). A verdict still inside its notice period does not count yet, because the buyer can still dispute it. A raise also lapses once its case is older than 180 days.
 - Only that buyer's cases from the last 180 days count. The limit is fixed on the order at purchase together with the cases that moved it, and the screen shows that reason under the purchase and in the buyer's "checking first" notice. Agents' and stores' records never move a buyer's limit.
 - In the measured 30-case run each case has its own buyer, so no limit moved there and the money results are the same as before this rule (`scripts/loop.mjs --fake-paypal`, before and after).
 
@@ -156,7 +156,7 @@ Neither is told to make a mistake, and no mistake is written in by code. It is a
 
 Reported without a target: the careful agent paid 5 of 6 times, each purchase within every condition, and in the 6th ("put it in the cart, don't pay") it did not pay. The hasty agent stopped without paying twice on the dish soap, because its listings did not say the scent, and once put AAA batteries in the cart when AA were asked, without paying. Refund 2.06–3.77 s. The deep check named the first step off as the pay step (over the limit) or the add-to-cart step (wrong connector), with the quote found in that step, in all 3 agent-responsible runs, and no step in the 5 buyer-responsible runs. An agent run took 3 to 6 model calls, about $0.001.
 
-On the hosted demo the live agent is capped: 15 runs a day for all visitors, 3 per workspace, 16 model calls per run, and the same overall AI spending cap as the checks.
+On the hosted demo the live agent has limits: 15 runs a day for all visitors, 3 per workspace, 16 model calls per run, and the same overall AI spending cap as the checks, checked before every model call. The counts behind these limits are kept in a file on the server. The hosted demo runs on Render's free plan with no persistent disk, so that file is lost when the instance restarts, for example after it sleeps: the limits hold while the server stays up, and the counts start again from zero after a restart.
 
 ## What is simulated, and what is only true in the sandbox
 
