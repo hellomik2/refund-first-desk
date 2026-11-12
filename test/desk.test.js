@@ -1003,3 +1003,18 @@ test('desk row: a failed PayPal lookup fails the check instead of reading as a m
   assert.ok(again.ok, JSON.stringify(again.rows));
   assert.equal(deskRow(again).match, true);
 });
+
+test('lookups: the purchase capture records the net amount used for the desk row and whether it was computed', async () => {
+  const ctx = setup();
+  const { order } = await buy(ctx);
+  await ctx.desk.reportProblem({ orderId: order.id, statement: 'Wrong item.' });
+  const cap = ctx.paypal.state.captures.get(order.paypal.captureId);
+  const fromPayPal = (await ctx.desk.reconcile(order.id)).lookups.find((l) => l.type === 'capture');
+  assert.equal(fromPayPal.netCents, cap.grossCents - cap.feeCents, 'PayPal net_amount');
+  assert.equal(fromPayPal.netComputed, false);
+
+  ctx.paypal.captureOmitsNet = true; // PayPal sent no net_amount: the desk falls back to gross minus fee
+  const computed = (await ctx.desk.reconcile(order.id)).lookups.find((l) => l.type === 'capture');
+  assert.equal(computed.netCents, cap.grossCents - cap.feeCents);
+  assert.equal(computed.netComputed, true);
+});

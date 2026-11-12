@@ -1176,7 +1176,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     fromPayPal.buyer -= cap.grossCents;
     fromPayPal['paypal:fees'] += cap.feeCents ?? 0;
     fromPayPal.desk += capNet(cap);
-    lookups.push({ type: 'capture', id: cap.id, status: cap.status, grossCents: cap.grossCents, feeCents: cap.feeCents });
+    lookups.push({ type: 'capture', id: cap.id, status: cap.status, grossCents: cap.grossCents, feeCents: cap.feeCents, netCents: capNet(cap), netComputed: cap.netCents == null });
     if (kase?.refund?.id) {
       const refund = readRefund((await paypal.getRefund(kase.refund.id)).body);
       if (refund.status === 'COMPLETED') {

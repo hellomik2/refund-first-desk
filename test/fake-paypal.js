@@ -102,7 +102,7 @@ export function createFakePayPal({ failNextCharge = false } = {}) {
     },
     async getCapture(captureId) {
       const cap = state.captures.get(captureId);
-      return ok({ id: cap.id, status: cap.status, amount: usd(cap.grossCents), custom_id: cap.custom_id, invoice_id: cap.invoice_id, seller_receivable_breakdown: { gross_amount: usd(cap.grossCents), paypal_fee: usd(cap.feeCents), net_amount: usd(cap.grossCents - cap.feeCents - (cap.netShortCents || 0)) } });
+      return ok({ id: cap.id, status: cap.status, amount: usd(cap.grossCents), custom_id: cap.custom_id, invoice_id: cap.invoice_id, seller_receivable_breakdown: { gross_amount: usd(cap.grossCents), paypal_fee: usd(cap.feeCents), ...(api.captureOmitsNet ? {} : { net_amount: usd(cap.grossCents - cap.feeCents - (cap.netShortCents || 0)) }) } });
     },
     async refundCapture(captureId, { requestId, amountCents } = {}) {
       state.log.push('refundCapture');
