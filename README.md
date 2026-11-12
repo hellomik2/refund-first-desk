@@ -4,7 +4,7 @@
 
 **Demo: https://refund-first-desk.onrender.com** (PayPal sandbox)
 
-**Video (3 min): https://youtu.be/OoZv7CPnU8c**
+**Video (3 min): https://youtu.be/0Zpp-MCgaGk**
 
 ![The buyer reported it and the money went back first: PayPal refund status COMPLETED 2.87 s after the report, while the deep check is still reading](docs/img/refund-first.png)
 
