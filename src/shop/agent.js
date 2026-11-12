@@ -12,6 +12,7 @@
 // Neither is told to make a mistake, and no result is written in by code: whatever it buys, it chose.
 import { conditionsAsText } from '../domain/mandate.js';
 import { fromCents } from '../domain/money.js';
+import { SHIPPING_SKU, TAX_SKU } from '../domain/agentlog.js';
 import { listingLine, priceCart, productOf, productPage, searchCatalog } from './catalog.js';
 
 const RULES_FOR_BOTH = `You are a shopping agent acting for a buyer, in a demo store catalog. The buyer is not available: nobody will answer questions. Use the tools; payment uses the PayPal wallet the buyer saved earlier and happens only when you call checkout_and_pay. A cart holds products from one store. When you are done, reply with one or two plain sentences to the buyer saying what you did.`;
@@ -132,16 +133,27 @@ export async function runShoppingAgent({ catalog, instruction, conditions, kind,
         record('agent', 'pay', `Payment of ${money(priced.totalCents)} failed: ${clip(err.message, 120)}.`, { amountCents: priced.totalCents });
         return { error: `Payment failed: ${err.message}` };
       }
-      purchase = { ...paid, totalCents: priced.totalCents, store: priced.store };
-      record('agent', 'pay', `Paid ${money(priced.totalCents)} with the saved PayPal wallet.`, { amountCents: priced.totalCents });
-      const shipped = priced.items.map((l) => `${l.qty} x ${l.name}`).join(', ');
-      record('store', 'message', `${priced.store.name}: Shipped ${shipped}.`);
+      // The desk may have recorded an earlier payment of this instruction that PayPal had not confirmed (asked
+      // about again under its own request id). Then that order is what was paid and shipped, not this cart.
+      const paidCart = paid.cart ? paid.cart.filter((l) => l.sku !== SHIPPING_SKU && l.sku !== TAX_SKU).map((l) => ({ sku: l.sku, qty: l.qty })) : null;
+      const earlier = paidCart && (paid.totalCents !== priced.totalCents || JSON.stringify(paid.cart) !== JSON.stringify(priced.paypalCart));
+      const charged = earlier ? priceCart(catalog, paidCart) : priced;
+      lastPriced = charged;
+      purchase = { ...paid, totalCents: charged.totalCents, store: charged.store };
+      if (earlier) {
+        record('agent', 'pay', `Paid ${money(charged.totalCents)} with the saved PayPal wallet: PayPal confirmed the earlier payment of this instruction (${charged.items.map((l) => `${l.qty} x ${l.name}`).join(', ')}). The cart of ${money(priced.totalCents)} at ${priced.store.name} was not paid.`, { amountCents: charged.totalCents });
+      } else {
+        record('agent', 'pay', `Paid ${money(charged.totalCents)} with the saved PayPal wallet.`, { amountCents: charged.totalCents });
+      }
+      const shipped = charged.items.map((l) => `${l.qty} x ${l.name}`).join(', ');
+      record('store', 'message', `${charged.store.name}: Shipped ${shipped}.`);
       storeRecord = [
         'Order received from agent checkout.',
-        `Charged ${money(priced.totalCents)}: items ${money(priced.subtotalCents)}, shipping ${money(priced.shippingCents)}, tax ${money(priced.taxCents)}. Matches the submitted cart line for line.`,
+        `Charged ${money(charged.totalCents)}: items ${money(charged.subtotalCents)}, shipping ${money(charged.shippingCents)}, tax ${money(charged.taxCents)}. Matches the submitted cart line for line.`,
         `Shipped: ${shipped}.`,
       ];
-      return `Paid ${money(priced.totalCents)} at ${priced.store.name}. PayPal order ${paid.paypalOrderId || paid.orderId}.`;
+      if (earlier) return `PayPal confirmed the earlier payment of this instruction: ${money(charged.totalCents)} at ${charged.store.name} (${shipped}). The current cart was not paid, and nothing more can be bought in this run. PayPal order ${paid.paypalOrderId || paid.orderId}.`;
+      return `Paid ${money(charged.totalCents)} at ${charged.store.name}. PayPal order ${paid.paypalOrderId || paid.orderId}.`;
     },
   };
 
