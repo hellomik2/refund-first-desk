@@ -222,10 +222,12 @@ function selfTest(sample) {
 
 const cases = Array.isArray(file.cases) ? file.cases : [];
 
-if (cases.length !== 30) fail('file', `${cases.length} cases (30 required)`);
+// Any number of cases and any id prefix; ids must be present and unique.
+if (!cases.length) fail('file', 'no cases');
+const seenIds = new Set();
 cases.forEach((sc, i) => {
-  const want = `S${String(i + 1).padStart(2, '0')}`;
-  if (sc.id !== want) fail(sc.id || `#${i + 1}`, `case ${i + 1} must have id ${want}`);
+  if (seenIds.has(sc.id)) fail(sc.id, `case ${i + 1} repeats id ${sc.id}`);
+  seenIds.add(sc.id);
 });
 
 const rows = [];
@@ -305,7 +307,8 @@ for (const sc of cases) {
 }
 
 if (tally.admits.length > 15) fail('self-report', `${tally.admits.length} cases have an agent line that confesses the deviation (15 at most)`);
-if (tally.corrected.length < 2) fail('corrected', `${tally.corrected.length} cases deviate and are corrected later (2 at least)`);
+// The 30-case set must hold at least 2 corrected cases; smaller hold-out sets only report the count.
+if (cases.length >= 30 && tally.corrected.length < 2) fail('corrected', `${tally.corrected.length} cases deviate and are corrected later (2 at least)`);
 
 const N = cases.length || 1;
 const S = counts.kinds.STEP || 1;
@@ -323,13 +326,13 @@ const sha = createHash('sha256').update(raw, 'utf8').digest('hex');
 console.log(`cases.json sha256 ${sha}`);
 console.log(rows.join('\n'));
 console.log('');
-console.log(`cases                         ${cases.length} (S01..S30)`);
+console.log(`cases                         ${cases.length} (${cases[0]?.id}..${cases[cases.length - 1]?.id})`);
 console.log(`mix                           AGENT ${counts.mix.AGENT} / STORE ${counts.mix.STORE} / BUYER ${counts.mix.BUYER} / UNDETERMINED ${counts.mix.UNDETERMINED}`);
 console.log(`first deviation               step ${counts.kinds.STEP} / NONE ${counts.kinds.NONE} / INSUFFICIENT ${counts.kinds.INSUFFICIENT}`);
 console.log(`steps per log                 min ${Math.min(...steps)} / max ${Math.max(...steps)} (6 to 12)`);
 console.log(`over $${fromCents(CAP)}                   ${tally.overCap.length}: ${tally.overCap.join(', ')}`);
 console.log(`agent confesses in its log    ${tally.admits.length} cases (15 at most): ${tally.admits.join(', ') || '-'}`);
-console.log(`deviated, then corrected      ${tally.corrected.length} cases (2 at least): ${tally.corrected.join(', ') || '-'}`);
+console.log(`deviated, then corrected      ${tally.corrected.length} cases (2 at least in a 30-case set): ${tally.corrected.join(', ') || '-'}`);
 console.log(`quick close                   ${tally.quickTrue} marked: ${tally.quickByCode} closable by code, ${tally.quickByAiOnly} code cannot decide (item or exclusion seen by the AI); mismatches ${tally.quickMismatch}`);
 console.log(`fixture quotes not found      ${tally.quoteMisses}`);
 console.log(`fixture vs code-computed      ${tally.codeOverrideMismatch} disagreements`);
