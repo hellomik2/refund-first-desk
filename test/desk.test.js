@@ -941,3 +941,65 @@ test('consent purchase: a buyer who turned back before any capture was sent can 
   assert.equal(order.storePayable.status, 'CANCELLED');
   assert.equal(order.consentCancelled, true);
 });
+
+// ---- the desk's own PayPal account in the ledger check (intent.md section 3, line 8) ----------------
+// PayPal keeps one balance for the desk. The ledger splits it into purchase money held and the desk's
+// own funds; PayPal can only confirm the sum, from the seller-side amounts it returns on each lookup.
+
+function deskRow(recon) {
+  return recon.rows.find((r) => r.party === 'desk');
+}
+
+test('desk row: the two desk accounts together equal what PayPal says reached or left the desk', async () => {
+  const ctx = setup({}, { payoutWaitMs: 5 });
+  const { order } = await buy(ctx, { fixtureFacts: facts({ itemMatchesMandate: 'no' }) }); // agent at fault: innocent store paid from desk funds
+  const kase = await runToVerdict(ctx, order);
+  await ctx.desk.processDue();
+  assert.equal(order.storePayable.status, 'PAID');
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.ok(recon.ok, JSON.stringify(recon.rows));
+  const row = deskRow(recon);
+  assert.ok(row, 'a desk row is part of the check');
+  assert.equal(row.match, true);
+  const cap = ctx.paypal.state.captures.get(order.paypal.captureId);
+  const refund = ctx.paypal.state.refunds.get(kase.refund.id);
+  const payout = ctx.paypal.state.payouts.get(order.storePayable.payout.batchId);
+  assert.equal(row.paypalCents, cap.grossCents - cap.feeCents - refund.amountCents - payout.amountCents - payout.feeCents, 'capture net in, refund and payout with its fee out');
+  assert.equal(row.parts['desk:purchase'] + row.parts['desk:reserve'], row.ledgerCents, 'the ledger split adds up to the compared total');
+});
+
+test('desk row: a fee PayPal gave back with the refund, missing from the ledger, reads as a difference', async () => {
+  const ctx = setup();
+  const { order } = await buy(ctx);
+  ctx.paypal.refundFeeReturnedCents = 40;
+  await ctx.desk.reportProblem({ orderId: order.id, statement: 'Wrong item.' });
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.equal(recon.ok, false);
+  assert.equal(deskRow(recon).match, false, 'the desk was debited 40 cents less than the ledger says');
+  assert.equal(deskRow(recon).paypalCents - deskRow(recon).ledgerCents, 40);
+  assert.equal(recon.rows.find((r) => r.party === 'paypal:fees').match, false, 'and PayPal kept 40 cents less in fees');
+  assert.equal(recon.rows.find((r) => r.party === 'buyer').match, true);
+});
+
+test('desk row: a capture whose net amount is short of gross minus fee is caught only by the desk row', async () => {
+  const ctx = setup();
+  ctx.paypal.captureNetShortCents = 7;
+  const { order } = await buy(ctx);
+  await ctx.desk.reportProblem({ orderId: order.id, statement: 'Wrong item.' });
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.equal(recon.ok, false);
+  for (const party of ['buyer', 'store', 'paypal:fees']) assert.equal(recon.rows.find((r) => r.party === party).match, true, party);
+  assert.equal(deskRow(recon).match, false);
+  assert.equal(deskRow(recon).ledgerCents - deskRow(recon).paypalCents, 7);
+});
+
+test('desk row: a failed PayPal lookup fails the check instead of reading as a match', async () => {
+  const ctx = setup();
+  const { order } = await buy(ctx);
+  await ctx.desk.reportProblem({ orderId: order.id, statement: 'Wrong item.' });
+  ctx.paypal.failNextGetRefund = true;
+  await assert.rejects(() => ctx.desk.reconcile(order.id));
+  const again = await ctx.desk.reconcile(order.id);
+  assert.ok(again.ok, JSON.stringify(again.rows));
+  assert.equal(deskRow(again).match, true);
+});

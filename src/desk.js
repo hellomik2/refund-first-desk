@@ -1166,27 +1166,41 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       await recharge(kase.id); // so is a re-charge PayPal has not answered about, or one being given back
       await deleteRevokedToken(S.buyers[kase.buyerId]);
     }
-    const fromPayPal = { buyer: 0, store: 0, 'paypal:fees': 0 };
+    // desk: the desk's one PayPal account. The ledger splits it into purchase money held and the desk's own
+    // funds; PayPal keeps one balance, so the sum is compared, from the seller-side amounts PayPal returns.
+    const fromPayPal = { buyer: 0, store: 0, 'paypal:fees': 0, desk: 0 };
     const lookups = [];
+    const capNet = (c) => c.netCents ?? c.grossCents - (c.feeCents ?? 0);
+    const refundNet = (r) => r.netCents ?? r.amountCents - (r.feeReturnedCents ?? 0);
     const cap = readCapture((await paypal.getCapture(order.paypal.captureId)).body);
     fromPayPal.buyer -= cap.grossCents;
     fromPayPal['paypal:fees'] += cap.feeCents ?? 0;
+    fromPayPal.desk += capNet(cap);
     lookups.push({ type: 'capture', id: cap.id, status: cap.status, grossCents: cap.grossCents, feeCents: cap.feeCents });
     if (kase?.refund?.id) {
       const refund = readRefund((await paypal.getRefund(kase.refund.id)).body);
-      if (refund.status === 'COMPLETED') fromPayPal.buyer += refund.amountCents;
-      lookups.push({ type: 'refund', id: refund.id, status: refund.status, amountCents: refund.amountCents });
+      if (refund.status === 'COMPLETED') {
+        fromPayPal.buyer += refund.amountCents;
+        fromPayPal['paypal:fees'] -= refund.feeReturnedCents ?? 0;
+        fromPayPal.desk -= refundNet(refund);
+      }
+      lookups.push({ type: 'refund', id: refund.id, status: refund.status, amountCents: refund.amountCents, netCents: refund.netCents });
     }
     if (kase?.recharge?.captureId) {
       const rc = readCapture((await paypal.getCapture(kase.recharge.captureId)).body);
       fromPayPal.buyer -= rc.grossCents;
       fromPayPal['paypal:fees'] += rc.feeCents ?? 0;
-      lookups.push({ type: 'recharge_capture', id: rc.id, status: rc.status, grossCents: rc.grossCents, feeCents: rc.feeCents });
+      fromPayPal.desk += capNet(rc);
+      lookups.push({ type: 'recharge_capture', id: rc.id, status: rc.status, grossCents: rc.grossCents, feeCents: rc.feeCents, netCents: rc.netCents });
     }
     if (kase?.recharge?.refund?.id) {
       const back = readRefund((await paypal.getRefund(kase.recharge.refund.id)).body);
-      if (back.status === 'COMPLETED') fromPayPal.buyer += back.amountCents;
-      lookups.push({ type: 'recharge_refund', id: back.id, status: back.status, amountCents: back.amountCents });
+      if (back.status === 'COMPLETED') {
+        fromPayPal.buyer += back.amountCents;
+        fromPayPal['paypal:fees'] -= back.feeReturnedCents ?? 0;
+        fromPayPal.desk -= refundNet(back);
+      }
+      lookups.push({ type: 'recharge_refund', id: back.id, status: back.status, amountCents: back.amountCents, netCents: back.netCents });
     }
     if (order.storePayable.payout?.batchId) {
       const payout = readPayout((await paypal.getPayout(order.storePayable.payout.batchId)).body);
@@ -1194,13 +1208,17 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       if (payout.item?.status === 'SUCCESS') {
         fromPayPal.store += payout.item.amountCents;
         fromPayPal['paypal:fees'] += payout.feeCents ?? 0;
+        fromPayPal.desk -= payout.item.amountCents + (payout.feeCents ?? 0);
       }
       lookups.push({ type: 'payout_item', id: payout.item?.id, status: payout.item?.status, amountCents: payout.item?.amountCents, feeCents: payout.feeCents });
     }
     const totals = ledger.orderTotals(orderId);
+    const moved = (account) => totals[account].netCents - totals[account].simulatedCents; // only what PayPal actually moved
     const rows = Object.keys(fromPayPal).map((party) => {
-      const ledgerCents = totals[party].netCents - totals[party].simulatedCents; // only what PayPal actually moved
-      return { party, ledgerCents, paypalCents: fromPayPal[party], match: ledgerCents === fromPayPal[party] };
+      if (party !== 'desk') return { party, ledgerCents: moved(party), paypalCents: fromPayPal[party], match: moved(party) === fromPayPal[party] };
+      const parts = { 'desk:purchase': moved('desk:purchase'), 'desk:reserve': moved('desk:reserve') };
+      const ledgerCents = parts['desk:purchase'] + parts['desk:reserve'];
+      return { party, ledgerCents, paypalCents: fromPayPal.desk, match: ledgerCents === fromPayPal.desk, parts };
     });
     // A payout whose answer never came cannot be compared: the store side is unknown, so this never reads as a match.
     const storeUnknown = order.storePayable.status === 'PAYOUT_UNCONFIRMED';
