@@ -167,7 +167,7 @@ function liveAgentCard(mandate, working) {
   const cost = live.finishedAt ? ` ${live.calls} model calls, $${(live.usd || 0).toFixed(4)} of AI.` : '';
   let tail = '';
   if (live.status === 'NOT_PAID') tail = `<div class="result"><strong>It did not pay.</strong> Nothing was charged. Pick another instruction to try again.</div>`;
-  if (live.status === 'PAYMENT_UNCONFIRMED') tail = `<div class="result wait"><strong>PayPal did not confirm the payment.</strong> It may have gone through. No second payment was sent; the next try asks PayPal about this one, same request id.</div>`;
+  if (live.status === 'PAYMENT_UNCONFIRMED') tail = `<div class="result wait"><strong>PayPal did not confirm the payment.</strong> It may have gone through. No second payment was sent for this instruction.</div>`;
   if (live.status === 'FAILED') tail = `<div class="result"><strong>The run stopped:</strong> ${esc(live.error || 'error')}.</div>`;
   return `<div class="card"><h3>${who} ${running ? 'is shopping' : 'shopped'}, step by step</h3>
     <p class="sub">One line per tool call, as it happened. The investigator reads this log.${cost}</p>

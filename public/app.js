@@ -95,6 +95,7 @@ const RETURN_NOTES = {
   approved: 'Back from PayPal: the payment is captured.',
   cancelled: 'Back from PayPal: cancelled, nothing was charged.',
   failed: 'Back from PayPal, but the payment could not be completed.',
+  unconfirmed: 'Back from PayPal. PayPal has not confirmed the payment yet; it may still go through.',
 };
 
 async function start(fresh = false) {
@@ -104,7 +105,8 @@ async function start(fresh = false) {
   const params = new URLSearchParams(location.search);
   if (params.has('ws')) {
     localStorage.setItem('rfd-workspace', params.get('ws'));
-    if (RETURN_NOTES[params.get('paypal')]) setTimeout(() => toast(RETURN_NOTES[params.get('paypal')]), 300);
+    const back = params.get('paypal') === 'failed' && params.get('reason') === 'PAYMENT_UNCONFIRMED' ? 'unconfirmed' : params.get('paypal');
+    if (RETURN_NOTES[back]) setTimeout(() => toast(RETURN_NOTES[back]), 300);
     history.replaceState(null, '', '/');
   }
   const saved = !fresh && localStorage.getItem('rfd-workspace');

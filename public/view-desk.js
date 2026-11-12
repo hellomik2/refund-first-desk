@@ -180,7 +180,9 @@ function keysCard(k, order, working, now) {
   let outcome = '';
   if (v) {
     const moved = linesSince(order.id, v.decidedAt);
-    const list = moved.length ? `<p class="fine">Moved since then:</p>${movedList(moved)}` : '<p class="fine">Nothing has moved yet.</p>';
+    const sp = order.storePayable;
+    const waiting = ['PAYOUT_PENDING', 'PAYOUT_UNCONFIRMED'].includes(sp?.status) ? 'The store payout is sent. The ledger records it once PayPal confirms it.' : 'No money has moved since the decision.';
+    const list = moved.length ? `<p class="fine">Moved since then:</p>${movedList(moved)}` : `<p class="fine">${waiting}</p>`;
     if (v.rule === 'R0') outcome = `<div class="result"><strong>The records could not be tied together.</strong> Neither key is used; the buyer keeps the refund.</div>${list}`;
     else if (v.rule === 'OPERATOR') outcome = `<div class="result wait"><strong>They differed. A person chose ${esc(label(WHO_SHORT, v.liable).toLowerCase())}</strong> at ${time(v.decidedAt)}${v.note ? `: <q>${esc(v.note)}</q>` : '.'}</div>${list}`;
     else if (v.liable === 'BUYER') outcome = `<div class="result wait"><strong>Both keys name the buyer.</strong> ${buyerKeysLine(k)}</div>${list}`;

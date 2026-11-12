@@ -18,7 +18,7 @@
 .case[aria-pressed="true"] { background: var(--c-surface); box-shadow: inset 4px 0 0 var(--c-accent); font-weight: 700; }
 .case[aria-pressed="true"] .r { color: var(--c-text); }
 .more { width: 100%; min-height: 48px; padding: var(--s2) var(--s3); background: transparent; border: 0; border-top: 1px solid var(--c-border); color: var(--c-text); font-weight: 700; text-align: left; }
-.cases .off { padding: var(--s2) var(--s3) 0; border-top: 1px solid var(--c-border); }
+.cases .off { max-width: none; padding: var(--s3) var(--s4) 0; border-top: 1px solid var(--c-border); } /* the line above runs the full width of the list, like the rows */
 
 /* the live agent: your own words, then how it works */
 .live-own { margin-top: var(--s4); display: flex; flex-direction: column; gap: var(--s2); }
