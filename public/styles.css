@@ -329,6 +329,24 @@ summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 
+/* the live agent */
+.picker.live { margin-bottom: 18px; }
+.live-own { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.live-own .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.live-own input { flex: 1 1 260px; min-width: 0; padding: 9px 11px; border: 1px solid var(--line-2); border-radius: 8px; font: inherit; background: var(--card); color: var(--ink); }
+.live-how { margin-top: 12px; font-size: 13.5px; color: var(--ink-2); }
+.live-how summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.live-how ul { padding-left: 18px; }
+.live-how li { margin: 4px 0; }
+#catalog-list { overflow-x: auto; }
+.catalog { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 8px; }
+.catalog th, .catalog td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.catalog .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.agent-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.agent-opt { display: flex; flex-direction: column; gap: 6px; }
+.agent-opt button { width: 100%; }
+.live-trace .st-row { cursor: default; }
+
 @media (max-width: 600px) {
   .top { padding: 20px 16px 12px; }
   .disclosure { margin: 0 16px 14px; }

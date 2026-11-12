@@ -53,6 +53,12 @@ export function loadConfig(overrides = {}) {
       reuseRecorded: env.AI_REUSE_RECORDED === '1',
       dailyCallCap: Number(env.AI_DAILY_CALL_CAP || 40),
       spendCapUsd: Number(env.AI_SPEND_CAP_USD || 7), // total for the whole event, about 10,000 KRW; approved by the owner on 2026-11-09
+      // The live shopping agent: runs per day (all visitors), runs per workspace, model calls per run.
+      agent: {
+        dailyRunCap: Number(env.AGENT_DAILY_RUN_CAP || 15),
+        runsPerWorkspace: Number(env.AGENT_RUNS_PER_WORKSPACE || 3),
+        maxCalls: Number(env.AGENT_MAX_CALLS || 16),
+      },
     },
     policy: defaultPolicy(env),
   };

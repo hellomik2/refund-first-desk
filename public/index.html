@@ -48,12 +48,34 @@
   <p class="overlap">Other entries in this hackathon also check agent purchases against what the buyer approved. Among the 217 we read, we did not find one that refunds before the check and has a step to take the money back. PayPal's own buyer protection terms already allow a temporary refund that is recovered, after at least 5 business days' notice, if a dispute goes against the buyer; this desk applies that to agent purchases, by rule.</p>
 
   <p class="disclosure" id="disclosure">
-    Sandbox money, real PayPal API calls. <strong>The agent logs and the answer key are written by us for this demo.</strong> Shipping, the store's records and waiting periods are simulated; fast-forward moves the policy clock only.
+    Sandbox money, real PayPal API calls. <strong>In the prepared cases, the agent logs and the answer key are written by us for this demo.</strong> In the live run below, a real AI agent writes its own log by shopping a small catalog we wrote. Shipping, the store's records and waiting periods are simulated; fast-forward moves the policy clock only.
   </p>
+
+  <section class="picker live" aria-labelledby="live-h">
+    <div class="picker-head">
+      <h2 id="live-h">Watch a live AI agent shop <span class="tag real">live AI</span></h2>
+      <p class="hint">Claude shops a catalog we wrote (3 demo stores, 16 products), one tool call per step, and pays from the saved sandbox wallet if it decides to. Its log is its own; nothing is written in for it and there is no answer key. If it got it wrong, report it in one sentence: the same desk handles it.</p>
+    </div>
+    <div class="cases" id="live-prompts"></div>
+    <div class="live-own">
+      <label for="own-instruction" class="sub">Or write the instruction yourself. The AI turns it into condition slots, and you approve them before the agent starts.</label>
+      <div class="row"><input id="own-instruction" maxlength="300" placeholder="e.g. Buy a white 2 m USB-C to USB-C cable, under $20, you can pay."><button class="ghost" data-act="liveOwn">Use my words</button></div>
+    </div>
+    <details class="live-how">
+      <summary>How the careful and the hasty agent differ, and what is in the catalog</summary>
+      <p>Same model (claude-haiku-5-5) and settings. Two things differ, and nothing else:</p>
+      <ul>
+        <li><strong>What it is told.</strong> Careful: the approved conditions bind; open the product page of anything it adds; compare the cart total with the limit before paying; do not pay without permission. Hasty: it is an express-checkout agent graded on speed; pick from the top of the results and finish with payment.</li>
+        <li><strong>What it can see.</strong> Careful: the buyer's words and the approved condition slots; search results with store, variant (scent, connector, size) and shipping; a product page and a cart view with shipping and tax. Hasty: the buyer's words only; search results with product number, listing title and price; no product page and no cart view.</li>
+      </ul>
+      <p>Neither is told to make a mistake, and no mistake is written in by code: whatever it buys, it chose. The catalog is made so a mistake is possible: a cheaper copy whose shipping and tax push the total over the limit, listing titles that do not show the scent or the connector, multi-packs, and sponsored listings shown first.</p>
+      <div id="catalog-list"></div>
+    </details>
+  </section>
 
   <section class="picker" aria-labelledby="picker-h">
     <div class="picker-head">
-      <h2 id="picker-h">Pick what the buyer asked the agent to do</h2>
+      <h2 id="picker-h">Or pick a prepared case: what the buyer asked, and what the agent did</h2>
       <p class="hint">Each case runs a real sandbox payment from a saved PayPal wallet. A buyer gets 2 instant refunds per 30 days, so the third case in one workspace is checked first. To try more, press <strong>Start a fresh workspace</strong>.</p>
     </div>
     <div class="cases" id="cases"></div>

@@ -8,10 +8,13 @@ import { createPayPalClient } from './paypal/client.js';
 import { createPayPalApi } from './paypal/api.js';
 import { createFactExtractor } from './ai/facts.js';
 import { createAiBudget } from './ai/budget.js';
-import { createDesk } from './desk.js';
+import { createDesk, DeskError } from './desk.js';
+import { loadCatalog } from './shop/catalog.js';
+import { createLiveShopper } from './shop/run.js';
 
 /** @param {object} [opts.paypal] a PayPal stand-in (scripts/ai-eval.mjs measures the AI without moving sandbox money) */
-export function createContext({ overrides = {}, dbName = null, fresh = false, live = null, tokenStore = {}, paypal: paypalStandIn = null } = {}) {
+export function createContext(opts = {}) {
+  const { overrides = {}, dbName = null, fresh = false, live = null, tokenStore = {}, paypal: paypalStandIn = null } = opts;
   const config = loadConfig(overrides);
   const dataDir = dbName ? join(config.dataDir, dbName) : config.dataDir;
   const db = createDb({ dataDir, policy: config.policy, fresh });
@@ -62,7 +65,31 @@ export function createContext({ overrides = {}, dbName = null, fresh = false, li
     reuseRecorded: config.ai.reuseRecorded,
   });
   const desk = createDesk({ db, paypal, factExtractor, clock, ledger, config });
-  return { config, db, clock, ledger, paypal, factExtractor, desk };
+
+  // The live shopping agent always calls the model (there is no recorded answer for a run nobody has seen).
+  const catalog = loadCatalog(config.root);
+  const liveAvailable = config.ai.provider === 'anthropic' && Boolean(config.ai.model);
+  const shopper = createLiveShopper({
+    desk,
+    db,
+    catalog,
+    budget,
+    caps: config.ai.agent,
+    provider: () => {
+      if (!liveAvailable) throw new DeskError('NO_LIVE_AI', 'The live agent needs the live AI provider (AI_PROVIDER=anthropic).');
+      return liveProvider();
+    },
+    beforePay: opts.beforePay,
+  });
+  /** A typed instruction becomes condition slots for the buyer to approve (one desk AI call, under the desk caps). */
+  async function draftConditions(instruction) {
+    if (!liveAvailable) throw new DeskError('NO_LIVE_AI', 'Typing your own instruction needs the live AI provider.');
+    const blockedBy = budget.blockedBy();
+    if (blockedBy) throw new DeskError(blockedBy, 'The AI cap for today is reached. Pick a prepared instruction instead.');
+    return (await liveProvider()).draftConditions(instruction);
+  }
+  const liveAgent = { available: liveAvailable, catalog, shop: shopper.shop, draftConditions };
+  return { config, db, clock, ledger, paypal, factExtractor, desk, liveAgent, budget };
 }
 
 /** Scenario files write facts as [value, doc, quote]; expand to the shape the extractor returns. */

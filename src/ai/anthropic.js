@@ -225,6 +225,31 @@ export async function createAnthropicProvider({ apiKey, model, effort = 'medium'
       };
     },
 
+    /**
+     * One turn of the live shopping agent (src/shop/agent.js runs the loop). The model and its settings are the
+     * same for both agents; only the system prompt and what the tools show differ.
+     */
+    async agentTurn({ system, tools, messages, runId }) {
+      let response;
+      try {
+        response = await client.messages.create({
+          model,
+          max_tokens: 8000,
+          system,
+          tools,
+          messages,
+          thinking: { type: 'adaptive' },
+          output_config: { effort: 'medium' },
+        });
+      } catch (error) {
+        if (error instanceof Anthropic.RateLimitError) throw new Error('AI call failed: rate limited. Try again shortly.');
+        if (error instanceof Anthropic.APIError) throw new Error(`AI call failed: API error ${error.status}.`);
+        throw error;
+      }
+      onUsage?.({ at: new Date().toISOString(), purpose: 'agent', runId, model: response.model, inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, stopReason: response.stop_reason });
+      return response;
+    },
+
     async draftConditions(instruction) {
       const result = await structured({
         purpose: 'conditions',
