@@ -10,10 +10,15 @@ import { loadConfig } from './config.js';
 import { createContext, fixtureFromCase } from './context.js';
 import { DeskError } from './desk.js';
 import { PayPalError, publicTrace } from './paypal/client.js';
+import { buildCaseBook, recordsFromState } from './domain/casebook.js';
+import { trustLimits } from './domain/trust.js';
 
 const config = loadConfig();
 const PUBLIC_DIR = join(config.root, 'public');
 const CASES = JSON.parse(readFileSync(join(config.root, 'scenarios', 'cases.json'), 'utf8')).cases;
+// The case book "after 30 cases": one measured run of the prepared cases (scripts/casebook-snapshot.mjs).
+const MEASURED = JSON.parse(readFileSync(join(config.root, 'scenarios', 'casebook-measured.json'), 'utf8'));
+const MEASURED_BOOK = { source: MEASURED.source, note: MEASURED._note, book: buildCaseBook(MEASURED.records) };
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon' };
 
 // ---- shared across workspaces ---------------------------------------------------------------------
@@ -67,6 +72,8 @@ function view(id, ctx) {
       storePayout: config.storePayoutEmail ? 'PAYPAL_PAYOUTS' : 'LEDGER_ONLY',
     },
     policy: config.policy,
+    // What the next purchase of this workspace's buyer would get, from the buyer's own record (fixed again at purchase).
+    buyerLimits: buyers[0] ? trustLimits({ policy: config.policy, buyerCases: Object.values(d.cases).filter((c) => c.buyerId === buyers[0].id), now: ctx.clock.now() }) : null,
     clock: { now: ctx.clock.now().toISOString(), fastForwarded: ctx.clock.isFastForwarded() },
     buyers,
     mandates: Object.values(d.mandates),
@@ -214,6 +221,10 @@ const server = createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && url.pathname === '/healthz') return send(res, 200, { ok: true });
     if (req.method === 'GET' && url.pathname === '/api/cases') return send(res, 200, { cases: CASES.map(publicCase) });
+    if (req.method === 'GET' && url.pathname === '/api/casebook') {
+      const id = url.searchParams.get('ws');
+      return send(res, 200, { workspace: id ? buildCaseBook(recordsFromState(workspace(id).db.data)) : null, measured: MEASURED_BOOK });
+    }
     if (req.method === 'POST' && url.pathname === '/api/workspaces') {
       const id = newWorkspace();
       return send(res, 200, view(id, workspace(id)));

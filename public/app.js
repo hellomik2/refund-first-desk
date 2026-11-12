@@ -3,6 +3,8 @@
 // Every time and duration on screen comes from the server's own timestamps. The page waits 1.4 s
 // between the report and the check so the refund can be seen on its own; no duration shown
 // includes that wait.
+import { limitCard, refreshCaseBook } from './casebook.js';
+
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const usd = (cents) => `${cents < 0 ? '-' : ''}$${(Math.abs(cents || 0) / 100).toFixed(2)}`;
@@ -214,6 +216,7 @@ function render(working = '') {
   const cur = current();
   $('ai-pill').textContent = state.flags.aiProvider === 'fixture' ? 'AI not connected: stand-in answers' : `AI: ${state.flags.aiModel || state.flags.aiProvider}`;
   renderCases(cur);
+  refreshCaseBook(state, cases);
   // The line is shown before any case is picked: the order of the steps is what this desk is about.
   $('stage').hidden = false;
   $('rail').innerHTML = railHtml(cur, working);
@@ -246,7 +249,7 @@ function redraw(id, html, scope) {
 
 function renderCases(cur) {
   const list = showAll ? cases : cases.slice(0, 6);
-  const cap = state.policy.perCaseCapCents;
+  const cap = state.buyerLimits?.perCaseCapCents ?? state.policy.perCaseCapCents; // this buyer's limit for the next purchase
   $('cases').innerHTML =
     list
       .map((c) => {
@@ -393,7 +396,7 @@ function buyerColumn({ mandate, order, kase, sc }, working) {
     html += `<div class="card"><h3>${atPayPal ? 'The buyer paid at PayPal' : 'The agent bought this'} at ${esc(order.store.name)}</h3>
       <ul class="items">${order.cart.map((l) => `<li><span>${l.qty} × ${esc(l.name)}</span><span class="num">${usd(l.unitCents * l.qty)}</span></li>`).join('')}
       <li class="total"><span>${atPayPal ? (saved ? 'Paid at PayPal; wallet saved for the agent' : 'Paid at PayPal; the wallet was not saved') : 'Paid from the saved PayPal wallet'}</span><span class="num">${usd(order.totalCents)}</span></li></ul>
-      <p class="sub">PayPal order <code>${esc(order.paypal.orderId)}</code></p></div>`;
+      <p class="sub">PayPal order <code>${esc(order.paypal.orderId)}</code></p>${limitCard(order, state)}</div>`;
   }
   if (order?.paypal && !kase) {
     html += `<div class="card"><h3>Something is wrong? Say it in one sentence.</h3>

@@ -66,5 +66,9 @@ export function defaultPolicy(env = {}) {
     noticeBusinessDays: Number(env.POLICY_NOTICE_BUSINESS_DAYS || 5), // same notice period PayPal uses before reversing a temporary refund
     storeHoldDays: Number(env.POLICY_STORE_HOLD_DAYS || 7), // demo device: the desk pays the store after this window
     reserveStartCents: Number(env.POLICY_RESERVE_START_CENTS || 50000), // the desk's own funds set aside for store make-good
+    // The buyer's own record moves their instant-refund limit (domain/trust.js). Defaults set before the owner decides; a step of 0 switches it off.
+    trustStepCents: Number(env.POLICY_TRUST_STEP_CENTS ?? 2500), // per earlier case: +$25 if it was not the buyer's fault, -$25 if it was
+    trustMaxUp: Number(env.POLICY_TRUST_MAX_UP ?? 2), // at most this many not-the-buyer's-fault cases raise the limit
+    trustWindowDays: Number(env.POLICY_TRUST_WINDOW_DAYS ?? 180), // only cases reported within this many days count
   };
 }

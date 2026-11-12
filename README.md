@@ -23,7 +23,7 @@ Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) a
    - *Shipping and tax took the total over the limit* or *Four ordered and charged, three shipped* (under **Show all 30 cases**): over the $50 limit, so the check comes first and the refund follows.
    - *Agent picked navy instead of black, then the store sent red*: in our runs the two keys disagreed here and a person decides; the live AI may answer differently on another run.
    - *Order matches what the buyer approved*: the buyer was responsible, gets a notice, and is charged again after it.
-2. Each visitor gets a separate workspace. A buyer gets **2 instant refunds per 30 days**, so the third case in one workspace is checked first instead of refunded first. That is the limit working. To try more cases, press **Start a fresh workspace** (top right).
+2. Each visitor gets a separate workspace. A buyer starts with **$50 a case and 2 instant refunds per 30 days**, and the buyer's own record moves both (see [The case book](#the-case-book-what-to-fix-in-the-agent)): after *Order matches what the buyer approved*, the next purchase over $25 is checked first; after two cases that were the agent's fault, a $58 purchase is refunded first. To start over, press **Start a fresh workspace** (top right).
 3. For the buyer-responsible ending, press **Fast-forward the notice period** to skip the 5-business-day notice; the saved wallet is then charged again.
 4. The server runs on Render's free plan. After a quiet spell the first page load can take about a minute while it wakes up.
 
@@ -77,6 +77,17 @@ The buyer can dispute during the notice period, or withdraw consent; either stop
 - **How separate the two keys are:** the rules key runs on the same seven facts. Code computes up to four of them itself from the mandate and the PayPal order (payment permission, spending limit, store charged as ordered, and quantity when the order holds one item) and its answer replaces the AI's there. The other three (right item, nothing excluded, store shipped as ordered) come from the AI's quoted answers. So the keys are not independent: they catch a verdict that does not follow from the facts and a fact that code can compute, but not a wrong answer that the AI backs with a real quote.
 - **Guards:** a quote that is not found in the cited record turns the answer into "unknown". The buyer's own report is never accepted as proof. Totals and the payment permission are computed by code and override the AI. Any open question resolves in the buyer's favour. When the keys differ, a person decides. Text inside the records that tries to instruct the checker is treated as data (three of the prepared cases contain such text).
 
+### The case book: what to fix in the agent
+
+Every case the desk finishes lands in a case book below the cases on screen, written for whoever runs the agent. Per agent, it counts the conditions the agent broke at its own steps (paid without permission, wrong item, wrong quantity, over the spending limit, included something ruled out) as bars, coloured by who was finally found responsible, with the quoted log line of one case for each. Per store, it counts the store's own findings. A visitor's workspace holds only a few cases, so the screen can also show the book **after our 30 measured cases**: one measured run (PayPal sandbox, live Claude, 2026-11-10), cases written by us. In that run the agent first left the mandate at its own step in 15 cases (wrong item 7; the other four conditions 2 each) and the store at its own step in 5; the counts equal the answer key (`test/casebook.test.js`). The 30 prepared cases carry no agent name, so they form one agent; an order that names its agent (`order.agent`) is grouped under that name.
+
+The record also moves the next purchase's instant-refund limit, by fixed rules in code (`src/domain/trust.js`); the AI never sets it:
+
+- **Up:** each earlier case of the same buyer that was the agent's or the store's fault (both keys agreed, or a person chose): +$25 a case and +1 refund, for at most two cases.
+- **Down, the only way down:** each earlier case where this buyer was found responsible and did not dispute: −$25 and −1 refund, to a floor of $0 (every purchase checked first).
+- Only that buyer's cases from the last 180 days count. The limit is fixed on the order at purchase together with the cases that moved it, and the screen shows that reason under the purchase and in the buyer's "checking first" notice. Agents' and stores' records never move a buyer's limit.
+- In the measured 30-case run each case has its own buyer, so no limit moved there and the money results are the same as before this rule (`scripts/loop.mjs --fake-paypal`, before and after).
+
 ## Measurements
 
 All in the PayPal sandbox with live Claude calls (`claude-haiku-5-5`, no recorded answers replayed), 2026-11-10. **The 30 cases, the agents' action logs and the answer key were written by us for this demo.** The answer key was fixed before the live AI first ran on these cases (SHA-256 of `scenarios/cases.json`: `5873cb94…447d`). Targets were written down before measuring.
@@ -118,7 +129,7 @@ Failure and abuse conditions: the same order reported twice; the same refund req
 - **Simulated:** shipping and returns; the store's records; waiting periods (a fast-forward button moves the policy clock only); the agent operator paying its invoice.
 - **Constructed by us:** the 30 cases, the agents' numbered action logs, the store records and the answer key.
 - **Sandbox only:** charging a saved PayPal wallet without the buyer present requires PayPal's approval (billing agreements / reference transactions) on live accounts.
-- **Policy numbers are assumptions:** $50 per case, 2 instant refunds per 30 days, 5 business days' notice (the same notice period PayPal's buyer protection terms give before recovering a temporary refund).
+- **Policy numbers are assumptions:** $50 per case, 2 instant refunds per 30 days, 5 business days' notice (the same notice period PayPal's buyer protection terms give before recovering a temporary refund). The way a buyer's record moves the limit (±$25 and ±1 refund per case, at most two cases up, 180 days) is an assumption too, not based on measured abuse or loss data; all of it is in settings (`POLICY_TRUST_*`).
 
 ## PayPal APIs used
 

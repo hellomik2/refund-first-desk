@@ -18,9 +18,11 @@ export function addBusinessDays(from, days) {
  * Fixed at purchase time and stored on the order: whether this purchase is covered by refund-first,
  * and the most the buyer can ever be charged again for it. Later rule changes do not touch it.
  */
-export function fixProtectionAtPurchase({ policy, totalCents, walletConsentActive, now }) {
+export function fixProtectionAtPurchase({ policy, totalCents, walletConsentActive, now, limits = null }) {
+  // limits: this buyer's instant-refund limit from their own record (domain/trust.js), with its reasons.
+  const perCaseCapCents = limits?.perCaseCapCents ?? policy.perCaseCapCents;
   const reasons = [];
-  if (totalCents > policy.perCaseCapCents) reasons.push('OVER_PER_CASE_CAP');
+  if (totalCents > perCaseCapCents) reasons.push('OVER_PER_CASE_CAP');
   if (!walletConsentActive) reasons.push('NO_SAVED_WALLET_CONSENT');
   return {
     fixedAt: new Date(now).toISOString(),
@@ -29,7 +31,9 @@ export function fixProtectionAtPurchase({ policy, totalCents, walletConsentActiv
     // The buyer can never be re-charged more than what was refunded for this order.
     buyerLiabilityCapCents: totalCents,
     noticeBusinessDays: policy.noticeBusinessDays,
-    perCaseCapCents: policy.perCaseCapCents,
+    perCaseCapCents,
+    refundsPer30Days: limits?.refundsPer30Days ?? policy.refundsPer30Days,
+    limits,
   };
 }
 
@@ -43,7 +47,8 @@ export function checkAtReport({ policy, order, buyerCases, reserveAvailableCents
   const recentInstantRefunds = buyerCases.filter(
     (c) => c.path === 'REFUND_FIRST' && c.refund?.completedAt && new Date(c.receivedAt).getTime() >= since,
   ).length;
-  if (recentInstantRefunds >= policy.refundsPer30Days) reasons.push('OVER_30_DAY_COUNT');
+  // The count fixed at purchase; orders saved before limits were fixed use the policy number.
+  if (recentInstantRefunds >= (order.protection.refundsPer30Days ?? policy.refundsPer30Days)) reasons.push('OVER_30_DAY_COUNT');
   // The desk must be able to make an innocent store whole from its own funds before it lets the purchase money go.
   if (reserveAvailableCents < order.totalCents) reasons.push('RESERVE_TOO_LOW');
   return { refundFirst: reasons.length === 0, reasons, recentInstantRefunds };
