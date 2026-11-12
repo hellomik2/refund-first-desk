@@ -4,14 +4,15 @@
 // between the report and the check so the refund can be seen on its own; no duration shown
 // includes that wait.
 import { limitCard, refreshCaseBook } from './casebook.js';
+import { unpaidOrderView } from './payment.js';
 import { aiKeySource, aiPillText, buyerKeysLine, deepAiSource, quickAiLine } from './ailabels.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const usd = (cents) => `${cents < 0 ? '-' : ''}$${(Math.abs(cents || 0) / 100).toFixed(2)}`;
 const signed = (cents) => (!cents ? '$0.00' : `${cents > 0 ? '+' : '-'}$${(Math.abs(cents) / 100).toFixed(2)}`);
-const time = (iso) => (iso ? new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '');
-const day = (iso) => (iso ? new Date(iso).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) : '');
+const time = (iso) => (iso ? new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '');
+const day = (iso) => (iso ? new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : '');
 const secs = (ms) => `${(Math.max(0, ms || 0) / 1000).toFixed(2)} s`;
 const humanize = (key) => {
   const s = String(key ?? '').replace(/_/g, ' ').toLowerCase().trim();
@@ -452,21 +453,16 @@ function buyerColumn({ mandate, order, kase, sc }, working) {
       <p class="sub" style="margin:14px 0 8px">Or see how the wallet gets saved in the first place: pay this order at PayPal yourself and agree to save the wallet for the agent. You need a PayPal sandbox personal account; sign in at <code>sandbox.paypal.com</code> first.</p>
       <button class="ghost" data-act="consentPurchase" ${busy ? 'disabled' : ''}>Pay at PayPal and save the wallet</button></div>`;
   }
-  if (order && order.consentCancelled) {
-    html += `<div class="card"><h3>Cancelled at PayPal</h3><p class="sub">The buyer turned back on the PayPal screen. Nothing was charged. Pick a case to start again.</p></div>`;
-  } else if (order && !order.paypal && order.payment !== 'CONSENT_CHECKOUT') {
-    // A saved-wallet payment PayPal did not confirm: no Cancel, it may have gone through. The live agent card says so itself.
-    if (mandate.live) html += '';
-    else if (order.storePayable?.status === 'PAYMENT_UNCONFIRMED')
-      html += `<div class="card"><h3>PayPal has not confirmed this payment</h3>
-      <p class="sub" style="margin-bottom:10px">The agent sent the payment from the saved wallet and PayPal did not answer. The money may have moved, so the desk does not send a new payment. Asking again uses the same request id, and PayPal does not charge twice.</p>
-      <button class="primary" data-act="purchase" ${busy ? 'disabled' : ''}>${spin}Ask PayPal about this payment again</button></div>`;
-    else html += `<div class="card"><h3>PayPal refused the payment</h3><p class="sub">PayPal clearly declined the saved-wallet payment, so nothing was charged. Pick a case to start again.</p></div>`;
-  } else if (order && !order.paypal) {
-    html += `<div class="card"><h3>Waiting for the buyer at PayPal</h3>
-      <p class="sub" style="margin-bottom:10px">PayPal shows the payment and the request to save the wallet for future agent purchases on one screen.</p>
-      <div class="row">${order.approveUrl ? `<a class="primary" href="${esc(order.approveUrl)}">Continue at PayPal</a>` : ''}
-      <button class="ghost" data-act="cancelConsent" ${busy ? 'disabled' : ''}>Cancel</button></div></div>`;
+  const unpaid = unpaidOrderView(order, { busy });
+  if (unpaid && mandate.live && order.payment !== 'CONSENT_CHECKOUT') {
+    // A live agent's saved-wallet payment: its own card above says what PayPal answered.
+  } else if (unpaid) {
+    const ask = unpaid.kind === 'unconfirmed'; // only this one is asked again under its own request id
+    html += `<div class="card"><h3>${unpaid.kind === 'paying' ? '<span class="spinner"></span>' : ''}${esc(unpaid.title)}</h3>
+      <p class="sub" style="margin-bottom:10px">${esc(unpaid.text)}</p>
+      ${unpaid.kind === 'consent-waiting' ? `<div class="row">${order.approveUrl ? `<a class="primary" href="${esc(order.approveUrl)}">Continue at PayPal</a>` : ''}
+      <button class="ghost" data-act="cancelConsent" ${busy ? 'disabled' : ''}>Cancel</button></div>` : ''}
+      ${ask ? `<button class="primary" data-act="purchase" ${busy ? 'disabled' : ''}>${spin}Ask PayPal about this payment again</button>` : ''}</div>`;
   } else if (order) {
     const atPayPal = order.payment === 'CONSENT_CHECKOUT';
     const saved = state.buyers[0]?.wallet?.source === 'OWN';
@@ -559,7 +555,11 @@ function buyerOutcome(kase) {
 // ---- desk column ----------------------------------------------------------------------------------------
 function deskColumn({ order, kase: k }, working) {
   if (!order) return `<div class="card"><p class="sub">Nothing has happened yet. The desk only acts when the buyer reports a problem.</p></div>`;
-  if (!order.paypal) return `<div class="card"><p class="sub">${order.consentCancelled ? 'Nothing was charged.' : 'Nothing has been charged yet. The payment and the saved-wallet consent are waiting at PayPal.'}</p></div>`;
+  if (!order.paypal) {
+    const kind = unpaidOrderView(order, { busy })?.kind;
+    const line = { 'consent-cancelled': 'Nothing was charged.', refused: 'Nothing was charged.', 'consent-waiting': 'Nothing has been charged yet. The payment and the saved-wallet consent are waiting at PayPal.', paying: 'The payment is on its way to PayPal.' }[kind] || 'PayPal has not confirmed the payment, so the desk records nothing as paid yet.';
+    return `<div class="card"><p class="sub">${line}</p></div>`;
+  }
   if (!k) {
     const p = order.protection;
     return `<div class="card"><h3>Waiting for a report</h3><p class="sub">The desk received the payment for this order and holds it for the store until the hold window ends (${state.policy.storeHoldDays} days, simulated). The protection for this purchase was fixed at the moment of purchase: ${p.refundFirst ? `refund first, and the buyer can never be charged again for more than ${usd(p.buyerLiabilityCapCents)}` : `check first, because ${esc(p.reasons.map((r) => label(REASONS, r)).join('; '))}`}.</p></div>`;
