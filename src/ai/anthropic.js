@@ -42,11 +42,11 @@ const DEEP_SYSTEM = `You investigate one purchase that an AI shopping agent made
 - kind "NONE": every numbered step stays within the mandate and the order. A problem that shows only in the store record, and in no numbered step, is not a step: the answer is NONE.
 - kind "INSUFFICIENT": the records cannot settle whether the purchase went off the mandate or the order, because the mandate is too vague to tell (no model, size or quantity where it matters) or the store record does not say what was shipped, or there is none. This holds even when every numbered step looks fine.
 2. facts: the fact table below. For each question answer "yes", "no" or "unknown". Answer "unknown" when the records do not settle the question, or when the mandate is too vague to tell.
-3. verdict: who is responsible for the final order.
-- STORE: the store did not charge or ship what was ordered.
-- AGENT: the order differs from the approved mandate in any condition (item, quantity, spending limit, exclusions, permission to pay).
+3. verdict: who is responsible for the final order. Check the answers in this order and give the first one that holds.
+- STORE: the store did not charge or ship what the agent submitted and paid for (it charged a line or a price the agent did not submit, shipped something other than what was ordered, or charged and shipped nothing). This comes first: it holds even when the agent also broke the mandate earlier, because what the buyer was finally charged for or sent is the store's doing.
+- AGENT: the order the agent submitted and paid for differs from the approved mandate in any condition (item, quantity, spending limit, exclusions, permission to pay). Judge the agent on what it submitted: a line the store added on its own is the store's departure, not the agent's.
+- UNDETERMINED: the records do not settle it (a fact is still unknown).
 - BUYER: only when the order matches every condition of the mandate, the buyer allowed the agent to pay, and the store charged and shipped as ordered.
-- UNDETERMINED: the records do not settle it.
 A deviation that was corrected before the payment does not by itself make anyone responsible: judge the final order. The first deviation is a report for whoever fixes the agent; responsibility is a separate answer.
 
 Your verdict is compared with the verdict fixed rules compute from the records. Money moves only when the two agree; otherwise a person decides. A wrong BUYER is the costliest error: the buyer would be charged again.
