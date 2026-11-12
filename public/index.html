@@ -7,6 +7,7 @@
   <meta name="description" content="Trust the buyer first. If that was wrong, give notice and take it back. When an AI agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Only if the AI's verdict and fixed rules in code both find the buyer responsible does the buyer get notice and 5 business days to dispute before the wallet that paid is charged again. Built on PayPal Orders, Payments, Vault and Payouts (sandbox).">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%230c2340%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27white%27%3E%E2%86%A9%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/casebook.css">
 </head>
 <body>
   <header class="top">
@@ -30,7 +31,7 @@
       <span class="ps-n" aria-hidden="true">1</span>
       <strong>Refund first</strong>
       <span class="ps-t">The PayPal refund completes in seconds, before anything is checked.</span>
-      <span class="ps-f">Within the limits ($50 a case, 2 refunds per 30 days). Sandbox runs: 1.87–3.17 s.</span>
+      <span class="ps-f">Within the buyer's limits (start: $50 a case, 2 refunds per 30 days; the buyer's own record moves them). Sandbox runs: 1.87–3.17 s.</span>
     </li>
     <li class="ps ps-check">
       <span class="ps-n" aria-hidden="true">2</span>
@@ -54,7 +55,7 @@
   <section class="picker" aria-labelledby="picker-h">
     <div class="picker-head">
       <h2 id="picker-h">Pick what the buyer asked the agent to do</h2>
-      <p class="hint">Each case runs a real sandbox payment from a saved PayPal wallet. A buyer gets 2 instant refunds per 30 days, so the third case in one workspace is checked first. To try more, press <strong>Start a fresh workspace</strong>.</p>
+      <p class="hint">Each case runs a real sandbox payment from a saved PayPal wallet. A buyer starts with $50 a case and 2 instant refunds per 30 days. Each case found to be the agent's or store's fault adds $25 and one refund (two cases at most); each case where the buyer was responsible and charged again after the notice period takes $25 and one away. The case book below shows why. To start over, press <strong>Start a fresh workspace</strong>.</p>
     </div>
     <div class="cases" id="cases"></div>
   </section>
@@ -76,6 +77,8 @@
       </section>
     </div>
   </main>
+
+  <section class="casebook" id="casebook" aria-labelledby="cb-h"></section>
 
   <footer class="foot">
     <p><strong>Who runs this.</strong> An operator of AI shopping agents can run this desk on PayPal today: it receives the payment, refunds from it, and makes an innocent store whole from its own funds. If PayPal ran it itself, it would hold the store's funds for the disputed order instead (delayed disbursement exists for approved partners).</p>

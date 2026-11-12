@@ -18,6 +18,7 @@
 import { conditionsAsText, fingerprintMandate, normalizeConditions } from './domain/mandate.js';
 import { cartTotalCents, fromCents } from './domain/money.js';
 import { addBusinessDays, checkAtReport, fixProtectionAtPurchase, rechargeGuard } from './domain/policy.js';
+import { limitWhy, trustLimits } from './domain/trust.js';
 import { normalizeAgentLog, stepLine, violationCandidates } from './domain/agentlog.js';
 import { ALL_FACTS, LIABLE, QUICK_AI_FACTS, applyCodeChecks, codeFacts, decideLiability, quoteFound, verifyFacts } from './domain/verdict.js';
 import { PayPalError } from './paypal/client.js';
@@ -56,9 +57,12 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     (kase.notices ||= []).push({ type, at: new Date(atMs).toISOString(), atMs, text }); // cases saved before notices existed have none
   };
   const CHECK_FIRST_BECAUSE = {
-    OVER_PER_CASE_CAP: () => `it is over the $${fromCents(policy.perCaseCapCents)} instant-refund limit`,
+    OVER_PER_CASE_CAP: (p) => `it is over the $${fromCents(p.perCaseCapCents ?? policy.perCaseCapCents)} instant-refund limit`,
     NO_SAVED_WALLET_CONSENT: () => 'this purchase was made without a saved wallet',
-    OVER_30_DAY_COUNT: () => `you already had ${policy.refundsPer30Days} instant refunds in 30 days`,
+    OVER_30_DAY_COUNT: (p) => {
+      const n = p.refundsPer30Days ?? policy.refundsPer30Days;
+      return n === 0 ? 'your record allows no instant refunds right now' : `you already had ${n} instant refund${n === 1 ? '' : 's'} in 30 days`;
+    },
     RESERVE_TOO_LOW: () => "the desk's own funds are low right now",
     REFUND_CALL_FAILED: () => 'the instant refund did not go through',
   };
@@ -175,6 +179,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       totalCents: order.totalCents,
       walletConsentActive: buyer.wallet?.consent === 'ACTIVE',
       now: clock.now(),
+      limits: trustLimits({ policy, buyerCases: Object.values(S.cases).filter((c) => c.buyerId === buyer.id), now: clock.now() }),
     });
     order.storePayable.status = 'HELD';
     ledger.post({ orderId: order.id, kind: 'PURCHASE_CAPTURED', from: 'buyer', to: 'desk:purchase', cents: parsed.capture.grossCents, paypal: { type: 'capture', id: parsed.capture.id } });
@@ -327,7 +332,9 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       }
     }
     if (kase.path === 'VERIFY_FIRST') {
-      const because = kase.limitCheck.reasons.map((r) => CHECK_FIRST_BECAUSE[r]?.() || r).join('; ');
+      const because =
+        kase.limitCheck.reasons.map((r) => CHECK_FIRST_BECAUSE[r]?.(order.protection) || r).join('; ') +
+        (kase.limitCheck.reasons.some((r) => r === 'OVER_PER_CASE_CAP' || r === 'OVER_30_DAY_COUNT') ? limitWhy(order.protection.limits) : '');
       notify(kase, 'CHECKING_FIRST', `We check this order before refunding it, because ${because}. If it was not your mistake, the refund follows within 5 minutes.`);
     }
     db.save();
