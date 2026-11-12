@@ -2,6 +2,7 @@
 // On top, the moment: one big number for where this purchase is now, from server state only.
 import { S, esc, usd, time, day, secs, humanize, label, refundTiming, REASONS, NOTICES } from './shared.js';
 import { limitCard } from './casebook.js';
+import { unpaidOrderView } from './payment.js';
 
 const AGENT_SAYS = {
   careful: 'Bound by the approved conditions. Sees product pages and the cart total.',
@@ -23,12 +24,15 @@ function moment({ mandate, order, kase: k }, working) {
     if (cap == null) return null;
     return { label: mandate.status === 'DRAFT' ? 'Spending limit to approve' : 'Spending limit, approved', giant: big(usd(cap), 'total') };
   }
-  if (!order.paypal) {
-    if (order.consentCancelled) return { label: 'Cancelled at PayPal', giant: big('$0.00', 'charged'), line: 'You turned back on the PayPal screen. Pick a case to start again.' };
-    if (order.payment === 'CONSENT_CHECKOUT') return { label: 'Waiting for you at PayPal', giant: big(usd(order.totalCents)), line: 'Not paid yet.' };
-    // Never "cancelled" or "nothing charged" for a payment PayPal did not confirm: it may have gone through.
-    if (order.storePayable?.status === 'PAYMENT_UNCONFIRMED') return { label: 'Sent from the saved wallet', giant: big(usd(order.totalCents)), tone: 'yellow', line: 'PayPal has not confirmed it. It may have gone through.' };
-    return { label: 'PayPal refused the payment', giant: big('$0.00', 'charged') };
+  const unpaid = unpaidOrderView(order, { busy: S.busy });
+  if (unpaid) {
+    // "Nothing charged" only where it is known (payment.js): a refusal or a buyer who turned back at PayPal.
+    if (unpaid.kind === 'consent-cancelled') return { label: 'Cancelled at PayPal', giant: big('$0.00', 'charged'), line: 'You turned back on the PayPal screen. Pick a case to start again.' };
+    if (unpaid.kind === 'consent-waiting') return { label: 'Waiting for you at PayPal', giant: big(usd(order.totalCents)), line: 'Not paid yet.' };
+    if (unpaid.kind === 'refused') return { label: 'PayPal refused the payment', giant: big('$0.00', 'charged') };
+    if (unpaid.kind === 'paying') return { label: 'Paying from the saved wallet', giant: big(usd(order.totalCents)), line: 'Sending the payment to PayPal.' };
+    if (unpaid.kind === 'unconfirmed') return { label: 'Sent from the saved wallet', giant: big(usd(order.totalCents)), tone: 'yellow', line: 'PayPal has not confirmed it. It may have gone through.' };
+    return { label: 'Not confirmed by PayPal yet', giant: big(usd(order.totalCents)), tone: 'yellow' };
   }
   if (!k) return { label: order.payment === 'CONSENT_CHECKOUT' ? 'Paid at PayPal' : 'The agent paid', giant: big(usd(order.totalCents)) };
 
@@ -182,11 +186,10 @@ function orderCards(mandate, order, spin) {
   if (!order || order.consentCancelled) return ''; // a cancelled checkout is said in the moment
   if (!order.paypal && order.payment !== 'CONSENT_CHECKOUT') {
     if (mandate.live) return ''; // the live agent card says it itself
-    if (order.storePayable?.status === 'PAYMENT_UNCONFIRMED')
-      return `<div class="card"><h3>PayPal has not confirmed this payment</h3>
-      <p class="sub">The money may have moved, so the desk sends no new payment. Asking again uses the same request id, and PayPal does not charge twice.</p>
-      <div class="row"><button class="primary" data-act="purchase" ${off}>${spin}Ask PayPal about this payment again</button></div></div>`;
-    return `<div class="card"><h3>PayPal refused the payment</h3><p class="sub">PayPal declined the saved-wallet payment, so nothing was charged. Pick a case to start again.</p></div>`;
+    const unpaid = unpaidOrderView(order, { busy: S.busy });
+    const ask = unpaid.kind === 'unconfirmed'; // only this one is asked again, under its own request id
+    return `<div class="card"><h3>${unpaid.kind === 'paying' ? '<span class="spinner"></span>' : ''}${esc(unpaid.title)}</h3><p class="sub">${esc(unpaid.text)}</p>
+      ${ask ? `<div class="row"><button class="primary" data-act="purchase" ${off}>${spin}Ask PayPal about this payment again</button></div>` : ''}</div>`;
   }
   if (!order.paypal) {
     return `<div class="card"><h3>Waiting for the buyer at PayPal</h3>

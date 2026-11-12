@@ -1,11 +1,16 @@
 // The desk's side: each check as one short proof block (name, result, status, time), details folded away.
 import { S, esc, usd, time, day, secs, label, linesSince, REASONS, FACT_LABELS, FACT_SHORT, INTEGRITY, RULES, WHO_SHORT, WHO_IN, DOCS, DOCS_IN, REVIEW_REASONS, KINDS } from './shared.js';
+import { unpaidOrderView } from './payment.js';
 import { aiKeySource, buyerKeysLine, deepAiSource, quickAiLine } from './ailabels.js';
 
 // ---- desk column ----------------------------------------------------------------------------------------
 export function deskColumn({ order, kase: k }, working) {
   if (!order) return `<div class="card proof"><p class="pr">Nothing yet. The desk acts when the buyer reports a problem.</p></div>`;
-  if (!order.paypal) return `<div class="card proof"><p class="pr">${order.consentCancelled ? 'Nothing was charged.' : 'Nothing charged yet. The payment and the saved-wallet consent are waiting at PayPal.'}</p></div>`;
+  if (!order.paypal) {
+    const kind = unpaidOrderView(order, { busy: S.busy })?.kind;
+    const line = { 'consent-cancelled': 'Nothing was charged.', refused: 'Nothing was charged.', 'consent-waiting': 'Nothing charged yet. The payment and the saved-wallet consent are waiting at PayPal.', paying: 'The payment is on its way to PayPal.' }[kind] || 'PayPal has not confirmed the payment, so the desk records nothing as paid yet.';
+    return `<div class="card proof"><p class="pr">${line}</p></div>`;
+  }
   if (!k) {
     const p = order.protection;
     return `<div class="card proof"><div class="ph"><h3>Waiting for a report</h3>${chip('grey', 'holding the payment')}</div>
