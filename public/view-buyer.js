@@ -31,7 +31,7 @@ function moment({ mandate, order, kase: k }, working) {
     if (unpaid.kind === 'consent-waiting') return { label: 'Waiting for you at PayPal', giant: big(usd(order.totalCents)), line: 'Not paid yet.' };
     if (unpaid.kind === 'refused') return { label: 'PayPal refused the payment', giant: big('$0.00', 'charged') };
     if (unpaid.kind === 'paying') return { label: 'Paying from the saved wallet', giant: big(usd(order.totalCents)), line: 'Sending the payment to PayPal.' };
-    if (unpaid.kind === 'unconfirmed') return { label: 'Sent from the saved wallet', giant: big(usd(order.totalCents)), tone: 'yellow', line: 'PayPal has not confirmed it. It may have gone through.' };
+    if (unpaid.kind === 'unconfirmed') return { label: order.payment === 'CONSENT_CHECKOUT' ? 'Sent after your approval at PayPal' : 'Sent from the saved wallet', giant: big(usd(order.totalCents)), tone: 'yellow', line: order.pendingCaptureStatus === 'PENDING' ? 'PayPal is still processing it.' : 'PayPal has not confirmed it. It may have gone through.' };
     return { label: 'Not confirmed by PayPal yet', giant: big(usd(order.totalCents)), tone: 'yellow' };
   }
   if (!k) return { label: order.payment === 'CONSENT_CHECKOUT' ? 'Paid at PayPal' : 'The agent paid', giant: big(usd(order.totalCents)) };
@@ -188,10 +188,12 @@ function mandateCard(mandate, spin, folded) {
 function orderCards(mandate, order, spin) {
   const off = S.busy ? 'disabled' : '';
   if (!order || order.consentCancelled) return ''; // a cancelled checkout is said in the moment
-  if (!order.paypal && order.payment !== 'CONSENT_CHECKOUT') {
-    if (mandate.live) return ''; // the live agent card says it itself
-    const unpaid = unpaidOrderView(order, { busy: S.busy });
-    const ask = unpaid.kind === 'unconfirmed'; // only this one is asked again, under its own request id
+  const unpaidNow = order.paypal ? null : unpaidOrderView(order, { busy: S.busy });
+  if (unpaidNow && unpaidNow.kind !== 'consent-waiting') {
+    if (mandate.live && order.payment !== 'CONSENT_CHECKOUT') return ''; // the live agent card says it itself
+    const unpaid = unpaidNow;
+    // only a saved-wallet payment is asked again from here, under its own request id; a sent consent capture has no Cancel
+    const ask = unpaid.kind === 'unconfirmed' && order.payment !== 'CONSENT_CHECKOUT';
     return `<div class="card"><h3>${unpaid.kind === 'paying' ? '<span class="spinner"></span>' : ''}${esc(unpaid.title)}</h3><p class="sub">${esc(unpaid.text)}</p>
       ${ask ? `<div class="row"><button class="primary" data-act="purchase" ${off}>${spin}Ask PayPal about this payment again</button></div>` : ''}</div>`;
   }

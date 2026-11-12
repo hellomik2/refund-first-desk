@@ -110,7 +110,9 @@ function scene({ mandate, order, kase: k }, working, verifyFirst) {
   if (!order) return { title: 'The agent shops and pays from the saved wallet.', lead: 'Nobody is asked again at checkout.' };
   if (!order.paypal) {
     if (order.consentCancelled) return { title: 'Cancelled at PayPal. Nothing was charged.' };
-    if (order.payment === 'CONSENT_CHECKOUT') return { title: 'Waiting for the buyer at PayPal.' };
+    if (order.payment === 'CONSENT_CHECKOUT' && !order.captureSentAt && order.storePayable?.status !== 'PAYMENT_UNCONFIRMED') return { title: 'Waiting for the buyer at PayPal.' };
+    if (order.pendingCaptureStatus === 'PENDING') return { title: 'PayPal is still processing this payment.' };
+    if (order.captureSentAt) return { title: 'PayPal has not confirmed this payment.' };
     if (order.storePayable?.status === 'PAYMENT_UNCONFIRMED') return { title: 'PayPal has not confirmed this payment.' };
     return { title: 'PayPal refused the payment. Nothing was charged.' };
   }

@@ -30,3 +30,24 @@ test('only a clear refusal (CANCELLED) or a buyer who turned back says nothing w
   assert.equal(unpaidOrderView({ payment: 'CONSENT_CHECKOUT', paypal: null, storePayable: { status: 'PENDING_CAPTURE' } }).kind, 'consent-waiting');
   assert.equal(unpaidOrderView({ payment: 'SAVED_WALLET', paypal: { orderId: 'X' } }), null);
 });
+
+// fix/pay13 follow-up: a consent checkout whose capture was sent has an unknown result; it is not "waiting at PayPal".
+const consent = (extra) => ({ payment: 'CONSENT_CHECKOUT', paypal: null, storePayable: { status: 'PENDING_CAPTURE' }, ...extra });
+
+test('a consent checkout whose capture was sent shows the unknown-result card, not the waiting card', () => {
+  for (const o of [consent({ captureSentAt: '2026-11-12T05:00:00Z', storePayable: { status: 'PAYMENT_UNCONFIRMED' } }), consent({ captureSentAt: '2026-11-12T05:00:00Z' })]) {
+    const v = unpaidOrderView(o);
+    assert.equal(v.kind, 'unconfirmed');
+    assert.doesNotMatch(`${v.title} ${v.text}`, charged);
+    assert.match(v.text, /approved at PayPal/);
+  }
+  assert.equal(unpaidOrderView(consent({})).kind, 'consent-waiting');
+});
+
+test('a capture PayPal answered as PENDING says PayPal is still processing it, not that PayPal did not answer', () => {
+  const v = unpaidOrderView({ payment: 'SAVED_WALLET', paypal: null, pendingCaptureStatus: 'PENDING', storePayable: { status: 'PAYMENT_UNCONFIRMED' } });
+  assert.equal(v.kind, 'unconfirmed');
+  assert.match(`${v.title} ${v.text}`, /still processing/i);
+  assert.doesNotMatch(v.text, /did not answer/i);
+  assert.match(unpaidOrderView(wallet('PAYMENT_UNCONFIRMED')).text, /did not answer/);
+});
