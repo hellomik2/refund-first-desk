@@ -7760,5 +7760,114 @@
    ],
    "note": "the screen replays run 7 answers recorded under the third change; the replay is not a result of the fourth change"
   }
+ },
+ "holdout5": {
+  "file": "scenarios/holdout5.json on branch verify/holdout5 (not in main)",
+  "commit": "bf817a831868ceca7695191029fd9f398d24d7ea",
+  "sha256": "a7dad590605a0581261f8b3446e19dab907461f712bd95ec0d0e2c3a65b90d3a",
+  "fixedAt": "2026-11-13T00:50:02+09:00, before the first AI run on these cases",
+  "answerKey": {
+   "STORE": 6,
+   "AGENT": 6,
+   "BUYER": 4,
+   "UNDETERMINED": 4
+  },
+  "written": "by two writers (Claude subagents), 10 cases each; they got a one-paragraph request, the meaning of the four responsibility rules, the case format with one earlier case as a format example, and a format check they could run but not read; no list of shapes, no prompt, no earlier cases to study and no measured results",
+  "payPal": "in memory (scripts/ai-eval.mjs), claude-haiku-5-5, recorded answers off",
+  "promptNotChangedAfter": true,
+  "runs": {
+   "currentPrompt1": {
+    "file": "11-13-검증22/원자료/now-1.json",
+    "sha256": "f00c0dc5ab9e6c33c0a576f26b97c3c891a6abe32e95aec422db24d7e9444e03",
+    "prompt": "fourth change (5f67ed4, same prompt as ab310ba)",
+    "ranAt": "2026-11-12T15:53:58.613Z",
+    "cases": 20,
+    "errors": 0,
+    "verdictsRight": 20,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 18,
+    "firstStepWrong": [
+     {
+      "id": "H5-B01",
+      "ai": "NONE",
+      "answerKey": "7"
+     },
+     {
+      "id": "H5-B05",
+      "ai": "5",
+      "answerKey": "4"
+     }
+    ],
+    "liveCalls": 33
+   },
+   "currentPrompt2": {
+    "file": "11-13-검증22/원자료/now-2.json",
+    "sha256": "fba38c05d65c9ec0c9b45e309329aa0054b2157f99e2cff004c4ccccff245355",
+    "prompt": "fourth change (5f67ed4, same prompt as ab310ba)",
+    "ranAt": "2026-11-12T15:53:59.680Z",
+    "cases": 20,
+    "errors": 0,
+    "verdictsRight": 20,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 18,
+    "firstStepWrong": [
+     {
+      "id": "H5-B01",
+      "ai": "NONE",
+      "answerKey": "7"
+     },
+     {
+      "id": "H5-B05",
+      "ai": "5",
+      "answerKey": "4"
+     }
+    ],
+    "liveCalls": 33
+   },
+   "thirdChange1": {
+    "file": "11-13-검증22/원자료/fix3-1.json",
+    "sha256": "c012080d5dded61b204b5f0453b88c067e1b62ea7b5759d1d12ae947d0c45f22",
+    "prompt": "third change (e528e38)",
+    "ranAt": "2026-11-12T15:53:53.562Z",
+    "cases": 20,
+    "errors": 0,
+    "verdictsRight": 20,
+    "toAPerson": [],
+    "bothKeysWrong": [],
+    "wrongBuyerVerdicts": [],
+    "firstStepRight": 16,
+    "firstStepWrong": [
+     {
+      "id": "H5-A02",
+      "ai": "5",
+      "answerKey": "3"
+     },
+     {
+      "id": "H5-B01",
+      "ai": "NONE",
+      "answerKey": "7"
+     },
+     {
+      "id": "H5-B05",
+      "ai": "5",
+      "answerKey": "4"
+     },
+     {
+      "id": "H5-B08",
+      "ai": "NONE",
+      "answerKey": "INSUFFICIENT"
+     }
+    ],
+    "liveCalls": 33
+   }
+  },
+  "firstStepNotes": {
+   "H5-B01": "the store took the payment and did not ship; the key names the store step; the AI answered NONE in all three runs (a real miss); the verdict STORE was right",
+   "H5-B05": "the agent chose express shipping at checkout and went over the limit; the key names the checkout step, the AI the pay step in all three runs; prepared case S13 puts the same shape on the pay step, so this key is open to dispute"
+  }
  }
 }
