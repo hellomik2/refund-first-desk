@@ -4,11 +4,9 @@
 
 When an AI shopping agent buys the wrong thing, PayPal refunds the buyer in seconds, before anything is checked. Then the records are checked. Only if the check finds the buyer responsible does the buyer get a notice and 5 business days to dispute; after that, the saved PayPal wallet that paid is charged again, never more than was refunded. In every other ending the buyer keeps the refund.
 
-```
-1. Refund first    PayPal refund COMPLETED before any check     within the limits; sandbox runs 1.87–3.17 s
-2. Then check      the AI's verdict + fixed rules in code       money moves only when they agree
-3. Take it back    only if the buyer was responsible            notice → 5 business days to dispute → charged again
-```
+1. **Refund first.** PayPal's refund status is COMPLETED before any check starts (within the limits; sandbox runs 1.87–3.17 s).
+2. **Then check.** The AI's verdict and fixed rules in code; money moves only when they agree.
+3. **Take it back, only if the buyer was responsible.** Notice, 5 business days to dispute, then the wallet that paid is charged again.
 
 The refund can come first because it can be taken back: the buyer saved the wallet with consent at purchase, the most they can be charged again is fixed at purchase, they get notice and can dispute, and money moves only when the AI and the rules agree. PayPal's own buyer protection terms already allow a temporary refund during a dispute, recovered after at least 5 business days' notice if the dispute goes against the buyer ([Purchase Protection Program](https://www.paypal.com/us/legalhub/paypal/buyer-protection), updated 2026-01-26). The desk applies that pattern to purchases made by AI agents, by rule and before the check.
 
