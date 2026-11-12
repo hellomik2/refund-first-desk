@@ -2,6 +2,8 @@
 // directory, so the server and the scripts share the same count and it survives restarts.
 // When a cap is reached the desk does not call the AI: every fact stays unknown, which the rules
 // resolve in the buyer's favour.
+// The live shopping agent's calls (purpose "agent") share the total spend cap but are counted apart from the
+// desk's daily call cap, so a visitor's shopping run never uses up the checks; agent runs have their own daily cap.
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 
@@ -18,21 +20,32 @@ export function costUsd({ model, inputTokens = 0, outputTokens = 0 }) {
   return (inputTokens * inp + outputTokens * out) / 1e6;
 }
 
+const isAgent = (c) => c.purpose === 'agent';
+
 export function createAiBudget({ file, dailyCallCap, spendCapUsd }) {
   const calls = () => (existsSync(file) ? readFileSync(file, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
+  const today = () => new Date().toISOString().slice(0, 10);
   return {
     record(usage) {
       mkdirSync(dirname(file), { recursive: true });
       appendFileSync(file, `${JSON.stringify({ ...usage, usd: costUsd(usage) })}\n`);
     },
     spentUsd: () => calls().reduce((sum, c) => sum + c.usd, 0),
-    /** @returns {string|null} why the next call is not allowed, or null */
+    /** @returns {string|null} why the next desk call (quick, deep, conditions) is not allowed, or null */
     blockedBy() {
       const all = calls();
-      const today = new Date().toISOString().slice(0, 10);
-      if (all.filter((c) => c.at.startsWith(today)).length >= dailyCallCap) return 'DAILY_AI_CALL_CAP';
+      if (all.filter((c) => !isAgent(c) && c.at.startsWith(today())).length >= dailyCallCap) return 'DAILY_AI_CALL_CAP';
       if (all.reduce((sum, c) => sum + c.usd, 0) >= spendCapUsd) return 'AI_SPEND_CAP';
       return null;
     },
+    /** @returns {string|null} why a new shopping run may not start, or null */
+    agentBlockedBy({ dailyRunCap }) {
+      const all = calls();
+      if (all.reduce((sum, c) => sum + c.usd, 0) >= spendCapUsd) return 'AI_SPEND_CAP';
+      const runs = new Set(all.filter((c) => isAgent(c) && c.at.startsWith(today())).map((c) => c.runId));
+      if (runs.size >= dailyRunCap) return 'DAILY_AGENT_RUN_CAP';
+      return null;
+    },
+    runUsd: (runId) => calls().filter((c) => c.runId === runId).reduce((sum, c) => sum + c.usd, 0),
   };
 }

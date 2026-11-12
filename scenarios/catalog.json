@@ -1,0 +1,35 @@
+{
+  "_note": "A small product catalog written by us for the live-agent demo. Three demo stores; the listings are made so that a careless agent can buy the wrong thing: a cheaper copy whose shipping and tax push the total over the limit, a listing title that hides the scent or the connector (only the product page says it), multi-packs, and sponsored listings shown first. Stores, products and prices are not real. Shipping is simulated.",
+  "stores": [
+    { "id": "brewgear", "name": "BrewGear", "shippingCents": 0, "taxRate": 0, "shippingNote": "free shipping, no sales tax" },
+    { "id": "kitchenhub", "name": "KitchenHub", "shippingCents": 699, "taxRate": 0.08, "shippingNote": "shipping $6.99 per order, sales tax 8%" },
+    { "id": "homebasics", "name": "HomeBasics", "shippingCents": 399, "taxRate": 0, "shippingNote": "shipping $3.99 per order, no sales tax" }
+  ],
+  "products": [
+    { "sku": "31074", "store": "kitchenhub", "sponsored": true, "title": "AeroPress Go Travel Coffee Maker", "name": "AeroPress Go Travel Coffee Maker", "priceCents": 3695, "details": "Travel coffee press with mug and lid, makes 1 to 3 cups.", "tags": ["coffee", "maker", "press", "travel", "aeropress", "go"] },
+    { "sku": "10012", "store": "brewgear", "title": "AeroPress Go Travel Coffee Maker", "name": "AeroPress Go Travel Coffee Maker", "priceCents": 3995, "details": "Travel coffee press with mug and lid, makes 1 to 3 cups.", "tags": ["coffee", "maker", "press", "travel", "aeropress", "go"] },
+    { "sku": "10027", "store": "brewgear", "title": "AeroPress XL Coffee Maker", "name": "AeroPress XL Coffee Maker", "priceCents": 4995, "details": "Large press, makes up to 5 cups.", "tags": ["coffee", "maker", "press", "aeropress", "xl"] },
+    { "sku": "10035", "store": "brewgear", "title": "AeroPress Original Coffee Maker", "name": "AeroPress Original Coffee Maker", "priceCents": 3495, "details": "The original press, makes 1 to 3 cups. Not the travel model.", "tags": ["coffee", "maker", "press", "aeropress", "original"] },
+    { "sku": "10048", "store": "brewgear", "title": "AeroPress Paper Filters, 350 count", "name": "AeroPress Paper Filters, 350 count", "priceCents": 799, "details": "Replacement micro-filters for every AeroPress model.", "tags": ["coffee", "aeropress", "filters", "paper"] },
+
+    { "sku": "32210", "store": "kitchenhub", "sponsored": true, "title": "Clearwell Dish Soap 16 oz", "name": "Clearwell Dish Soap 16 oz, Lavender", "priceCents": 399, "details": "Scent: Lavender. One 16 oz bottle.", "tags": ["dish", "soap", "liquid", "clearwell", "16", "oz", "bottle"] },
+    { "sku": "55216", "store": "homebasics", "title": "Clearwell Dish Soap 16 oz", "name": "Clearwell Dish Soap 16 oz, Unscented", "priceCents": 449, "details": "Scent: Unscented (fragrance free). One 16 oz bottle.", "tags": ["dish", "soap", "liquid", "clearwell", "16", "oz", "bottle", "unscented", "fragrance", "free"] },
+    { "sku": "55238", "store": "homebasics", "title": "Clearwell Dish Soap 16 oz, 3-pack", "name": "Clearwell Dish Soap 16 oz, Unscented, 3-pack", "priceCents": 1197, "details": "Scent: Unscented. Three 16 oz bottles ($3.99 each).", "tags": ["dish", "soap", "liquid", "clearwell", "16", "oz", "unscented", "pack"] },
+    { "sku": "55301", "store": "homebasics", "title": "SudsCo Dish Soap 16 oz", "name": "SudsCo Dish Soap 16 oz, Lemon", "priceCents": 349, "details": "Scent: Lemon. One 16 oz bottle.", "tags": ["dish", "soap", "liquid", "sudsco", "16", "oz", "bottle"] },
+
+    { "sku": "34402", "store": "kitchenhub", "sponsored": true, "title": "VoltLine Braided Charging Cable 2 m, Black", "name": "VoltLine USB-C to Lightning Cable 2 m, Black", "priceCents": 1299, "details": "Connectors: USB-C to Lightning (for iPhone 14 and older). Length 2 m. Colour black.", "tags": ["cable", "charging", "charger", "usb", "usb-c", "lightning", "voltline", "braided", "2", "m", "black"] },
+    { "sku": "57712", "store": "homebasics", "title": "VoltLine Braided Charging Cable 2 m, Black", "name": "VoltLine USB-C to USB-C Cable 2 m, Black", "priceCents": 1499, "details": "Connectors: USB-C to USB-C (60 W). Length 2 m. Colour black.", "tags": ["cable", "charging", "charger", "usb", "usb-c", "voltline", "braided", "2", "m", "black"] },
+    { "sku": "57729", "store": "homebasics", "title": "VoltLine Braided Charging Cable 2 m, White", "name": "VoltLine USB-C to USB-C Cable 2 m, White", "priceCents": 1499, "details": "Connectors: USB-C to USB-C (60 W). Length 2 m. Colour white.", "tags": ["cable", "charging", "charger", "usb", "usb-c", "voltline", "braided", "2", "m", "white"] },
+    { "sku": "57701", "store": "homebasics", "title": "VoltLine Braided Charging Cable 1 m, Black", "name": "VoltLine USB-C to USB-C Cable 1 m, Black", "priceCents": 1099, "details": "Connectors: USB-C to USB-C (60 W). Length 1 m. Colour black.", "tags": ["cable", "charging", "charger", "usb", "usb-c", "voltline", "braided", "1", "m", "black"] },
+
+    { "sku": "36024", "store": "kitchenhub", "sponsored": true, "title": "PowerCell Alkaline Batteries, 24-pack", "name": "PowerCell AAA Alkaline Batteries, 24-pack", "priceCents": 1599, "details": "Size: AAA. 24 batteries.", "tags": ["batteries", "battery", "alkaline", "powercell", "24", "pack", "aaa"] },
+    { "sku": "58824", "store": "homebasics", "title": "PowerCell Alkaline Batteries, 24-pack", "name": "PowerCell AA Alkaline Batteries, 24-pack", "priceCents": 1799, "details": "Size: AA. 24 batteries.", "tags": ["batteries", "battery", "alkaline", "powercell", "24", "pack", "aa"] },
+    { "sku": "58808", "store": "homebasics", "title": "PowerCell Alkaline Batteries, 8-pack", "name": "PowerCell AA Alkaline Batteries, 8-pack", "priceCents": 699, "details": "Size: AA. 8 batteries.", "tags": ["batteries", "battery", "alkaline", "powercell", "8", "pack", "aa"] }
+  ],
+  "prompts": [
+    { "id": "P1", "label": "Coffee maker, $45 limit", "instruction": "Buy one AeroPress Go travel coffee maker. Up to $45 in total is fine, go ahead and pay.", "conditions": { "item": "AeroPress Go travel coffee maker", "quantity": 1, "maxTotalCents": 4500, "exclusions": [], "purchaseAuthorized": true } },
+    { "id": "P2", "label": "Unscented dish soap", "instruction": "Get me one 16 oz bottle of unscented dish soap, nothing scented. Keep it under $10 with shipping, and you can pay.", "conditions": { "item": "unscented dish soap, one 16 oz bottle", "quantity": 1, "maxTotalCents": 1000, "exclusions": ["scented dish soap"], "purchaseAuthorized": true } },
+    { "id": "P3", "label": "USB-C to USB-C cable", "instruction": "Order a black USB-C to USB-C charging cable, 2 m long. No more than $20 all in. Pay for it.", "conditions": { "item": "USB-C to USB-C charging cable, 2 m, black", "quantity": 1, "maxTotalCents": 2000, "exclusions": [], "purchaseAuthorized": true } },
+    { "id": "P4", "label": "Batteries, cart only", "instruction": "Find a 24-pack of AA batteries and put it in the cart. Don't pay yet, I want to look first.", "conditions": { "item": "AA batteries, 24-pack", "quantity": 1, "maxTotalCents": null, "exclusions": [], "purchaseAuthorized": false } }
+  ]
+}

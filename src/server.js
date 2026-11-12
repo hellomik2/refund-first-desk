@@ -12,6 +12,8 @@ import { DeskError } from './desk.js';
 import { PayPalError, publicTrace } from './paypal/client.js';
 import { buildCaseBook, recordsFromState } from './domain/casebook.js';
 import { trustLimits } from './domain/trust.js';
+import { loadCatalog } from './shop/catalog.js';
+import { AGENTS } from './shop/agent.js';
 
 const config = loadConfig();
 const PUBLIC_DIR = join(config.root, 'public');
@@ -19,6 +21,7 @@ const CASES = JSON.parse(readFileSync(join(config.root, 'scenarios', 'cases.json
 // The case book "after 30 cases": one measured run of the prepared cases (scripts/casebook-snapshot.mjs).
 const MEASURED = JSON.parse(readFileSync(join(config.root, 'scenarios', 'casebook-measured.json'), 'utf8'));
 const MEASURED_BOOK = { source: MEASURED.source, note: MEASURED._note, book: buildCaseBook(MEASURED.records) };
+const CATALOG = loadCatalog(config.root);
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon' };
 
 // ---- shared across workspaces ---------------------------------------------------------------------
@@ -40,14 +43,14 @@ function workspace(id) {
   if (!/^[a-z0-9]{12}$/.test(id || '')) throw new DeskError('BAD_WORKSPACE', 'Unknown workspace');
   if (!workspaces.has(id)) {
     if (!existsSync(join(config.dataDir, 'ws', id, 'db.json'))) throw new DeskError('BAD_WORKSPACE', 'Unknown workspace');
-    workspaces.set(id, createContext({ dbName: join('ws', id), tokenStore }));
+    workspaces.set(id, createContext({ dbName: join('ws', id), tokenStore, beforePay: countPurchase }));
   }
   return workspaces.get(id);
 }
 
 function newWorkspace() {
   const id = randomBytes(9).toString('base64url').toLowerCase().replace(/[^a-z0-9]/g, 'x').slice(0, 12);
-  const ctx = createContext({ dbName: join('ws', id), tokenStore, fresh: true });
+  const ctx = createContext({ dbName: join('ws', id), tokenStore, fresh: true, beforePay: countPurchase });
   ctx.desk.createBuyer({ name: 'Demo buyer', useDemoWallet: true });
   ctx.db.save();
   workspaces.set(id, ctx);
@@ -69,6 +72,7 @@ function view(id, ctx) {
     flags: {
       aiProvider: ctx.factExtractor.provider,
       aiModel: config.ai.provider === 'anthropic' ? config.ai.model : null,
+      liveAgent: ctx.liveAgent.available,
       storePayout: config.storePayoutEmail ? 'PAYPAL_PAYOUTS' : 'LEDGER_ONLY',
     },
     policy: config.policy,
@@ -107,6 +111,34 @@ const actions = {
     mandate.caseId = sc.id;
     ctx.db.save();
     return { mandateId: mandate.id };
+  },
+  /**
+   * The live agent's instruction: a prepared one (its condition slots are fixed in the catalog file) or the
+   * visitor's own words, which the AI turns into condition slots. Either way the buyer approves them next.
+   */
+  async liveMandate(ctx, { promptId, instruction }) {
+    const buyer = Object.values(ctx.db.data.buyers)[0];
+    let text;
+    let conditions;
+    if (promptId) {
+      const p = ctx.liveAgent.catalog.prompts.find((x) => x.id === promptId);
+      if (!p) throw new DeskError('NOT_FOUND', 'Unknown instruction');
+      ({ instruction: text, conditions } = p);
+    } else {
+      text = String(instruction || '').trim().slice(0, 300);
+      if (text.length < 8) throw new DeskError('EMPTY_INSTRUCTION', 'Write what the agent should buy, in one or two sentences.');
+      ({ conditions } = await ctx.liveAgent.draftConditions(text));
+    }
+    const mandate = ctx.desk.draftMandate({ buyerId: buyer.id, instruction: text, conditions });
+    mandate.live = { promptId: promptId || null };
+    ctx.db.save();
+    return { mandateId: mandate.id };
+  },
+  /** The live agent shops the demo catalog and, if it decides to, pays from the saved wallet (a real sandbox charge). */
+  async shop(ctx, { mandateId, kind }) {
+    if (!['careful', 'hasty'].includes(kind)) throw new DeskError('BAD_CHOICE', 'Choose the careful or the hasty agent');
+    const { mandate } = await ctx.liveAgent.shop({ mandateId, kind });
+    return { status: mandate.live.status };
   },
   async approve(ctx, { mandateId }) {
     ctx.desk.approveMandate(mandateId);
@@ -224,6 +256,10 @@ const server = createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/api/casebook') {
       const id = url.searchParams.get('ws');
       return send(res, 200, { workspace: id ? buildCaseBook(recordsFromState(workspace(id).db.data)) : null, measured: MEASURED_BOOK });
+    }
+    if (req.method === 'GET' && url.pathname === '/api/catalog') {
+      const { stores, products, prompts } = CATALOG;
+      return send(res, 200, { stores, products, prompts, agents: Object.fromEntries(Object.entries(AGENTS).map(([k, a]) => [k, { label: a.label, tools: a.tools }])) });
     }
     if (req.method === 'POST' && url.pathname === '/api/workspaces') {
       const id = newWorkspace();

@@ -21,6 +21,7 @@ const label = (map, key) => map[key] ?? humanize(key);
 
 let state = null;
 let cases = [];
+let catalog = null; // the live agent's demo catalog and prepared instructions
 let busy = false;
 let showAll = false;
 let reconciliation = null;
@@ -180,6 +181,7 @@ const RETURN_NOTES = {
 
 async function start(fresh = false) {
   cases = (await api('/api/cases')).cases;
+  catalog = await api('/api/catalog').catch(() => null);
   // Coming back from the PayPal approval screen: the workspace id rides on the return URL.
   const params = new URLSearchParams(location.search);
   if (params.has('ws')) {
@@ -217,6 +219,7 @@ function render(working = '') {
   $('ai-pill').textContent = state.flags.aiProvider === 'fixture' ? 'AI not connected: stand-in answers' : `AI: ${state.flags.aiModel || state.flags.aiProvider}`;
   renderCases(cur);
   refreshCaseBook(state, cases);
+  renderLive(cur);
   // The line is shown before any case is picked: the order of the steps is what this desk is about.
   $('stage').hidden = false;
   $('rail').innerHTML = railHtml(cur, working);
@@ -261,6 +264,66 @@ function renderCases(cur) {
         </button>`;
       })
       .join('') + (cases.length > 6 ? `<button class="ghost more" data-toggle-all>${showAll ? 'Show fewer' : `Show all ${cases.length} cases`}</button>` : '');
+}
+
+// ---- the live agent ----------------------------------------------------------------------------------------
+function renderLive(cur) {
+  const el = $('live-prompts');
+  if (!catalog) {
+    el.innerHTML = '';
+    return;
+  }
+  const on = state.flags.liveAgent;
+  el.innerHTML = catalog.prompts
+    .map(
+      (p) => `<button class="case" data-live-prompt="${esc(p.id)}" aria-pressed="${cur.mandate?.live?.promptId === p.id}" ${busy || !on ? 'disabled' : ''}>
+        <span class="t">${esc(p.label)}</span><span class="q">“${esc(p.instruction)}”</span>
+        <span class="m"><span>3 demo stores</span><span class="amt-cell">${p.conditions.maxTotalCents == null ? 'no limit' : `limit ${usd(p.conditions.maxTotalCents)}`}</span></span></button>`,
+    )
+    .join('') + (on ? '' : '<p class="sub">The live agent is off here: this server has no live AI connected. The prepared cases below still run.</p>');
+  document.querySelector('[data-act="liveOwn"]').disabled = busy || !on;
+  const list = $('catalog-list');
+  if (!list.dataset.done) {
+    const store = (id) => catalog.stores.find((s) => s.id === id);
+    list.innerHTML = `<table class="catalog"><thead><tr><th>Store</th><th>Listing title</th><th>On the product page</th><th class="num">Price</th></tr></thead><tbody>${catalog.products
+      .map((p) => `<tr><td>${esc(store(p.store).name)}${p.sponsored ? ' <span class="tag sim">sponsored</span>' : ''}</td><td>${esc(p.title)}</td><td>${esc(p.details)}</td><td class="num">${usd(p.priceCents)}</td></tr>`)
+      .join('')}</tbody></table><p class="fine">${catalog.stores.map((s) => `${esc(s.name)}: ${esc(s.shippingNote)}`).join(' · ')}</p>`;
+    list.dataset.done = '1';
+  }
+}
+
+const AGENT_SAYS = {
+  careful: 'Told: the approved conditions bind, open product pages, check the cart total, pay only if allowed. Sees the condition slots, store, variant and shipping.',
+  hasty: 'Told: it is graded on speed, pick from the top and pay. Sees only the buyer’s words and number, title and price. No product page, no cart view.',
+};
+
+function liveStepsHtml(steps, running) {
+  if (!steps?.length) return running ? '<p class="sub"><span class="spinner"></span>The agent is reading the instruction…</p>' : '';
+  return `<ol class="trace live-trace">${steps
+    .map((s) => `<li class="st"><div class="st-row"><span class="sn">${s.step}</span><span class="st-body"><span class="st-head"><span class="act">${esc(s.action)}</span><span class="actor">${esc(s.actor)}</span></span><span class="st-text">${esc(s.content)}</span></span></div></li>`)
+    .join('')}${running ? '<li class="st"><div class="st-row"><span class="sn"><span class="spinner"></span></span><span class="st-body"><span class="st-text">thinking…</span></span></div></li>' : ''}</ol>`;
+}
+
+function liveAgentCard(mandate, order, working) {
+  const live = mandate.live;
+  const off = busy ? 'disabled' : '';
+  if (!live.status) {
+    return `<div class="card"><h3>Give this to a live AI agent</h3>
+      <p class="sub" style="margin-bottom:10px">Same model, same catalog. It pays from the PayPal wallet the buyer saved earlier, if it decides to: a real sandbox charge. Nobody is asked again at checkout.</p>
+      <div class="agent-pick">${['careful', 'hasty']
+        .map((k) => `<div class="agent-opt"><button class="${k === 'careful' ? 'primary' : 'danger'}" data-act="shop" data-kind="${k}" ${off}>${working === 'shop' ? '<span class="spinner"></span>' : ''}Run the ${k} agent</button><p class="sub">${esc(AGENT_SAYS[k])}</p></div>`)
+        .join('')}</div></div>`;
+  }
+  const running = live.status === 'RUNNING' || (working === 'shop' && !live.finishedAt);
+  const who = live.kind === 'hasty' ? 'The hasty agent' : 'The careful agent';
+  const cost = live.finishedAt ? ` ${live.calls} model calls, $${(live.usd || 0).toFixed(4)} of AI.` : '';
+  let tail = '';
+  if (live.status === 'NOT_PAID') tail = `<div class="result"><strong>It did not pay.</strong> Nothing was charged, so there is nothing to report. Pick another instruction to try again.</div>`;
+  if (live.status === 'FAILED') tail = `<div class="result"><strong>The run stopped:</strong> ${esc(live.error || 'error')}.</div>`;
+  const body = liveStepsHtml(live.steps, running);
+  return `<div class="card"><h3>${who} ${running ? 'is shopping' : 'shopped'}, step by step</h3>
+    <p class="sub">Each line is one tool call it made, written down as it happened. This is the log the investigator will read.${cost}</p>
+    ${body}${tail}</div>`;
 }
 
 // ---- the line: the order of operations is the product ------------------------------------------------
@@ -376,7 +439,9 @@ function buyerColumn({ mandate, order, kase, sc }, working) {
     }
   </div>`;
 
-  if (mandate.status === 'APPROVED' && !order) {
+  if (mandate.live && mandate.status === 'APPROVED') {
+    html += liveAgentCard(mandate, order, working);
+  } else if (mandate.status === 'APPROVED' && !order) {
     html += `<div class="card"><h3>The agent goes shopping</h3>
       <p class="sub" style="margin-bottom:10px">It pays from the PayPal wallet the buyer saved earlier. Nobody is asked again at checkout.</p>
       <button class="primary" data-act="purchase" ${busy ? 'disabled' : ''}>${spin}Let the agent shop and pay</button>
@@ -400,7 +465,7 @@ function buyerColumn({ mandate, order, kase, sc }, working) {
   }
   if (order?.paypal && !kase) {
     html += `<div class="card"><h3>Something is wrong? Say it in one sentence.</h3>
-      <textarea id="statement" aria-label="What went wrong">${esc(sc?.complaint || '')}</textarea>
+      <textarea id="statement" aria-label="What went wrong">${esc(sc?.complaint || (mandate.live ? 'This is not what I asked the agent to buy.' : ''))}</textarea>
       <div class="row"><button class="primary" data-act="report" ${busy ? 'disabled' : ''}>${spin}Report it</button><span class="sub">This is the only thing the buyer has to do.</span></div></div>`;
   }
   if (kase) {
@@ -566,7 +631,7 @@ function traceHtml(k) {
         fork ? `<span class="mk ai">${fd.verified ? 'AI: first step off' : 'AI: first step off, quote not verified'}</span>` : '',
         ...f.map((c) => `<span class="mk flag">rule flag: ${esc(label(FACT_SHORT, c.condition))}</span>`),
       ].join('');
-      let detail = `<p class="raw">${fork && fd.verified ? markQuote(raw, fd.quote) : esc(raw)}</p>`;
+      let detail = `<p class="raw">${fork && fd.verified ? markQuote(raw, fd.quote) : esc(raw)}</p><p class="dl muted">The log line is shown as the investigator read it; its time is UTC.</p>`;
       if (fork) {
         detail += fd.verified
           ? `<p class="dl"><span class="tag real">quote found in this step</span> Condition named: ${esc(fd.condition ? label(FACT_LABELS, fd.condition) : 'none')}.</p>`
@@ -597,7 +662,7 @@ function traceHtml(k) {
   return `<p class="trace-sum">${summary}${flagLine} The first step off is a report for whoever fixes the agent; it does not decide who pays.</p>
     <p class="legend"><span class="lg"><span class="mk ai">AI</span> the investigator's first step off</span><span class="lg"><span class="mk flag">rule flag</span> a simple rule's pick</span><span class="hint">Press a step to see its line in the log.</span></p>
     <ol class="trace">${rows}</ol>
-    <p class="fine">Agent logs and answer key written by us for this demo.</p>`;
+    <p class="fine">${state.mandates.find((m) => m.id === state.orders.find((o) => o.id === k.orderId)?.mandateId)?.live ? 'Written by the live agent as it shopped. The catalog is ours; the steps are not, and there is no answer key.' : 'Agent logs and answer key written by us for this demo.'}</p>`;
 }
 
 function keyBox(kind, key, inv) {
@@ -796,6 +861,13 @@ document.addEventListener('click', async (event) => {
     render();
     return;
   }
+  const livePrompt = event.target.closest('[data-live-prompt]');
+  if (livePrompt) {
+    reconciliation = null;
+    await act('liveMandate', { promptId: livePrompt.dataset.livePrompt });
+    $('stage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
   const stepButton = event.target.closest('[data-step]');
   if (stepButton) {
     const { kase } = current();
@@ -808,6 +880,13 @@ document.addEventListener('click', async (event) => {
   if (!button || button.disabled) return;
   const { mandate, order, kase } = current();
   const name = button.dataset.act;
+  if (name === 'liveOwn') {
+    reconciliation = null;
+    const made = await act('liveMandate', { instruction: $('own-instruction').value }, 'liveMandate');
+    if (made) $('stage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  if (name === 'shop') await act('shop', { mandateId: mandate.id, kind: button.dataset.kind }, 'shop');
   if (name === 'approve') await act('approve', { mandateId: mandate.id }, 'approve');
   if (name === 'purchase') await act('purchase', { mandateId: mandate.id }, 'purchase');
   if (name === 'consentPurchase') {

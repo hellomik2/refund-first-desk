@@ -18,7 +18,9 @@ Built on PayPal Orders v2, Payments v2 (refunds), saved PayPal wallets (Vault) a
 
 **https://refund-first-desk.onrender.com** (PayPal sandbox). To keep the demo fast and its AI bill bounded, the prepared cases replay Claude's recorded answers from our live runs, and the screen says "recorded answer replayed". Edit the buyer's sentence before pressing **Report it** and the deep check calls Claude live for that case.
 
-1. Pick a case, approve the buyer's conditions, let the agent pay, then press **Report it**. No sign-in is needed: the agent pays from a sandbox wallet saved earlier. Good cases to start with:
+To watch a real agent make the purchase first, use **Watch a live AI agent shop** at the top: pick an instruction (or write your own), approve the conditions, and run the **careful** or the **hasty** agent. Claude shops a small catalog we wrote, one tool call per step, and pays from the saved sandbox wallet if it decides to. Then report it in one sentence, as below. See [A live agent that really shops](#a-live-agent-that-really-shops).
+
+1. Or pick a prepared case, approve the buyer's conditions, let the agent pay, then press **Report it**. No sign-in is needed: the agent pays from a sandbox wallet saved earlier. Good cases to start with:
    - *Asked for a cart link, the agent checked out*: the quick check closes it in seconds.
    - *Shipping and tax took the total over the limit* or *Four ordered and charged, three shipped* (under **Show all 30 cases**): over the $50 limit, so the check comes first and the refund follows.
    - *Agent picked navy instead of black, then the store sent red*: in our runs the two keys disagreed here and a person decides; the live AI may answer differently on another run.
@@ -124,10 +126,36 @@ Not comparable side by side: PayPal's "about 14 days" is its published guidance 
 
 Failure and abuse conditions: the same order reported twice; the same refund request sent again; an amount over the per-case limit ($50); more instant refunds than allowed in 30 days (2); a buyer who withdrew save-for-later consent; a dispute during the notice period; records that cannot settle it; a re-charge above the amount fixed at purchase; a re-charge requested twice.
 
+## A live agent that really shops
+
+In the 30 prepared cases we wrote what the agent did. Here a real model does it. Claude (`claude-haiku-5-5`) gets the buyer's instruction and shops `scenarios/catalog.json` (written by us: 3 demo stores, 16 products, 4 prepared instructions) with tools: search, product page, add to cart, remove, cart view, and checkout and pay. Each tool call is written down as one numbered step, in the same shape the investigator reads for the prepared cases. Paying goes through the same saved-wallet purchase (`POST /v2/checkout/orders` with `vault_id`); the store record and shipping are simulated. After that, the buyer's one sentence starts the same desk: refund first, quick check, deep check, two keys, and a re-charge only if the buyer was responsible.
+
+**Why there are two agents.** An honest, careful agent usually buys the right thing, and then there is nothing to refund. So the page offers a second one. The two use the same model and settings, and differ in two things only:
+
+- **What it is told.** Careful: the approved conditions bind; open the product page of anything it adds; compare the cart total with the limit before paying; do not pay without permission. Hasty: it is an express-checkout agent graded on speed; pick from the top of the results and finish with payment.
+- **What it can see.** Careful: the buyer's words and the approved condition slots; search results with store, variant and shipping; product pages and a cart view. Hasty: the buyer's words only; search results with product number, listing title and price; no product page and no cart view.
+
+Neither is told to make a mistake, and no mistake is written in by code. It is a live model, so the same instruction can end differently from one run to the next. The catalog makes a mistake possible: a cheaper copy whose shipping and tax push the total over the limit, listing titles that hide the scent or the connector, multi-packs, sponsored listings first. We changed the hasty agent once before measuring: at first its product numbers spelled out the variant (`SOAP-LAV`, `AAA24`) and it could open product pages, and it got 3 of 4 right; product numbers became plain numbers and the hasty agent lost the product page and cart tools.
+
+**Measured on 2026-11-12, PayPal sandbox, live Claude for the agent and for the checks.** 12 runs, each with a fresh buyer: careful and hasty, 6 each, on the 4 prepared instructions. There is no answer key for a live run. We read each paid run's agent log and PayPal order and wrote down who was responsible after the purchase and before any report or check ran (file fingerprint fixed first). Every run was then reported with the same sentence, "This is not what I asked the agent to buy." Targets were written before measuring.
+
+| What | Target | Result |
+|---|---|---|
+| Paid runs that went purchase → report → refund → two keys → settle (re-charge when the buyer was responsible) → ledger check without an error | ≥ 90 % | 8/8 |
+| Two keys agreed and matched the person's answer | ≥ 80 % of paid runs | 8/8 (5 buyer responsible, 3 agent responsible); none went to a person |
+| Hasty runs that bought off the mandate | ≥ 3 of 6 | 3 of 6 (coffee maker $46.90 over a $45 limit, twice; a USB-C to Lightning cable at $21.02 when a USB-C to USB-C cable under $20 was asked); the other 3 did not pay |
+| Buyer charged again when the person's answer was not "buyer" | 0 | 0 |
+| Ledger equals PayPal lookups | every finished run | 8/8 |
+| AI cost of the whole measurement | ≤ $0.50 | $0.024 (agent 51 calls, $0.011; checks 13 calls, $0.013) |
+
+Reported without a target: the careful agent paid 5 of 6 times, each purchase within every condition, and in the 6th ("put it in the cart, don't pay") it did not pay. The hasty agent stopped without paying twice on the dish soap, because its listings did not say the scent, and once put AAA batteries in the cart when AA were asked, without paying. Refund 2.06–3.77 s. The deep check named the first step off as the pay step (over the limit) or the add-to-cart step (wrong connector), with the quote found in that step, in all 3 agent-responsible runs, and no step in the 5 buyer-responsible runs. An agent run took 3 to 6 model calls, about $0.001.
+
+On the hosted demo the live agent is capped: 15 runs a day for all visitors, 3 per workspace, 16 model calls per run, and the same overall AI spending cap as the checks.
+
 ## What is simulated, and what is only true in the sandbox
 
 - **Simulated:** shipping and returns; the store's records; waiting periods (a fast-forward button moves the policy clock only); the agent operator paying its invoice.
-- **Constructed by us:** the 30 cases, the agents' numbered action logs, the store records and the answer key.
+- **Constructed by us:** the 30 cases, the agents' numbered action logs, the store records and the answer key. For the live agent: the catalog, its stores and the 4 prepared instructions (the live agent's log is its own).
 - **Sandbox only:** charging a saved PayPal wallet without the buyer present requires PayPal's approval (billing agreements / reference transactions) on live accounts.
 - **Policy numbers are assumptions:** $50 per case, 2 instant refunds per 30 days, 5 business days' notice (the same notice period PayPal's buyer protection terms give before recovering a temporary refund). The way a buyer's record moves the limit (±$25 and ±1 refund per case, at most two cases up, 180 days) is an assumption too, not based on measured abuse or loss data; all of it is in settings (`POLICY_TRUST_*`).
 
@@ -152,7 +180,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 105 tests against an in-memory PayPal stand-in
+npm test                       # 112 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 
@@ -168,7 +196,7 @@ ANTHROPIC_API_KEY=...
 STORE_PAYPAL_EMAIL=...         # optional: a sandbox business account that receives store payouts
 ```
 
-Scripts: `node scripts/loop.mjs` (cases end to end on the sandbox), `node scripts/abuse.mjs` (failure and abuse conditions on the sandbox), `node scripts/ai-eval.mjs` (the AI on all cases, no sandbox money moves). Live AI calls are capped per day and in total (`src/ai/budget.js`).
+Scripts: `node scripts/loop.mjs` (cases end to end on the sandbox), `node scripts/abuse.mjs` (failure and abuse conditions on the sandbox), `node scripts/ai-eval.mjs` (the AI on all cases, no sandbox money moves), `node scripts/live-agent.mjs buy` then `report <answers.json>` (the live agent, in two phases so the person's answer is written before the checks run; `--fake-paypal` for a run without sandbox money). Live AI calls are capped per day and in total (`src/ai/budget.js`).
 
 ## Evidence
 
