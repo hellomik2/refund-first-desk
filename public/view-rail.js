@@ -1,5 +1,5 @@
 // The line of steps at the top of a case: where this case is now, and what comes next.
-import { S, $, esc, usd, signed, time, day, secs, humanize, label, linesSince, refundTiming, REASONS, FACT_LABELS, FACT_SHORT, INTEGRITY, RULES, WHO, WHO_SHORT, WHO_IN, DOCS, DOCS_IN, NOTICES, REVIEW_REASONS, ACCOUNTS, KINDS } from './shared.js';
+import { S, $, esc, sentences, usd, signed, time, day, secs, humanize, label, linesSince, refundTiming, REASONS, FACT_LABELS, FACT_SHORT, INTEGRITY, RULES, WHO, WHO_SHORT, WHO_IN, DOCS, DOCS_IN, NOTICES, REVIEW_REASONS, ACCOUNTS, KINDS } from './shared.js';
 
 // ---- the line: the order of operations is the product ------------------------------------------------
 const lockIcon = (open) =>
@@ -91,7 +91,7 @@ export function railHtml(cur, working) {
   const caption = now ? `${now.name}: ${now.sub}` : 'Nothing has happened yet';
   const { title, lead } = scene(cur, working, verifyFirst);
   return `<ol class="rail" aria-label="Steps of this case, in order">${items}</ol><p class="rail-now">${esc(caption)}</p>
-    <div class="rail-head"><h2>${esc(title)}</h2>${lead ? `<p>${esc(lead)}</p>` : ''}</div>`;
+    <div class="rail-head"><h2>${sentences(title)}</h2>${lead ? `<p>${sentences(lead)}</p>` : ''}</div>`;
 }
 
 /** The headline of the moment on screen: one sentence for where this case is now, from server state only. */
@@ -118,7 +118,7 @@ function scene({ mandate, order, kase: k }, working, verifyFirst) {
   if (k.status === 'HUMAN_REVIEW') return { title: 'The two keys differ. A person decides.', lead: 'Nothing is charged or paid out meanwhile.' };
   if (v?.liable === 'BUYER') {
     if (!k.refund?.completedAt) return { title: 'The order matches what the buyer approved. No refund.', lead: 'The check came first here, so there is nothing to take back.' };
-    if (r?.status === 'COMPLETED') return { title: 'After the notice period, charged again.', lead: 'Never for more than was refunded.' };
+    if (r?.status === 'COMPLETED') return { title: 'Charged again after the notice period.', lead: 'Never for more than was refunded.' };
     if (r?.status === 'HALTED') return { title: 'The re-charge is stopped. The buyer keeps the refund.' };
     return { title: 'Here the buyer was responsible: notice first.', lead: 'A dispute before the date stops the charge.' };
   }
@@ -129,6 +129,6 @@ function scene({ mandate, order, kase: k }, working, verifyFirst) {
   }
   if (k.refund?.completedAt && !verifyFirst) return { title: 'The buyer reported it. The money went back first.', lead: working === 'investigate' ? 'Now the checks run.' : '' };
   if (verifyFirst && k.refund?.completedAt) return { title: 'Checked first, then refunded.', lead: 'Over the instant-refund limit, so the check came before the refund.' };
-  if (verifyFirst) return { title: 'Over the instant-refund limit, so the desk checks first.', lead: 'If it was not the buyer, the refund follows within 5 minutes.' };
+  if (verifyFirst) return { title: 'Over the instant-refund limit, so the desk checks first.', lead: 'If it was not the buyer, the refund follows within 5 minutes. If a person has to decide, it can take longer.' };
   return { title: 'The buyer reported it. The refund goes out first.' };
 }

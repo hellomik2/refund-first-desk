@@ -161,6 +161,10 @@ function redraw(id, html, scope) {
   const keyOf = (d) => (d.querySelector('summary')?.textContent || '').replace(/\d+/g, '#'); // "latest 14" and "latest 15" are the same record
   const was = new Map([...el.querySelectorAll('details')].map((d) => [keyOf(d), d.open]));
   const typed = el.dataset.scope === scope ? new Map([...el.querySelectorAll('textarea[id], input[id]')].map((f) => [f.id, f.value])) : new Map();
+  // keep keyboard focus on the same control (matched by its id or data- attributes, or a record by its summary)
+  const had = el.contains(document.activeElement) ? document.activeElement : null;
+  const sel = had && (had.id ? `#${CSS.escape(had.id)}` : [...had.attributes].filter((a) => a.name.startsWith('data-')).map((a) => `[${a.name}="${CSS.escape(a.value)}"]`).join(''));
+  const sum = had?.tagName === 'SUMMARY' ? keyOf(had.parentElement) : null;
   el.innerHTML = html;
   el.dataset.scope = scope;
   for (const d of el.querySelectorAll('details')) {
@@ -169,6 +173,8 @@ function redraw(id, html, scope) {
   for (const f of el.querySelectorAll('textarea[id], input[id]')) {
     if (typed.has(f.id)) f.value = typed.get(f.id);
   }
+  const back = sel ? el.querySelector(had.tagName.toLowerCase() + sel) : sum !== null ? [...el.querySelectorAll('details')].find((d) => keyOf(d) === sum)?.querySelector('summary') : null;
+  back?.focus({ preventScroll: true });
 }
 
 // ---- events -----------------------------------------------------------------------------------------------

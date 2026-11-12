@@ -1,19 +1,20 @@
 /* The buyer's side. Colours, type and spacing come from the variables in styles.css. */
 
-/* the moment: one white surface, one big number */
-.moment { background: var(--c-surface); border-radius: var(--r-container); padding: var(--s6); box-shadow: var(--shadow-low); margin-bottom: var(--s4); }
+/* the moment: one white surface, one big number. The refund moment is the one section on a colour (.point). */
+.moment { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-container); padding: var(--s8); margin-bottom: var(--gap); }
+.moment.point { background: var(--c-success); border-color: var(--c-success); color: #fff; }
+.moment.point .m-label, .moment.point .giant, .moment.point .giant.green, .moment.point .giant small, .moment.point .m-line, .moment.point .quote { color: #fff; }
 .moment .m-label, .moment .big { font-size: var(--f-base); font-weight: 400; color: var(--c-text); }
 .moment.stamp.go .big { color: var(--c-text-green); font-weight: 700; }
 .moment.stamp.wait .big { color: var(--c-text-yellow); font-weight: 700; }
 .moment.stamp.info .big { font-weight: 700; }
 .moment .giant { font-size: var(--f-giant); font-weight: 700; line-height: 0.95; letter-spacing: -0.04em; margin: var(--s2) 0 var(--s3); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.moment .giant.long { font-size: calc(var(--f-giant) * 0.7); }
 .moment .giant.green { color: var(--c-success); }
 .moment .giant.yellow { color: var(--c-text-yellow); }
 .moment .giant small { font-size: var(--f-lg); letter-spacing: -0.01em; font-weight: 700; color: var(--c-text-2); }
 .moment .m-line { font-size: var(--f-base); }
-.moment .quote { margin-top: var(--s3); }
-.moment .row { margin-top: var(--s4); }
+.moment .quote { margin-top: var(--s4); }
+.moment .row { margin-top: var(--s5); }
 .seq { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s2); }
 .seq li { display: grid; grid-template-columns: 6.5rem 1fr; gap: var(--s3); align-items: baseline; }
 .seq time { font-size: var(--f-sm); color: var(--c-text-2); font-variant-numeric: tabular-nums; }
@@ -32,10 +33,10 @@ details.card.fold > summary { font-weight: 700; color: var(--c-text); }
 details.card.fold[open] > summary { margin-bottom: var(--s3); }
 
 /* notices, as sent */
-.phone { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-container); padding: var(--s4); margin-bottom: var(--s3); }
+.phone { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-container); padding: var(--s5) var(--s6); margin-bottom: var(--gap); }
 .phone-h { font-size: var(--f-sm); color: var(--c-text-2); margin-bottom: var(--s2); }
-.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
-.note { border-radius: var(--r-element); padding: var(--s2) var(--s3); background: var(--c-body); border-left: 4px solid var(--c-accent-muted); }
+.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.note { border-radius: var(--r-element); padding: var(--s3) var(--s4); background: var(--c-surface); border: 1px solid var(--c-border); border-left: 4px solid var(--c-accent-muted); }
 .note.n-go { border-left-color: var(--c-success); }
 .note.n-wait { border-left-color: var(--c-take); }
 .note .nt { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); }
@@ -54,7 +55,5 @@ details.card.fold[open] > summary { margin-bottom: var(--s3); }
 
 @media (max-width: 760px) {
   .moment { padding: var(--s5); }
-  .moment .giant { font-size: 4rem; }
-  .moment .giant.long { font-size: var(--f-xl); }
   .seq li { grid-template-columns: 1fr; gap: 0; }
 }

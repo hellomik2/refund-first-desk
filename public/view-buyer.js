@@ -1,6 +1,6 @@
 // The buyer's side: what the person sees, from the instruction to the last notice.
 // On top, the moment: one big number for where this purchase is now, from server state only.
-import { S, esc, usd, time, day, secs, humanize, label, refundTiming, REASONS, NOTICES } from './shared.js';
+import { S, esc, sentences, usd, time, day, secs, humanize, label, refundTiming, REASONS, NOTICES } from './shared.js';
 import { limitCard } from './casebook.js';
 import { unpaidOrderView } from './payment.js';
 
@@ -49,10 +49,11 @@ function moment({ mandate, order, kase: k }, working) {
     };
   }
   if (refunded && k.path === 'REFUND_FIRST') {
-    return { label: 'Seconds after the report', giant: big(secs(k.refund.completedAtMs - k.receivedAtMs).replace(' s', ''), 's'), tone: 'green', line: 'PayPal refund status: COMPLETED.', quote };
+    // the one section on a colour background: the money went back first
+    return { label: 'Seconds after the report', giant: big(secs(k.refund.completedAtMs - k.receivedAtMs).replace(' s', ''), 's'), tone: 'green', point: true, line: sentences(`${usd(k.refund.amountCents)} refunded. PayPal refund status: COMPLETED.`), quote };
   }
   if (refunded) return { label: 'Refunded after the check', giant: big(usd(k.refund.amountCents)), tone: 'green', line: `${esc(refundTiming(k))}. PayPal refund status: COMPLETED.`, quote };
-  if (k.path === 'VERIFY_FIRST') return { label: 'Checked before any refund', giant: big(usd(order.totalCents)), line: 'If it was not your mistake, the refund follows within 5 minutes.', quote };
+  if (k.path === 'VERIFY_FIRST') return { label: 'Checked before any refund', giant: big(usd(order.totalCents)), line: 'If it was not your mistake, the refund follows within 5 minutes. If a person has to decide, it can take longer.', quote };
   return { label: 'Refund requested', giant: big(usd(k.refund?.amountCents ?? order.totalCents)), tone: 'yellow', line: k.refund ? `PayPal says ${esc(k.refund.status)}.` : 'On its way.', quote };
 }
 
@@ -98,8 +99,8 @@ function outcome(k) {
       label: 'Charged again',
       giant: big(usd(r.amountCents)),
       tone: 'yellow',
-      extra: `<ol class="seq">${noticeStep}<li><time datetime="${esc(r.at || '')}">${time(r.at)}</time><span>Charged from the saved wallet, no dispute on file.</span></li></ol>
-        <p class="fine">PayPal capture <code>${esc(r.captureId)}</code>.</p>${asSent}`,
+      extra: `<ol class="seq">${noticeStep}<li><time datetime="${esc(r.at || '')}">${time(r.at)}</time><span>Charged from the saved wallet, no dispute on file.${S.state.clock?.fastForwarded ? ' <span class="tag sim">notice period fast-forwarded: simulated</span>' : ''}</span></li></ol>
+        <p class="fine">PayPal capture <code>${esc(r.captureId)}</code>, in the sandbox. On live accounts, charging a saved wallet without the buyer needs PayPal's approval.</p>${asSent}`,
     };
   }
   if (r.status === 'HALTED') {
@@ -126,7 +127,7 @@ function momentHtml(m) {
   const g = m.giant;
   const long = g.value.length > 7 ? ' long' : '';
   const head = m.stamp ? `<p class="big">${esc(m.label)}</p>` : `<p class="m-label">${esc(m.label)}</p>`;
-  return `<div class="moment${m.stamp ? ` stamp ${m.stamp}` : ''}">${head}
+  return `<div class="moment${m.stamp ? ` stamp ${m.stamp}` : ''}${m.point ? ' point' : ''}">${head}
     <p class="giant${m.tone ? ` ${m.tone}` : ''}${long}">${esc(g.value)}${g.unit ? `<small> ${esc(g.unit)}</small>` : ''}</p>
     ${m.line ? `<p class="m-line">${m.line}</p>` : ''}${m.extra || ''}${m.quote || ''}${m.act || ''}</div>`;
 }

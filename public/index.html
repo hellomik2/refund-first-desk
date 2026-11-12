@@ -24,12 +24,12 @@
   </header>
 
   <section class="hero wrap" aria-labelledby="hero-h">
-    <h1 id="hero-h">Trust the buyer first. If that was wrong, give notice and take it back.</h1>
     <p class="tagline">For purchases made by AI shopping agents, on PayPal.</p>
+    <h1 id="hero-h"><span class="ln">Trust the buyer first.</span> <span class="ln">If that was wrong, give notice and take it back.</span></h1>
     <ol class="promise-steps" aria-label="The order this desk works in">
-      <li class="ps ps-first"><span class="ps-n" aria-hidden="true">1</span><strong>Refund first</strong><span class="ps-t">Back in seconds, before the purchase is checked.</span><span class="ps-f">Within the buyer's instant-refund limit: $50 a case and 2 refunds per 30 days to start.</span></li>
-      <li class="ps ps-check"><span class="ps-n" aria-hidden="true">2</span><strong>Then check</strong><span class="ps-t">A re-charge, the store's payout or an agent invoice happens only when AI and code rules give the same answer.</span><span class="ps-f">If they differ, a person decides and nothing is charged meanwhile.</span></li>
-      <li class="ps ps-back"><span class="ps-n" aria-hidden="true">3</span><strong>Take it back only if the buyer was responsible</strong><span class="ps-t">Notice first, 5 business days to dispute.</span><span class="ps-f">A dispute stops it. Never more than was refunded.</span></li>
+      <li class="ps ps-first"><span class="ps-n" aria-hidden="true">1</span><strong>Refund first</strong><span class="ps-t">Back in seconds, <span class="nw">before the purchase is checked.</span></span><span class="ps-f">Within the buyer's instant-refund limit: $50 a case and 2 refunds per 30 days to start.</span></li>
+      <li class="ps ps-check"><span class="ps-n" aria-hidden="true">2</span><strong>Then check</strong><span class="ps-t">A re-charge, the store's payout or an invoice entry for the agent happens on its own only when AI and code rules agree.</span><span class="ps-f">If they differ, a person decides and nothing is charged meanwhile.</span></li>
+      <li class="ps ps-back"><span class="ps-n" aria-hidden="true">3</span><strong>Take it back only if the buyer was responsible</strong><span class="ps-t">Notice first, 5 business days to dispute.</span><span class="ps-f"><span class="ln">A dispute stops it.</span> <span class="ln">Never more than was refunded.</span></span></li>
     </ol>
     <p class="disclosure" id="disclosure">Sandbox money, real PayPal API calls. <strong>Prepared cases and their answer key are written by us.</strong> Shipping, store records and waiting periods are simulated; fast-forward moves the policy clock only. More in "What is simulated or written by us" at the bottom.</p>
   </section>
@@ -37,15 +37,15 @@
   <div class="starts wrap">
     <section class="picker" aria-labelledby="picker-h">
       <div class="picker-head">
-        <h2 id="picker-h">Run a prepared case</h2>
-        <p class="hint">Agent logs and answer key written by us. Each case makes a real sandbox payment.</p>
+        <h2 id="picker-h"><span class="tag sim">written by us</span>Run a prepared case</h2>
+        <p class="hint">Agent logs and answer key written by us. Each case makes a real sandbox payment and replays Claude's recorded answers.</p>
       </div>
       <div class="cases" id="cases"></div>
     </section>
 
     <section class="picker live" aria-labelledby="live-h">
       <div class="picker-head">
-        <h2 id="live-h">Watch a live AI agent shop <span class="tag real">live AI</span></h2>
+        <h2 id="live-h"><span class="tag real">live AI</span>Watch a live AI agent shop</h2>
         <p class="hint">Claude shops a catalog we wrote. Its log is its own; there is no answer key.</p>
       </div>
       <div class="cases" id="live-prompts"></div>

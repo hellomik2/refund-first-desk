@@ -37,7 +37,7 @@ let last = { state: null, cases: [] };
 export function refreshCaseBook(state, cases) {
   if (!state) return;
   last = { state, cases };
-  const sig = `${state.workspace}|${state.cases.map((c) => `${c.id}:${c.status}`).join(',')}`;
+  const sig = `${state.workspace}|${state.cases.map((c) => `${c.id}:${c.status}:${c.verdict?.liable || ''}:${c.recharge?.status || ''}`).join(',')}`; // a verdict or a re-charge changes the book too
   if (sig === signature || sig === refreshCaseBook.asking) return draw();
   refreshCaseBook.asking = sig;
   fetch(`/api/casebook?ws=${encodeURIComponent(state.workspace)}`, { cache: 'no-store' })
@@ -89,7 +89,7 @@ function strip(book) {
 function agentCards(book, max) {
   return book.agents
     .map((a) => `<article class="card cb-agent"><h3>${esc(a.name)}</h3>
-      <p class="sub"><b class="num">${a.cases}</b> case${a.cases === 1 ? '' : 's'} · left the mandate at its own step in <b class="num">${a.deviations}</b> · at fault in <b class="num">${a.outcomes.AGENT}</b></p>
+      <p class="sub"><b class="num">${a.cases}</b> case${a.cases === 1 ? '' : 's'} · left the mandate at its own step in <b class="num">${a.deviations}</b> · responsible in <b class="num">${a.outcomes.AGENT}</b></p>
       ${rows(a, max, 'agent')}</article>`)
     .join('');
 }
@@ -128,7 +128,7 @@ function limitPanel(state, cases) {
     .join('');
   const p = state.policy || {};
   return `<article class="card cb-limit">
-    <p class="cb-msg">Instant-refund limit for the next purchase</p>
+    <p class="cb-msg"><span class="tag sim">assumption, not measured</span> Instant-refund limit for the next purchase</p>
     <p class="cb-giant ${dir}">${usd(now)}<small> a case</small></p>
     <p class="cb-msg"><b class="num">${l.refundsPer30Days}</b> instant refund${l.refundsPer30Days === 1 ? '' : 's'} per 30 days${now === 0 || l.refundsPer30Days === 0 ? ': every purchase is checked first' : ''}</p>
     <div class="cb-scale" role="img" aria-label="Instant-refund limit ${usd(now)} a case, started at ${usd(start)}, on a ${usd(0)} to ${usd(max)} scale">
@@ -174,9 +174,9 @@ function draw() {
   const html = `<div class="cb-head">
       <div><h2 id="cb-h">Case book: what to fix in the agent</h2>
       <p class="hint">For the agent's operator. Bar length = cases, colour = who was found responsible.</p></div>
-      <div class="cb-tabs" role="tablist">
-        <button role="tab" class="ghost" data-cb="workspace" aria-selected="${!measured}">This workspace · ${ws?.cases ?? 0}</button>
-        <button role="tab" class="ghost" data-cb="measured" aria-selected="${measured}">30 measured cases</button>
+      <div class="cb-tabs" role="group" aria-label="Which cases">
+        <button class="ghost" data-cb="workspace" aria-pressed="${!measured}">This workspace · ${ws?.cases ?? 0}</button>
+        <button class="ghost" data-cb="measured" aria-pressed="${measured}">30 measured cases</button>
       </div></div>${body}`;
   // The page redraws often (every state read while an action runs); an unchanged book is left alone so an opened quote stays open.
   if (html === drawn) return;

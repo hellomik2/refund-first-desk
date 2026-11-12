@@ -165,7 +165,7 @@ function movedList(lines) {
     .join('')}</ul>`;
 }
 
-const RULE_LINE = "A re-charge, the store's payout or an agent invoice happens only when they give the same answer.";
+const RULE_LINE = "A re-charge, the store's payout or an invoice entry for the agent happens on its own only when they agree.";
 
 function keysCard(k, order, working, now) {
   const inv = k.investigation;

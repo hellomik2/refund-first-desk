@@ -1,19 +1,20 @@
 /* ---- case book: one big number per view, counts as bar lengths, coloured by who was found responsible ---- */
-.casebook { padding-top: var(--s8); padding-bottom: var(--s4); }
-.cb-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s3) var(--s6); flex-wrap: wrap; margin-bottom: var(--s4); }
+.casebook { padding-top: var(--s12); padding-bottom: 0; }
+.cb-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s4) var(--s8); flex-wrap: wrap; margin-bottom: var(--gap); }
 .cb-head h2 { font-size: var(--f-xl); line-height: 1.12; letter-spacing: -0.02em; }
 .cb-head .hint { margin-top: var(--s2); }
 .cb-tabs { display: flex; gap: var(--s2); flex-wrap: wrap; }
-.cb-tabs button.ghost[aria-selected="true"] { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+.cb-tabs button.ghost[aria-pressed="true"] { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
 button.linkish { background: none; border: 0; padding: 0; color: var(--c-info); text-decoration: underline; font-size: inherit; }
 
 /* left: the big number; right: what the desk counted */
-.cb-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--s4) var(--s8); align-items: start; }
+.cb-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--gap) var(--s10); align-items: start; }
 .cb-col { min-width: 0; }
-.cb-right { border-left: 1px solid var(--c-border-em); padding-left: var(--s8); }
+.cb-right { border-left: 1px solid var(--c-border); padding-left: var(--s10); }
 .cb-label { font-size: var(--f-sm); color: var(--c-text-2); margin-bottom: var(--s2); }
-.cb-hero, .cb-limit { box-shadow: var(--shadow-low); border: 0; padding: var(--s6); }
+.cb-hero, .cb-limit { padding: var(--s8); }
 .cb-msg { font-size: var(--f-base); }
+.cb-msg .tag { margin-right: var(--s2); }
 .cb-giant { font-size: var(--f-giant); font-weight: 700; line-height: 0.95; letter-spacing: -0.04em; margin: var(--s2) 0 var(--s3); font-variant-numeric: tabular-nums; }
 .cb-giant small { font-size: var(--f-lg); letter-spacing: -0.01em; color: var(--c-text-2); }
 .cb-giant.up { color: var(--c-success); }
@@ -22,23 +23,24 @@ button.linkish { background: none; border: 0; padding: 0; color: var(--c-info); 
 
 /* all cases as one strip, with the legend */
 .cb-strip { display: flex; height: 40px; border-radius: var(--r-inner); overflow: hidden; background: var(--c-accent-muted); margin-top: var(--s5); }
-.cb-strip .seg { display: grid; place-items: center; color: #fff; font-weight: 700; font-size: var(--f-sm); min-width: 0; overflow: hidden; }
+.cb-strip .seg { display: grid; place-items: center; color: #000; /* dark numbers on the light colours; white on the dark ones below */ font-weight: 700; font-size: var(--f-sm); min-width: 0; overflow: hidden; }
 .cb-strip .seg + .seg, .cb-bar .seg + .seg { border-left: 2px solid var(--c-surface); }
 .cb-total .cb-strip { height: 20px; margin-top: var(--s2); }
 .cb-legend { list-style: none; padding: 0; margin: var(--s2) 0 0; display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); font-size: var(--f-sm); color: var(--c-text-2); }
 .cb-legend li { display: flex; align-items: center; gap: 6px; }
 .cb-legend b { color: var(--c-text); }
-.sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.sw { width: 12px; height: 12px; border-radius: var(--r-inner); display: inline-block; }
 .seg, .sw { background: var(--c-accent-muted); }
 .o-AGENT { background: var(--c-accent); }
 .o-STORE { background: var(--c-info); }
+.cb-strip .seg.o-AGENT, .cb-strip .seg.o-STORE, .cb-strip .seg.o-HUMAN_REVIEW { color: #fff; }
 .o-BUYER { background: var(--c-take); }
 .o-UNDETERMINED { background: #919191; }
-.o-HUMAN_REVIEW { background: repeating-linear-gradient(45deg, var(--c-error) 0 4px, #ffc4be 4px 8px); }
+.o-HUMAN_REVIEW { background: var(--c-error); }
 .o-OPEN { background: var(--c-accent-muted); }
 
 /* one row per condition (or store): name, bar, count; opening it shows the quoted log line */
-.cb-agent h3, .cb-stores h3 { font-size: var(--f-base); }
+.cb-agent h3, .cb-stores h3 { font-size: var(--f-md); }
 .cb-rows { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s2); }
 .cb-cond { margin: 0; }
 .cb-cond summary { display: grid; grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr) 2rem; gap: var(--s3); align-items: center; color: var(--c-text); font-size: var(--f-base); list-style: none; }
@@ -47,7 +49,7 @@ button.linkish { background: none; border: 0; padding: 0; color: var(--c-info); 
 .cb-track { display: block; height: 18px; border-radius: var(--r-inner); background: #00000008; overflow: hidden; }
 .cb-bar { display: flex; height: 100%; }
 .cb-n { font-weight: 700; text-align: right; }
-.cb-quote { margin: var(--s2) 0 var(--s1); padding: var(--s2) var(--s3); background: var(--c-body); border-radius: var(--r-inner); font-size: var(--f-sm); overflow-wrap: anywhere; }
+.cb-quote { margin: var(--s2) 0 var(--s1); padding: var(--s2) var(--s3); background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-inner); font-size: var(--f-sm); overflow-wrap: anywhere; }
 .cb-at { color: var(--c-text-2); margin-right: var(--s1); }
 .cb-cond .sub { margin-top: var(--s1); }
 .cb-stores .cb-cond summary { grid-template-columns: minmax(7rem, 10rem) minmax(0, 1fr) 2rem; }
@@ -55,16 +57,16 @@ button.linkish { background: none; border: 0; padding: 0; color: var(--c-info); 
 
 /* the instant-refund limit: position on $0 to $100 against where it started */
 .cb-scale { position: relative; height: 56px; margin: var(--s6) 10px var(--s4); }
-.cb-scale .rail { position: absolute; left: 0; right: 0; top: 26px; height: 4px; background: var(--c-accent-muted); border-radius: 2px; }
-.cb-scale .moved { position: absolute; top: 24px; height: 8px; border-radius: 4px; }
+.cb-scale .rail { position: absolute; left: 0; right: 0; top: 26px; height: 4px; background: var(--c-accent-muted); border-radius: var(--r-inner); }
+.cb-scale .moved { position: absolute; top: 24px; height: 8px; border-radius: var(--r-inner); }
 .cb-scale .moved.up, .cb-scale .dot.up { background: var(--c-success); }
 .cb-scale .moved.dn, .cb-scale .dot.dn { background: var(--c-take); }
 .cb-scale .mark { position: absolute; top: -6px; transform: translateX(-50%); font-size: var(--f-sm); color: var(--c-text-2); white-space: nowrap; }
 .cb-scale .mark::after { content: ""; display: block; width: 2px; height: 20px; margin: 2px auto 0; background: var(--c-text-3); }
-.cb-scale .dot { position: absolute; top: 18px; width: 20px; height: 20px; border-radius: 50%; background: var(--c-accent); border: 3px solid #fff; box-shadow: var(--shadow-low); transform: translateX(-50%); }
+.cb-scale .dot { position: absolute; top: 18px; width: 20px; height: 20px; border-radius: var(--r-element); background: var(--c-accent); border: 3px solid #fff; box-shadow: var(--shadow-low); transform: translateX(-50%); }
 .cb-scale .end { position: absolute; top: 38px; left: 0; font-size: var(--f-sm); color: var(--c-text-3); }
 .cb-scale .end.r { left: auto; right: 0; }
-.cb-limit h4 { font-size: var(--f-base); margin-top: var(--s2); }
+.cb-limit h4 { font-size: var(--f-md); margin-top: var(--s2); }
 .cb-basis { list-style: none; padding: 0; margin: var(--s2) 0 0; display: grid; gap: var(--s2); font-size: var(--f-sm); }
 .cb-basis li { padding-left: var(--s3); border-left: 3px solid var(--c-accent-muted); }
 .cb-basis li.up { border-color: var(--c-success); }
@@ -78,9 +80,8 @@ button.linkish { background: none; border: 0; padding: 0; color: var(--c-info); 
   .cb-right { border-left: 0; padding-left: 0; border-top: 1px solid var(--c-border-em); padding-top: var(--s4); }
 }
 @media (max-width: 600px) {
-  .cb-head h2 { font-size: var(--f-lg); }
+  .cb-head h2 { font-size: 1.75rem; } /* 28px: the smallest headline size */
   .cb-hero, .cb-limit { padding: var(--s5); }
-  .cb-giant { font-size: 4rem; }
   .cb-cond summary, .cb-stores .cb-cond summary { grid-template-columns: minmax(0, 1fr) 2rem; row-gap: var(--s1); }
   .cb-cond summary .cb-k { grid-column: 1 / -1; }
 }

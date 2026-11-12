@@ -1,22 +1,23 @@
 /* The start of the page: two start cards under the hero, each a list of compact rows.
    Colours, type and spacing come from the variables in styles.css. */
-.starts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s6); align-items: start; padding-top: var(--s6); }
-.picker { background: var(--c-surface); border-radius: var(--r-container); box-shadow: var(--shadow-low); padding: var(--s5) var(--s6); min-width: 0; }
-.picker-head { margin-bottom: var(--s3); }
-.picker h2 { font-size: var(--f-lg); line-height: 1.25; letter-spacing: -0.01em; display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+.starts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap); align-items: start; padding-top: var(--s12); }
+.picker { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-container); padding: var(--s6); min-width: 0; }
+.picker-head { margin-bottom: var(--s4); }
+/* keyword chip, then the title, then one line of body */
+.picker h2 { font-size: var(--f-lg); line-height: 1.25; letter-spacing: -0.01em; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s3); }
 .picker h2 .tag { letter-spacing: 0; }
-.picker .hint { margin-top: var(--s1); }
+.picker .hint { margin-top: var(--s2); }
 
 /* a row: title left, amount or spending limit right */
 .case { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: var(--s3); min-height: 48px; margin: 0; padding: var(--s2) var(--s3); background: transparent; border: 0; border-top: 1px solid var(--c-border); border-radius: 0; color: var(--c-text); font-size: var(--f-base); text-align: left; }
 .case .t { min-width: 0; }
 .case .tag { display: block; width: fit-content; margin-top: var(--s1); }
 .case .r { flex: none; color: var(--c-text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.case:hover:not(:disabled) { background: #0000000a; }
-.case[aria-pressed="true"] { background: var(--c-body); box-shadow: inset 4px 0 0 var(--c-accent); font-weight: 700; }
+.case:hover:not(:disabled), .more:hover { background: var(--c-tint); }
+.case:disabled, .case:disabled .r, .more:disabled { color: var(--c-text-2); }
+.case[aria-pressed="true"] { background: var(--c-surface); box-shadow: inset 4px 0 0 var(--c-accent); font-weight: 700; }
 .case[aria-pressed="true"] .r { color: var(--c-text); }
 .more { width: 100%; min-height: 48px; padding: var(--s2) var(--s3); background: transparent; border: 0; border-top: 1px solid var(--c-border); color: var(--c-text); font-weight: 700; text-align: left; }
-.more:hover { background: #0000000a; }
 .cases .off { padding: var(--s2) var(--s3) 0; border-top: 1px solid var(--c-border); }
 
 /* the live agent: your own words, then how it works */
@@ -32,7 +33,7 @@
 .catalog { min-width: 520px; }
 
 @media (max-width: 760px) {
-  .starts { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
-  .picker { padding: var(--s4) var(--s4); }
+  .starts { grid-template-columns: minmax(0, 1fr); gap: var(--gap); padding-top: var(--s10); }
+  .picker { padding: var(--s5); }
   .case, .more { padding: var(--s2) var(--s2); }
 }
