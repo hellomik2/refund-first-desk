@@ -62,3 +62,18 @@ test('while the book is read again, a new limit is never drawn next to the old b
   assert.match(el.innerHTML, /store's fault/);
   assert.doesNotMatch(el.innerHTML, /responsible in <b class="num">1<\/b>/);
 });
+
+// codex UI 3: the verdict lands while the book is being read. The answer's book already has it; the limit must come
+// from the same moment, never from the state the request started with.
+test('a verdict that lands between the request and the answer: the limit and the book come from the same moment', async () => {
+  const { refreshCaseBook } = await import('../public/casebook.js');
+  const open = { ...state(null, 5000), workspace: 'w2' };
+  refreshCaseBook(open, []);
+  const answer2 = { ...answer('AGENT'), buyerLimits: limits(7500) }; // the server read the book and the limit after the verdict
+  asked.at(-1)(answer2);
+  await tick();
+  const html = el.innerHTML;
+  assert.ok(!(html.includes('$50<small>') && html.includes('responsible in <b class="num">1</b>')), 'the old limit drawn next to a book that already has the verdict');
+  assert.match(html, /\$75<small>/);
+  assert.match(html, /responsible in <b class="num">1<\/b>/);
+});

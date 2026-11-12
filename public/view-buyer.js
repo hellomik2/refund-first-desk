@@ -43,6 +43,7 @@ function moment({ mandate, order, kase: k }, working) {
     return {
       label: 'A person is checking',
       giant: big('Review'),
+      word: true, // a word, not the one big number: headline size
       tone: 'yellow',
       line: refunded ? `Your ${usd(k.refund.amountCents)} refund stays with you. Nothing is charged until a person decides.` : 'The refund waits for a person. Nothing is charged meanwhile.',
       quote,
@@ -137,7 +138,7 @@ const lineBreaks = (html) => (html.includes('class="ln"') ? html : html.split(/(
 function momentHtml(m) {
   if (!m) return '';
   const g = m.giant;
-  const long = g.value.length > 7 ? ' long' : '';
+  const long = m.word ? ' word' : g.value.length > 7 ? ' long' : '';
   const head = m.stamp ? `<p class="big">${esc(m.label)}</p>` : `<p class="m-label">${esc(m.label)}</p>`;
   return `<div class="moment${m.stamp ? ` stamp ${m.stamp}` : ''}${m.point ? ' point' : ''}">${head}
     <p class="giant${m.tone ? ` ${m.tone}` : ''}${long}">${esc(g.value)}${g.unit ? `<small> ${esc(g.unit)}</small>` : ''}</p>

@@ -153,6 +153,9 @@ function limitPanel(state, cases) {
     <p class="fine">Only this buyer's own decided cases from the last ${l.windowDays} days move it, ${usd(p.trustStepCents)} and one refund per case. Up: the agent's or store's fault (${p.trustMaxUp ?? 2} cases at most). Down: this buyer was responsible and charged again with no dispute. Fixed on the order at purchase. Agents' and stores' records never move it. <strong>The numbers are assumptions, not measured.</strong></p></article>`;
 }
 
+/** The state to draw the limit from: the buyer's limit read with the book, when the server sent one. */
+const atAnswer = () => ('buyerLimits' in (data || {}) ? { ...last.state, buyerLimits: data.buyerLimits } : last.state);
+
 function draw() {
   const el = $('casebook');
   if (!el || !data || !last.state) return;
@@ -175,11 +178,11 @@ function draw() {
       <section class="cb-col cb-right">${rightLabel}${agentCards(book, max)}${storesPanel(book, max)}</section></div>`;
   } else if (empty) {
     body = `<div class="cb-grid">
-      <section class="cb-col"><p class="cb-label">Next purchase for this buyer</p>${limitPanel(last.state, last.cases)}</section>
+      <section class="cb-col"><p class="cb-label">Next purchase for this buyer</p>${limitPanel(atAnswer(), last.cases)}</section>
       <section class="cb-col cb-right">${rightLabel}<p class="card sub">No case in this workspace yet. Run a case above, or open <button class="linkish" data-cb="measured">the 30 measured cases</button>.</p></section></div>`;
   } else {
     body = `<div class="cb-grid">
-      <section class="cb-col"><p class="cb-label">Next purchase for this buyer</p>${limitPanel(last.state, last.cases)}</section>
+      <section class="cb-col"><p class="cb-label">Next purchase for this buyer</p>${limitPanel(atAnswer(), last.cases)}</section>
       <section class="cb-col cb-right">${rightLabel}${agentCards(book, max)}
         <div class="card cb-total"><p class="sub">${book.cases} case${book.cases === 1 ? '' : 's'}, by who was found responsible</p>${strip(book)}</div>
         ${storesPanel(book, max)}</section></div>`;

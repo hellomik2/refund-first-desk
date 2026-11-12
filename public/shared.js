@@ -76,6 +76,16 @@ export const FACT_SHORT = {
   storeChargedAsOrdered: 'store charge',
   storeFulfilledAsOrdered: 'store shipment',
 };
+/** A condition that failed, in words that say the failure (the Case book uses the same words). */
+export const FACT_BROKEN = {
+  purchaseAuthorized: 'paid without permission',
+  itemMatchesMandate: 'wrong item',
+  quantityMatchesMandate: 'wrong quantity',
+  withinSpendingLimit: 'over the spending limit',
+  exclusionsRespected: 'included something ruled out',
+  storeChargedAsOrdered: 'charged other than the order',
+  storeFulfilledAsOrdered: 'shipped other than the order',
+};
 export const INTEGRITY = {
   MANDATE_RECORD_CHANGED_AFTER_APPROVAL: 'The mandate record changed after the buyer approved it',
   PAYPAL_ORDER_NOT_TIED_TO_THIS_MANDATE: 'The PayPal order does not carry this mandate',

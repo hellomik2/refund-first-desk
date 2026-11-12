@@ -1,5 +1,5 @@
 // The desk's side: each check as one short proof block (name, result, status, time), details folded away.
-import { S, esc, usd, time, day, secs, label, linesSince, REASONS, FACT_LABELS, FACT_SHORT, INTEGRITY, RULES, WHO_SHORT, WHO_IN, DOCS, DOCS_IN, REVIEW_REASONS, KINDS } from './shared.js';
+import { S, esc, usd, time, day, secs, label, linesSince, REASONS, FACT_LABELS, FACT_SHORT, FACT_BROKEN, INTEGRITY, RULES, WHO_SHORT, WHO_IN, DOCS, DOCS_IN, REVIEW_REASONS, KINDS } from './shared.js';
 import { unpaidOrderView } from './payment.js';
 import { aiKeySource, buyerKeysLine, deepAiSource, quickAiLine } from './ailabels.js';
 
@@ -80,7 +80,7 @@ function deepChip(inv) {
 function deepFinding(inv) {
   const fd = inv.firstDeviation || { kind: 'INSUFFICIENT' };
   const inLog = fd.kind === 'STEP' && (inv.steps || []).some((s) => s.step === fd.step);
-  if (inLog) return `<p class="pbig stop">Step ${esc(fd.step)}</p><p class="pr">The first step off the mandate${fd.condition ? `: ${esc(label(FACT_SHORT, fd.condition))}` : ''}.</p>`;
+  if (inLog) return `<p class="pbig stop">Step ${esc(fd.step)}</p><p class="pr">The first step off the mandate${fd.condition ? `: ${esc(label(FACT_BROKEN, fd.condition))}` : ''}.</p>`;
   if (fd.kind === 'STEP') return `<p class="pr">The investigator named step ${esc(fd.step)}, which is not in this log.</p>`;
   return `<p class="pr">${fd.kind === 'NONE' ? 'No step went off the mandate.' : 'The records are not enough to name a step.'}</p>`;
 }
@@ -194,10 +194,13 @@ function keysCard(k, order, working, now) {
 }
 
 /** One line under the two keys: where the agent first left the mandate, from the deep check below. */
-function firstOff(inv) {
+export function firstOff(inv) {
   const fd = inv.firstDeviation;
   if (fd?.kind !== 'STEP' || !(inv.steps || []).some((s) => s.step === fd.step)) return '';
-  return `<p class="first-off"><b>Step ${esc(fd.step)}</b> went off the mandate first${fd.condition ? ` · ${esc(label(FACT_SHORT, fd.condition))}` : ''}</p>`;
+  const what = fd.condition ? ` · ${esc(label(FACT_BROKEN, fd.condition))}` : '';
+  // stated as found only when code found the AI's quote in that step; otherwise it stays the AI's claim, as in the deep check card
+  if (!fd.verified) return `<p class="first-off unverified">AI named <b>Step ${esc(fd.step)}</b>${what} · quote not verified</p>`;
+  return `<p class="first-off"><b>Step ${esc(fd.step)}</b> went off the mandate first${what}</p>`;
 }
 
 function factsAndRecords(inv) {
@@ -226,7 +229,7 @@ function operatorPanel(k, working) {
       return `<button class="choice${who === 'BUYER' ? ' c-buyer' : ''}" data-act="resolve" data-liable="${who}" ${off || (blocked ? 'disabled' : '')}${blocked ? ' title="The quick check closed the re-charge for this order"' : ''}>${esc(WHO_SHORT[who])}</button>`;
     })
     .join('');
-  return `<div class="card proof op now"><div class="ph"><h3>A person decides</h3>${chip('wait', `waiting since ${time(rv.openedAt)}`)}</div>
+  return `<div class="card proof op now"><div class="ph">${chip('wait', `waiting since ${time(rv.openedAt)}`)}<h3>A person decides</h3></div>
     <p class="pr">${esc(label(REVIEW_REASONS, rv.reason))} Nothing moves until then: no re-charge, no store payout, no agent invoice.</p>
     ${inv?.codeKey && inv?.aiKey ? keysPair(inv) : ''}
     ${inv?.steps ? `<h4 class="op-sub">Where the agent left the mandate</h4>${deepFinding(inv)}${traceHtml(k)}` : ''}

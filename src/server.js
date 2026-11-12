@@ -58,6 +58,13 @@ function newWorkspace() {
 }
 
 // ---- what the browser is allowed to see -----------------------------------------------------------
+/** What the next purchase of a workspace's buyer would get, from the buyer's own record (fixed again at purchase). */
+function buyerLimitsOf(ctx) {
+  const d = ctx.db.data;
+  const buyer = Object.values(d.buyers)[0];
+  return buyer ? trustLimits({ policy: config.policy, buyerCases: Object.values(d.cases).filter((c) => c.buyerId === buyer.id), now: ctx.clock.now() }) : null;
+}
+
 function view(id, ctx) {
   const d = ctx.db.data;
   const buyers = Object.values(d.buyers).map((b) => ({
@@ -77,7 +84,7 @@ function view(id, ctx) {
     },
     policy: config.policy,
     // What the next purchase of this workspace's buyer would get, from the buyer's own record (fixed again at purchase).
-    buyerLimits: buyers[0] ? trustLimits({ policy: config.policy, buyerCases: Object.values(d.cases).filter((c) => c.buyerId === buyers[0].id), now: ctx.clock.now() }) : null,
+    buyerLimits: buyerLimitsOf(ctx),
     clock: { now: ctx.clock.now().toISOString(), fastForwarded: ctx.clock.isFastForwarded() },
     buyers,
     mandates: Object.values(d.mandates),
@@ -255,7 +262,9 @@ const server = createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/api/cases') return send(res, 200, { cases: CASES.map(publicCase) });
     if (req.method === 'GET' && url.pathname === '/api/casebook') {
       const id = url.searchParams.get('ws');
-      return send(res, 200, { workspace: id ? buildCaseBook(recordsFromState(workspace(id).db.data)) : null, measured: MEASURED_BOOK });
+      const ctx = id ? workspace(id) : null;
+      // the buyer's limit is read in the same moment as the book, so the two sides of the case book always agree
+      return send(res, 200, { workspace: ctx ? buildCaseBook(recordsFromState(ctx.db.data)) : null, buyerLimits: ctx ? buyerLimitsOf(ctx) : null, measured: MEASURED_BOOK });
     }
     if (req.method === 'GET' && url.pathname === '/api/catalog') {
       const { stores, products, prompts } = CATALOG;

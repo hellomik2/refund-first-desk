@@ -10,6 +10,7 @@
 .moment.stamp.info .big { font-weight: 700; }
 .moment .giant { font-size: var(--f-giant); font-weight: 700; line-height: 0.95; letter-spacing: -0.04em; margin: var(--s2) 0 var(--s3); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .moment .giant.green { color: var(--c-success); }
+.moment .giant.word { font-size: var(--f-xl); letter-spacing: -0.02em; } /* a word such as Review takes the 36px headline size */
 .moment .giant.yellow { color: var(--c-text-yellow); }
 .moment .giant small { font-size: var(--f-lg); letter-spacing: -0.01em; font-weight: 700; color: var(--c-text-2); }
 .moment .m-line { font-size: var(--f-base); }

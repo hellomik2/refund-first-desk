@@ -197,7 +197,7 @@ Node 20 or later.
 
 ```bash
 npm install
-npm test                       # 178 tests against an in-memory PayPal stand-in
+npm test                       # 181 tests against an in-memory PayPal stand-in
 npm start                      # http://localhost:8787
 ```
 

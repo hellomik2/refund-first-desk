@@ -111,3 +111,4 @@ button.choice:hover:not(:disabled) { background: var(--c-accent); color: #fff; }
 .records pre { white-space: pre-wrap; overflow-wrap: anywhere; font: var(--f-sm)/1.5 var(--font); background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-inner); padding: var(--s3); margin: var(--s1) 0 var(--s3); }
 .records h4 { margin: var(--s2) 0 0; font-size: var(--f-md); color: var(--c-text-2); }
 .first-off { margin: var(--s3) 0 0; font-size: var(--f-base); color: var(--c-text-red); } /* the first step off the mandate, under the two keys */
+.first-off.unverified { color: var(--c-text-2); }

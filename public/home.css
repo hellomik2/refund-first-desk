@@ -35,5 +35,5 @@
 @media (max-width: 760px) {
   .starts { grid-template-columns: minmax(0, 1fr); gap: var(--gap); padding-top: var(--s10); }
   .picker { padding: var(--s5); }
-  .case, .more { padding: var(--s3) var(--s3); }
+  .case, .more { padding: var(--s3) var(--s4); }
 }
