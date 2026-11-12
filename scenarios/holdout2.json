@@ -1,0 +1,455 @@
+{
+  "_note": "Hold-out cases X01..X10, new cases written on 2026-11-12 by a writer who did not open the AI instructions (nothing under src/ai/ was opened). Every case is made up for this demo; none is a real customer record. The answer key (expected.liable, expected.firstDeviation, expected.quickClose, firstDeviationQuote, firstDeviationCondition) was fixed before any AI run. fixtureFacts are hand-written stand-ins used only when the AI provider is 'fixture'.",
+  "cases": [
+    {
+      "id": "X01",
+      "title": "Agent picked the 10-inch clock, then the store sent it in black",
+      "instruction": "Order a silent wall clock, 12-inch, in white, up to $30. You can pay.",
+      "conditions": { "item": "silent wall clock, 12-inch, white", "quantity": 1, "maxTotalCents": 3000, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "tickwell", "name": "Tickwell Home" },
+      "cart": [
+        { "sku": "TW-SWC-10-WHT", "name": "Silent Wall Clock, 10-inch, White", "qty": 1, "unitCents": 1799 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 450 }
+      ],
+      "agentCart": [
+        { "sku": "TW-SWC-10-WHT", "name": "Silent Wall Clock, 10-inch, White", "qty": 1, "unitCents": 1799 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 450 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-01T09:10:04Z", "actor": "agent", "action": "search", "content": "Searching silent wall clocks, 12-inch, white, under $30." },
+        { "step": 2, "at": "2026-11-01T09:10:31Z", "actor": "agent", "action": "view", "content": "Tickwell Home: Silent Wall Clock, 12-inch, White, $22.99. Shipping $4.50." },
+        { "step": 3, "at": "2026-11-01T09:10:55Z", "actor": "agent", "action": "view", "content": "Tickwell Home: Silent Wall Clock, 10-inch, White, $17.99, same sweep movement." },
+        { "step": 4, "at": "2026-11-01T09:11:20Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Silent Wall Clock, 10-inch, White ($17.99).", "sku": "TW-SWC-10-WHT", "qty": 1, "amountCents": 1799 },
+        { "step": 5, "at": "2026-11-01T09:11:42Z", "actor": "agent", "action": "checkout", "content": "Checkout total $22.49 with $4.50 shipping.", "amountCents": 2249 },
+        { "step": 6, "at": "2026-11-01T09:11:58Z", "actor": "agent", "action": "pay", "content": "Paid $22.49 with the saved PayPal wallet.", "amountCents": 2249 },
+        { "step": 7, "at": "2026-11-02T14:05:00Z", "actor": "store", "action": "message", "content": "Tickwell Home: Your clock has shipped." }
+      ],
+      "storeRecord": [
+        "Order TW-4471 received from agent checkout.",
+        "Charged $22.49, same as the submitted cart.",
+        "Picker pulled Silent Wall Clock, 10-inch, Black from the shelf for this order.",
+        "Shipped: 1 x Silent Wall Clock, 10-inch, Black."
+      ],
+      "complaint": "I asked for a 12-inch white clock and a small black one arrived.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["no", "paypal_order", "1 x Silent Wall Clock, 10-inch, White"],
+        "quantityMatchesMandate": ["yes", "paypal_order", "1 x Silent Wall Clock, 10-inch, White"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $22.49"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["yes", "store_record", "Charged $22.49, same as the submitted cart."],
+        "storeFulfilledAsOrdered": ["no", "store_record", "Shipped: 1 x Silent Wall Clock, 10-inch, Black."]
+      },
+      "expected": { "liable": "STORE", "firstDeviation": 4, "quickClose": true },
+      "firstDeviationQuote": "Added 1 x Silent Wall Clock, 10-inch, White",
+      "firstDeviationCondition": "itemMatchesMandate",
+      "why": "R1 is checked before R2: the first deviation is the agent adding the 10-inch clock against a mandate for the 12-inch (step 4), but the store record says it shipped a black 10-inch clock in place of the white one that was ordered, so the store fact decides. The PayPal order already shows the 10-inch clock, so the quick check closes the re-charge path."
+    },
+    {
+      "id": "X02",
+      "title": "Agent took two packs of produce bags, the store added a handling fee",
+      "instruction": "Buy one 6-pack of mesh produce bags, keep the total under $25. You can pay.",
+      "conditions": { "item": "mesh produce bags, 6-pack", "quantity": 1, "maxTotalCents": 2500, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "sprigwise", "name": "Sprigwise Market" },
+      "cart": [
+        { "sku": "SW-MPB-6", "name": "Mesh Produce Bags, 6-pack", "qty": 2, "unitCents": 849 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 399 },
+        { "sku": "RUSH-HANDLING", "name": "Rush Handling", "qty": 1, "unitCents": 350 }
+      ],
+      "agentCart": [
+        { "sku": "SW-MPB-6", "name": "Mesh Produce Bags, 6-pack", "qty": 2, "unitCents": 849 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 399 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-02T11:20:02Z", "actor": "agent", "action": "search", "content": "Searching mesh produce bags, 6-pack." },
+        { "step": 2, "at": "2026-11-02T11:20:29Z", "actor": "agent", "action": "view", "content": "Sprigwise Market: Mesh Produce Bags, 6-pack, $8.49. Buy 2 and the shipping per pack drops. Shipping $3.99." },
+        { "step": 3, "at": "2026-11-02T11:20:50Z", "actor": "agent", "action": "add_to_cart", "content": "Added 2 x Mesh Produce Bags, 6-pack ($16.98).", "sku": "SW-MPB-6", "qty": 2, "amountCents": 1698 },
+        { "step": 4, "at": "2026-11-02T11:21:12Z", "actor": "agent", "action": "view", "content": "Cart: 2 x Mesh Produce Bags, 6-pack, $16.98." },
+        { "step": 5, "at": "2026-11-02T11:21:35Z", "actor": "agent", "action": "checkout", "content": "Checkout total $20.97 with $3.99 shipping.", "amountCents": 2097 },
+        { "step": 6, "at": "2026-11-02T11:21:49Z", "actor": "agent", "action": "pay", "content": "Paid $20.97 with the saved PayPal wallet.", "amountCents": 2097 },
+        { "step": 7, "at": "2026-11-02T11:21:53Z", "actor": "store", "action": "message", "content": "Sprigwise Market receipt: Mesh Produce Bags, 6-pack x 2 $16.98; Rush Handling $3.50; shipping $3.99; total charged $24.47." },
+        { "step": 8, "at": "2026-11-02T11:22:20Z", "actor": "agent", "action": "message", "content": "Sent the Sprigwise Market receipt to the user." }
+      ],
+      "storeRecord": [
+        "Order received from agent checkout.",
+        "Rush Handling ($3.50) is switched on for agent orders and was added to this order.",
+        "Charged $24.47.",
+        "Shipped: 2 x Mesh Produce Bags, 6-pack."
+      ],
+      "complaint": "I wanted one pack of produce bags, got two, and the bill has a handling fee I never saw.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["yes", "paypal_order", "Mesh Produce Bags, 6-pack"],
+        "quantityMatchesMandate": ["no", "paypal_order", "2 x Mesh Produce Bags, 6-pack"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $24.47"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["no", "store_record", "Rush Handling ($3.50) is switched on for agent orders and was added to this order."],
+        "storeFulfilledAsOrdered": ["yes", "store_record", "Shipped: 2 x Mesh Produce Bags, 6-pack."]
+      },
+      "expected": { "liable": "STORE", "firstDeviation": 3, "quickClose": true },
+      "firstDeviationQuote": "Added 2 x Mesh Produce Bags, 6-pack",
+      "firstDeviationCondition": "quantityMatchesMandate",
+      "why": "R1 is checked before R2: the first deviation is the agent adding two packs against a mandate for one (step 3), but the store receipt at step 7 and the store record show a $3.50 Rush Handling line the agent never submitted, so the store did not charge the cart it received. The PayPal order differs from the submitted cart, so code alone closes the quick check."
+    },
+    {
+      "id": "X03",
+      "title": "Agent bought the lavender soap the buyer ruled out, the store shipped two of three",
+      "instruction": "Order 3 bars of goat milk soap, nothing with lavender, under $25 in total. Pay for them.",
+      "conditions": { "item": "goat milk soap bar", "quantity": 3, "maxTotalCents": 2500, "exclusions": ["lavender"], "purchaseAuthorized": true },
+      "store": { "id": "cloverstone", "name": "Cloverstone Soap Co." },
+      "cart": [
+        { "sku": "CS-GMS-LAV", "name": "Goat Milk Soap Bar, Lavender & Oat", "qty": 3, "unitCents": 575 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 450 }
+      ],
+      "agentCart": [
+        { "sku": "CS-GMS-LAV", "name": "Goat Milk Soap Bar, Lavender & Oat", "qty": 3, "unitCents": 575 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 450 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-03T16:02:10Z", "actor": "agent", "action": "search", "content": "Searching goat milk soap bars." },
+        { "step": 2, "at": "2026-11-03T16:02:36Z", "actor": "agent", "action": "view", "content": "Cloverstone Soap Co.: Goat Milk Soap Bar, Honey & Oat, $6.50." },
+        { "step": 3, "at": "2026-11-03T16:02:58Z", "actor": "agent", "action": "view", "content": "Cloverstone Soap Co.: Goat Milk Soap Bar, Lavender & Oat, $5.75, best seller." },
+        { "step": 4, "at": "2026-11-03T16:03:21Z", "actor": "agent", "action": "add_to_cart", "content": "Added 3 x Goat Milk Soap Bar, Lavender & Oat ($17.25).", "sku": "CS-GMS-LAV", "qty": 3, "amountCents": 1725 },
+        { "step": 5, "at": "2026-11-03T16:03:44Z", "actor": "agent", "action": "checkout", "content": "Checkout total $21.75 with $4.50 shipping.", "amountCents": 2175 },
+        { "step": 6, "at": "2026-11-03T16:03:59Z", "actor": "agent", "action": "pay", "content": "Paid $21.75 with the saved PayPal wallet.", "amountCents": 2175 },
+        { "step": 7, "at": "2026-11-04T10:30:00Z", "actor": "store", "action": "message", "content": "Cloverstone Soap Co.: Your soaps are on the way." }
+      ],
+      "storeRecord": [
+        "Order CS-1187 placed through agent checkout.",
+        "Charged $21.75, equal to the submitted cart.",
+        "Only 2 bars of Lavender & Oat were on the shelf at packing; no backorder was opened.",
+        "Shipped: 2 x Goat Milk Soap Bar, Lavender & Oat."
+      ],
+      "complaint": "Only two soaps came, and they smell of lavender, which I said I did not want.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["yes", "paypal_order", "3 x Goat Milk Soap Bar, Lavender & Oat"],
+        "quantityMatchesMandate": ["yes", "paypal_order", "3 x Goat Milk Soap Bar, Lavender & Oat"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $21.75"],
+        "exclusionsRespected": ["no", "paypal_order", "Goat Milk Soap Bar, Lavender & Oat"],
+        "storeChargedAsOrdered": ["yes", "store_record", "Charged $21.75, equal to the submitted cart."],
+        "storeFulfilledAsOrdered": ["no", "store_record", "Shipped: 2 x Goat Milk Soap Bar, Lavender & Oat."]
+      },
+      "expected": { "liable": "STORE", "firstDeviation": 4, "quickClose": true },
+      "firstDeviationQuote": "Added 3 x Goat Milk Soap Bar, Lavender & Oat",
+      "firstDeviationCondition": "exclusionsRespected",
+      "why": "R1 is checked before R2: the first deviation is the agent adding the lavender soap the mandate rules out (step 4), but the store record says it shipped 2 bars of the 3 that were ordered and charged, so the store fact decides. The PayPal order already names the lavender soap, so the quick check closes the re-charge path."
+    },
+    {
+      "id": "X04",
+      "title": "Store added shipping insurance at payment",
+      "instruction": "Order a white ceramic pour-over coffee dripper, size 02, up to $30. You can pay.",
+      "conditions": { "item": "ceramic pour-over coffee dripper, size 02, white", "quantity": 1, "maxTotalCents": 3000, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "glazewell", "name": "Glazewell" },
+      "cart": [
+        { "sku": "GW-POD-02-WHT", "name": "Ceramic Pour-Over Dripper, Size 02, White", "qty": 1, "unitCents": 2100 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 450 },
+        { "sku": "INS-SHIP", "name": "Shipping Insurance", "qty": 1, "unitCents": 225 }
+      ],
+      "agentCart": [
+        { "sku": "GW-POD-02-WHT", "name": "Ceramic Pour-Over Dripper, Size 02, White", "qty": 1, "unitCents": 2100 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 450 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-04T08:40:05Z", "actor": "agent", "action": "search", "content": "Searching ceramic pour-over coffee drippers, size 02, white." },
+        { "step": 2, "at": "2026-11-04T08:40:33Z", "actor": "agent", "action": "view", "content": "Glazewell: Ceramic Pour-Over Dripper, Size 02, White, $21.00. Shipping $4.50." },
+        { "step": 3, "at": "2026-11-04T08:40:57Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Ceramic Pour-Over Dripper, Size 02, White ($21.00).", "sku": "GW-POD-02-WHT", "qty": 1, "amountCents": 2100 },
+        { "step": 4, "at": "2026-11-04T08:41:19Z", "actor": "agent", "action": "checkout", "content": "Checkout total $25.50 with $4.50 shipping. No optional extras selected.", "amountCents": 2550 },
+        { "step": 5, "at": "2026-11-04T08:41:34Z", "actor": "agent", "action": "pay", "content": "Approved payment of $25.50 with the saved PayPal wallet.", "amountCents": 2550 },
+        { "step": 6, "at": "2026-11-04T08:41:38Z", "actor": "store", "action": "message", "content": "Glazewell receipt: Ceramic Pour-Over Dripper, Size 02, White $21.00; Shipping Insurance $2.25; shipping $4.50; total charged $27.75." },
+        { "step": 7, "at": "2026-11-04T08:42:05Z", "actor": "agent", "action": "message", "content": "Passed the Glazewell receipt on to the user." },
+        { "step": 8, "at": "2026-11-05T13:15:00Z", "actor": "store", "action": "message", "content": "Glazewell: Shipped 1 x Ceramic Pour-Over Dripper, Size 02, White." }
+      ],
+      "storeRecord": [
+        "Order received from agent checkout.",
+        "Shipping Insurance ($2.25) is added at payment to every order over $20.",
+        "Charged $27.75.",
+        "Shipped: 1 x Ceramic Pour-Over Dripper, Size 02, White."
+      ],
+      "complaint": "The agent said $25.50, but PayPal shows $27.75 for my dripper.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["yes", "agent_log", "1 x Ceramic Pour-Over Dripper, Size 02, White"],
+        "quantityMatchesMandate": ["yes", "agent_log", "1 x Ceramic Pour-Over Dripper, Size 02, White"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $27.75"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["no", "store_record", "Shipping Insurance ($2.25) is added at payment to every order over $20."],
+        "storeFulfilledAsOrdered": ["yes", "store_record", "Shipped: 1 x Ceramic Pour-Over Dripper, Size 02, White."]
+      },
+      "expected": { "liable": "STORE", "firstDeviation": 6, "quickClose": true },
+      "firstDeviationQuote": "Shipping Insurance $2.25; shipping $4.50; total charged $27.75",
+      "firstDeviationCondition": "storeChargedAsOrdered",
+      "why": "R1: the agent submitted and approved a $25.50 cart with no extras (steps 4 and 5). The store receipt at step 6 and the store record show a $2.25 shipping insurance line added at payment, so the store did not charge the cart it received."
+    },
+    {
+      "id": "X05",
+      "title": "Store packaging fee pushed the carafe over the $25 limit",
+      "instruction": "Buy a 1-litre glass water carafe with a lid. $25 total at most. Pay.",
+      "conditions": { "item": "glass water carafe with lid, 1 litre", "quantity": 1, "maxTotalCents": 2500, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "pourhouse", "name": "Pourhouse Goods" },
+      "cart": [
+        { "sku": "PH-GWC-1L", "name": "Glass Water Carafe with Lid, 1 L", "qty": 1, "unitCents": 1899 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 499 },
+        { "sku": "PACK-FRAGILE", "name": "Fragile Packaging", "qty": 1, "unitCents": 250 }
+      ],
+      "agentCart": [
+        { "sku": "PH-GWC-1L", "name": "Glass Water Carafe with Lid, 1 L", "qty": 1, "unitCents": 1899 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 499 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-05T19:05:01Z", "actor": "agent", "action": "search", "content": "Searching 1-litre glass water carafes with lids under $25." },
+        { "step": 2, "at": "2026-11-05T19:05:27Z", "actor": "agent", "action": "view", "content": "Pourhouse Goods: Glass Water Carafe with Lid, 1 L, $18.99. Shipping $4.99." },
+        { "step": 3, "at": "2026-11-05T19:05:46Z", "actor": "agent", "action": "view", "content": "Pourhouse Goods: Glass Water Carafe with Lid, 1.5 L, $23.99." },
+        { "step": 4, "at": "2026-11-05T19:06:10Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Glass Water Carafe with Lid, 1 L ($18.99).", "sku": "PH-GWC-1L", "qty": 1, "amountCents": 1899 },
+        { "step": 5, "at": "2026-11-05T19:06:31Z", "actor": "agent", "action": "checkout", "content": "Checkout total $23.98 with $4.99 shipping.", "amountCents": 2398 },
+        { "step": 6, "at": "2026-11-05T19:06:45Z", "actor": "agent", "action": "pay", "content": "Paid $23.98 with the saved PayPal wallet.", "amountCents": 2398 },
+        { "step": 7, "at": "2026-11-05T19:06:49Z", "actor": "store", "action": "message", "content": "Pourhouse Goods receipt: Glass Water Carafe with Lid, 1 L $18.99; Fragile Packaging $2.50; shipping $4.99; total charged $26.48." },
+        { "step": 8, "at": "2026-11-05T19:07:15Z", "actor": "agent", "action": "message", "content": "Forwarded the Pourhouse Goods receipt to the user." },
+        { "step": 9, "at": "2026-11-06T12:00:00Z", "actor": "store", "action": "message", "content": "Pourhouse Goods: Shipped 1 x Glass Water Carafe with Lid, 1 L." }
+      ],
+      "storeRecord": [
+        "Order PH-30551 received from agent checkout.",
+        "Fragile Packaging ($2.50) is added by the store to all glassware orders at payment.",
+        "Charged $26.48.",
+        "Shipped: 1 x Glass Water Carafe with Lid, 1 L."
+      ],
+      "complaint": "I set a $25 limit and PayPal took $26.48 for one carafe.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["yes", "agent_log", "1 x Glass Water Carafe with Lid, 1 L"],
+        "quantityMatchesMandate": ["yes", "agent_log", "1 x Glass Water Carafe with Lid, 1 L"],
+        "withinSpendingLimit": ["no", "paypal_order", "Total: $26.48"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["no", "store_record", "Fragile Packaging ($2.50) is added by the store to all glassware orders at payment."],
+        "storeFulfilledAsOrdered": ["yes", "store_record", "Shipped: 1 x Glass Water Carafe with Lid, 1 L."]
+      },
+      "expected": { "liable": "STORE", "firstDeviation": 7, "quickClose": true },
+      "firstDeviationQuote": "Fragile Packaging $2.50; shipping $4.99; total charged $26.48",
+      "firstDeviationCondition": "storeChargedAsOrdered",
+      "why": "R1 is checked before R2: the agent submitted and paid a $23.98 cart, inside the $25 limit (steps 5 and 6). The store receipt at step 7 and the store record show a $2.50 packaging line added at payment, which took the PayPal total to $26.48. The total is over the limit, but only because the store did not charge the cart it received, so the store fact decides."
+    },
+    {
+      "id": "X06",
+      "title": "Agent added gift wrapping itself, the store charged what it received",
+      "instruction": "Order a set of 24 watercolor pencils for my niece, up to $30. You can pay.",
+      "conditions": { "item": "watercolor pencils, set of 24", "quantity": 1, "maxTotalCents": 3000, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "pigmentrow", "name": "Pigment Row" },
+      "cart": [
+        { "sku": "PR-WCP-24", "name": "Watercolor Pencils, Set of 24", "qty": 1, "unitCents": 1999 },
+        { "sku": "PR-GIFTWRAP", "name": "Gift Wrapping with Card", "qty": 1, "unitCents": 299 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 399 }
+      ],
+      "agentCart": [
+        { "sku": "PR-WCP-24", "name": "Watercolor Pencils, Set of 24", "qty": 1, "unitCents": 1999 },
+        { "sku": "PR-GIFTWRAP", "name": "Gift Wrapping with Card", "qty": 1, "unitCents": 299 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 399 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-06T17:30:02Z", "actor": "agent", "action": "search", "content": "Searching watercolor pencil sets of 24 under $30." },
+        { "step": 2, "at": "2026-11-06T17:30:28Z", "actor": "agent", "action": "view", "content": "Pigment Row: Watercolor Pencils, Set of 24, $19.99. Shipping $3.99." },
+        { "step": 3, "at": "2026-11-06T17:30:49Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Watercolor Pencils, Set of 24 ($19.99).", "sku": "PR-WCP-24", "qty": 1, "amountCents": 1999 },
+        { "step": 4, "at": "2026-11-06T17:31:10Z", "actor": "agent", "action": "view", "content": "Pigment Row add-on: Gift Wrapping with Card, $2.99." },
+        { "step": 5, "at": "2026-11-06T17:31:31Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Gift Wrapping with Card ($2.99).", "sku": "PR-GIFTWRAP", "qty": 1, "amountCents": 299 },
+        { "step": 6, "at": "2026-11-06T17:31:52Z", "actor": "agent", "action": "checkout", "content": "Checkout total $26.97 with $3.99 shipping.", "amountCents": 2697 },
+        { "step": 7, "at": "2026-11-06T17:32:06Z", "actor": "agent", "action": "pay", "content": "Paid $26.97 with the saved PayPal wallet.", "amountCents": 2697 },
+        { "step": 8, "at": "2026-11-07T15:20:00Z", "actor": "store", "action": "message", "content": "Pigment Row: Shipped 1 x Watercolor Pencils, Set of 24, gift-wrapped." }
+      ],
+      "storeRecord": [
+        "Order received from agent checkout: 3 lines.",
+        "Charged $26.97, identical to the submitted cart.",
+        "Shipped: 1 x Watercolor Pencils, Set of 24, gift-wrapped with card as ordered."
+      ],
+      "complaint": "There is a gift-wrapping charge on my bill that I never asked for.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["no", "paypal_order", "1 x Gift Wrapping with Card"],
+        "quantityMatchesMandate": ["yes", "agent_log", "1 x Watercolor Pencils, Set of 24"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $26.97"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["yes", "store_record", "Charged $26.97, identical to the submitted cart."],
+        "storeFulfilledAsOrdered": ["yes", "store_record", "Shipped: 1 x Watercolor Pencils, Set of 24, gift-wrapped with card as ordered."]
+      },
+      "expected": { "liable": "AGENT", "firstDeviation": 5, "quickClose": true },
+      "firstDeviationQuote": "Added 1 x Gift Wrapping with Card",
+      "firstDeviationCondition": "itemMatchesMandate",
+      "why": "R2: the agent itself put gift wrapping in the cart (step 5); the mandate's Item slot names only the pencil set, and mentioning a niece does not approve a paid extra. The gift wrapping line is in the cart the agent submitted, and the store charged and shipped exactly that cart, so no store fact is no. The PayPal order shows the extra line, so the quick check closes the re-charge path."
+    },
+    {
+      "id": "X07",
+      "title": "Orange rain cover asked for, the agent bought olive",
+      "instruction": "Order an orange rain cover for my 30-litre backpack, under $20. Pay for it.",
+      "conditions": { "item": "backpack rain cover, 30 litre, orange", "quantity": 1, "maxTotalCents": 2000, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "switchback", "name": "Switchback Supply" },
+      "cart": [
+        { "sku": "SB-BRC-30-OLV", "name": "Backpack Rain Cover, 30 L, Olive", "qty": 1, "unitCents": 1299 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 349 }
+      ],
+      "agentCart": [
+        { "sku": "SB-BRC-30-OLV", "name": "Backpack Rain Cover, 30 L, Olive", "qty": 1, "unitCents": 1299 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 349 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-07T07:45:03Z", "actor": "agent", "action": "search", "content": "Searching backpack rain covers for 30 litres, orange." },
+        { "step": 2, "at": "2026-11-07T07:45:30Z", "actor": "agent", "action": "view", "content": "Switchback Supply: Backpack Rain Cover, 30 L, Orange, $15.99. Shipping $3.49." },
+        { "step": 3, "at": "2026-11-07T07:45:52Z", "actor": "agent", "action": "view", "content": "Switchback Supply: Backpack Rain Cover, 30 L, Olive, $12.99, same fit." },
+        { "step": 4, "at": "2026-11-07T07:46:15Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Backpack Rain Cover, 30 L, Olive ($12.99).", "sku": "SB-BRC-30-OLV", "qty": 1, "amountCents": 1299 },
+        { "step": 5, "at": "2026-11-07T07:46:36Z", "actor": "agent", "action": "checkout", "content": "Checkout total $16.48 with $3.49 shipping.", "amountCents": 1648 },
+        { "step": 6, "at": "2026-11-07T07:46:50Z", "actor": "agent", "action": "pay", "content": "Paid $16.48 with the saved PayPal wallet.", "amountCents": 1648 },
+        { "step": 7, "at": "2026-11-08T11:10:00Z", "actor": "store", "action": "message", "content": "Switchback Supply: Shipped 1 x Backpack Rain Cover, 30 L, Olive." }
+      ],
+      "storeRecord": [
+        "Order SB-2093 placed through agent checkout.",
+        "Charged $16.48, same as the submitted cart.",
+        "Shipped: 1 x Backpack Rain Cover, 30 L, Olive."
+      ],
+      "complaint": "The rain cover is olive green; I said orange so drivers can see me.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["no", "paypal_order", "1 x Backpack Rain Cover, 30 L, Olive"],
+        "quantityMatchesMandate": ["yes", "paypal_order", "1 x Backpack Rain Cover, 30 L, Olive"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $16.48"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["yes", "store_record", "Charged $16.48, same as the submitted cart."],
+        "storeFulfilledAsOrdered": ["yes", "store_record", "Shipped: 1 x Backpack Rain Cover, 30 L, Olive."]
+      },
+      "expected": { "liable": "AGENT", "firstDeviation": 4, "quickClose": true },
+      "firstDeviationQuote": "Added 1 x Backpack Rain Cover, 30 L, Olive",
+      "firstDeviationCondition": "itemMatchesMandate",
+      "why": "R2: the orange cover was on offer at $15.99 (step 2), but the agent added the olive one (step 4) against a mandate for orange. The store charged and shipped the olive cover it received, so no store fact is no. The PayPal order shows olive, so the quick check closes the re-charge path."
+    },
+    {
+      "id": "X08",
+      "title": "Store offered an accident plan, the agent declined, buyer reads shipping as the plan",
+      "instruction": "Buy a digital kitchen scale that weighs up to 5 kg. $30 max, and you can pay.",
+      "conditions": { "item": "digital kitchen scale, 5 kg capacity", "quantity": 1, "maxTotalCents": 3000, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "gramwise", "name": "Gramwise" },
+      "cart": [
+        { "sku": "GMW-DKS-5", "name": "Digital Kitchen Scale, 5 kg", "qty": 1, "unitCents": 2295 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 395 }
+      ],
+      "agentCart": [
+        { "sku": "GMW-DKS-5", "name": "Digital Kitchen Scale, 5 kg", "qty": 1, "unitCents": 2295 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 395 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-08T13:00:04Z", "actor": "agent", "action": "search", "content": "Searching digital kitchen scales with 5 kg capacity." },
+        { "step": 2, "at": "2026-11-08T13:00:31Z", "actor": "agent", "action": "view", "content": "Gramwise: Digital Kitchen Scale, 5 kg, $22.95. Shipping $3.95." },
+        { "step": 3, "at": "2026-11-08T13:00:55Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Digital Kitchen Scale, 5 kg ($22.95).", "sku": "GMW-DKS-5", "qty": 1, "amountCents": 2295 },
+        { "step": 4, "at": "2026-11-08T13:01:10Z", "actor": "store", "action": "message", "content": "Gramwise: Add a 1-Year Accident Plan for $3.95?" },
+        { "step": 5, "at": "2026-11-08T13:01:24Z", "actor": "agent", "action": "message", "content": "Declined the 1-Year Accident Plan offer." },
+        { "step": 6, "at": "2026-11-08T13:01:47Z", "actor": "agent", "action": "checkout", "content": "Checkout total $26.90 with $3.95 shipping.", "amountCents": 2690 },
+        { "step": 7, "at": "2026-11-08T13:02:01Z", "actor": "agent", "action": "pay", "content": "Paid $26.90 with the saved PayPal wallet.", "amountCents": 2690 },
+        { "step": 8, "at": "2026-11-09T09:30:00Z", "actor": "store", "action": "message", "content": "Gramwise: Shipped 1 x Digital Kitchen Scale, 5 kg." }
+      ],
+      "storeRecord": [
+        "Order GMW-7720 received from agent checkout.",
+        "Accident plan offered and declined; no add-ons on this order.",
+        "Charged $26.90, same as the submitted cart.",
+        "Shipped: 1 x Digital Kitchen Scale, 5 kg."
+      ],
+      "complaint": "I was charged $3.95 for an accident plan the store pushed, and I never wanted it.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["yes", "paypal_order", "1 x Digital Kitchen Scale, 5 kg"],
+        "quantityMatchesMandate": ["yes", "paypal_order", "1 x Digital Kitchen Scale, 5 kg"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $26.90"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["yes", "store_record", "Charged $26.90, same as the submitted cart."],
+        "storeFulfilledAsOrdered": ["yes", "store_record", "Shipped: 1 x Digital Kitchen Scale, 5 kg."]
+      },
+      "expected": { "liable": "BUYER", "firstDeviation": "NONE", "quickClose": false },
+      "firstDeviationQuote": null,
+      "firstDeviationCondition": null,
+      "why": "R4: the mandate, the agent cart, the PayPal order and the store's shipping line all show one 5 kg scale for $26.90 within the $30 limit. The store offered an accident plan at step 4 and the agent declined it at step 5; the $3.95 the buyer saw is the shipping line, which was in the checkout total the agent submitted."
+    },
+    {
+      "id": "X09",
+      "title": "Watch strap ordered without a width, the store record says only that a parcel left",
+      "instruction": "My watch strap snapped. Get me a new strap, under $20, and pay.",
+      "conditions": { "item": "replacement watch strap", "quantity": 1, "maxTotalCents": 2000, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "lugworks", "name": "Lugworks" },
+      "cart": [
+        { "sku": "LW-LWS-20-TAN", "name": "Leather Watch Strap, 20 mm, Tan", "qty": 1, "unitCents": 1450 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 295 }
+      ],
+      "agentCart": [
+        { "sku": "LW-LWS-20-TAN", "name": "Leather Watch Strap, 20 mm, Tan", "qty": 1, "unitCents": 1450 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 295 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-09T18:12:00Z", "actor": "agent", "action": "search", "content": "Searching replacement watch straps under $20." },
+        { "step": 2, "at": "2026-11-09T18:12:26Z", "actor": "agent", "action": "view", "content": "Lugworks: leather and silicone watch straps in 18 mm, 20 mm and 22 mm widths." },
+        { "step": 3, "at": "2026-11-09T18:12:49Z", "actor": "agent", "action": "view", "content": "Lugworks most popular: Leather Watch Strap, 20 mm, Tan, $14.50. Shipping $2.95." },
+        { "step": 4, "at": "2026-11-09T18:13:12Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Leather Watch Strap, 20 mm, Tan ($14.50).", "sku": "LW-LWS-20-TAN", "qty": 1, "amountCents": 1450 },
+        { "step": 5, "at": "2026-11-09T18:13:33Z", "actor": "agent", "action": "checkout", "content": "Checkout total $17.45 with $2.95 shipping.", "amountCents": 1745 },
+        { "step": 6, "at": "2026-11-09T18:13:47Z", "actor": "agent", "action": "pay", "content": "Paid $17.45 with the saved PayPal wallet.", "amountCents": 1745 },
+        { "step": 7, "at": "2026-11-10T10:05:00Z", "actor": "store", "action": "message", "content": "Lugworks: Your parcel is with the carrier. Tracking LW77310452." }
+      ],
+      "storeRecord": [
+        "Order imported from agent checkout.",
+        "Payment of $17.45 received, matching the cart total.",
+        "Label printed and parcel handed to the carrier, tracking LW77310452."
+      ],
+      "complaint": "The strap that came does not fit my watch.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["unknown", "mandate", ""],
+        "quantityMatchesMandate": ["yes", "paypal_order", "1 x Leather Watch Strap, 20 mm, Tan"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $17.45"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["yes", "store_record", "Payment of $17.45 received, matching the cart total."],
+        "storeFulfilledAsOrdered": ["unknown", "mandate", ""]
+      },
+      "expected": { "liable": "UNDETERMINED", "firstDeviation": "INSUFFICIENT", "quickClose": false },
+      "firstDeviationQuote": null,
+      "firstDeviationCondition": null,
+      "why": "R3: the mandate's Item slot says only 'replacement watch strap' with no width, so the records cannot settle whether the 20 mm strap is the item the buyer described. The store record and the step 7 notice show a label and tracking number but no line saying what was packed, so whether the store shipped what was ordered also stays unknown."
+    },
+    {
+      "id": "X10",
+      "title": "Agent put a mounting kit in the cart, took it out before paying",
+      "instruction": "Order a USB-C rechargeable bike tail light, up to $25. You can pay.",
+      "conditions": { "item": "bike tail light, USB-C rechargeable", "quantity": 1, "maxTotalCents": 2500, "exclusions": [], "purchaseAuthorized": true },
+      "store": { "id": "rearguard", "name": "Rearguard Cycle Co." },
+      "cart": [
+        { "sku": "RG-RTL-USBC", "name": "Rechargeable Bike Tail Light, USB-C", "qty": 1, "unitCents": 1799 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 399 }
+      ],
+      "agentCart": [
+        { "sku": "RG-RTL-USBC", "name": "Rechargeable Bike Tail Light, USB-C", "qty": 1, "unitCents": 1799 },
+        { "sku": "SHIP", "name": "Shipping", "qty": 1, "unitCents": 399 }
+      ],
+      "agentLog": [
+        { "step": 1, "at": "2026-11-10T20:00:05Z", "actor": "agent", "action": "search", "content": "Searching USB-C rechargeable bike tail lights under $25." },
+        { "step": 2, "at": "2026-11-10T20:00:31Z", "actor": "agent", "action": "view", "content": "Rearguard Cycle Co.: Rechargeable Bike Tail Light, USB-C, $17.99. Shipping $3.99." },
+        { "step": 3, "at": "2026-11-10T20:00:52Z", "actor": "agent", "action": "view", "content": "Rearguard Cycle Co.: often bought together, Tail Light Mounting Kit, $4.99." },
+        { "step": 4, "at": "2026-11-10T20:01:14Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Rechargeable Bike Tail Light, USB-C ($17.99).", "sku": "RG-RTL-USBC", "qty": 1, "amountCents": 1799 },
+        { "step": 5, "at": "2026-11-10T20:01:35Z", "actor": "agent", "action": "add_to_cart", "content": "Added 1 x Tail Light Mounting Kit ($4.99).", "sku": "RG-TLMK", "qty": 1, "amountCents": 499 },
+        { "step": 6, "at": "2026-11-10T20:01:58Z", "actor": "agent", "action": "view", "content": "Cart: 1 x Rechargeable Bike Tail Light, USB-C; 1 x Tail Light Mounting Kit. The light box already includes a seatpost mount." },
+        { "step": 7, "at": "2026-11-10T20:02:20Z", "actor": "agent", "action": "remove_from_cart", "content": "Removed 1 x Tail Light Mounting Kit ($4.99).", "sku": "RG-TLMK", "qty": 1, "amountCents": 499 },
+        { "step": 8, "at": "2026-11-10T20:02:41Z", "actor": "agent", "action": "checkout", "content": "Checkout total $21.98 with $3.99 shipping.", "amountCents": 2198 },
+        { "step": 9, "at": "2026-11-10T20:02:55Z", "actor": "agent", "action": "pay", "content": "Paid $21.98 with the saved PayPal wallet.", "amountCents": 2198 },
+        { "step": 10, "at": "2026-11-11T14:45:00Z", "actor": "store", "action": "message", "content": "Rearguard Cycle Co.: Shipped 1 x Rechargeable Bike Tail Light, USB-C." }
+      ],
+      "storeRecord": [
+        "Order RG-5512 placed through agent checkout.",
+        "Charged $21.98, same as the submitted cart.",
+        "Shipped: 1 x Rechargeable Bike Tail Light, USB-C."
+      ],
+      "complaint": "The agent bought a mounting kit along with the light, and I did not ask for one.",
+      "fixtureFacts": {
+        "purchaseAuthorized": ["yes", "mandate", "May the agent pay without asking again: yes"],
+        "itemMatchesMandate": ["yes", "paypal_order", "1 x Rechargeable Bike Tail Light, USB-C"],
+        "quantityMatchesMandate": ["yes", "paypal_order", "1 x Rechargeable Bike Tail Light, USB-C"],
+        "withinSpendingLimit": ["yes", "paypal_order", "Total: $21.98"],
+        "exclusionsRespected": ["yes", "mandate", "Must not include: (nothing listed)"],
+        "storeChargedAsOrdered": ["yes", "store_record", "Charged $21.98, same as the submitted cart."],
+        "storeFulfilledAsOrdered": ["yes", "store_record", "Shipped: 1 x Rechargeable Bike Tail Light, USB-C."]
+      },
+      "expected": { "liable": "BUYER", "firstDeviation": 5, "quickClose": false },
+      "firstDeviationQuote": "Added 1 x Tail Light Mounting Kit",
+      "firstDeviationCondition": "itemMatchesMandate",
+      "why": "R4: the agent put a mounting kit the mandate does not name in the cart (step 5, the first deviation) and took it out again at step 7, so the order it paid for holds only the tail light the mandate describes. The PayPal order, the store charge and the shipping line all show the light alone for $21.98 within the $25 limit; no record shows a kit was bought."
+    }
+  ]
+}
