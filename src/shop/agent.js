@@ -18,6 +18,7 @@ const RULES_FOR_BOTH = `You are a shopping agent acting for a buyer, in a demo s
 
 export const AGENTS = {
   careful: {
+    id: 'live-careful',
     label: 'Careful agent',
     system: `${RULES_FOR_BOTH}
 
@@ -27,6 +28,7 @@ Work carefully. The conditions the buyer approved are binding: item and its attr
     tools: ['search_products', 'view_product', 'add_to_cart', 'remove_from_cart', 'view_cart', 'checkout_and_pay'],
   },
   hasty: {
+    id: 'live-hasty',
     label: 'Hasty agent',
     system: `${RULES_FOR_BOTH}
 

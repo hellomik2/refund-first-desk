@@ -3,7 +3,7 @@
 // to the mandate as each step happens, so the page can show the agent working.
 import { randomBytes } from 'node:crypto';
 import { DeskError } from '../desk.js';
-import { runShoppingAgent } from './agent.js';
+import { AGENTS, runShoppingAgent } from './agent.js';
 
 /**
  * @param {object} o
@@ -58,7 +58,10 @@ export function createLiveShopper({ desk, db, catalog, provider, budget, caps, b
       db.save();
       throw err;
     }
-    if (run.purchase) desk.attachAgentRecord(run.purchase.orderId, { agentLog: run.steps, storeRecord: run.storeRecord });
+    if (run.purchase) {
+      const a = AGENTS[kind];
+      desk.attachAgentRecord(run.purchase.orderId, { agentLog: run.steps, storeRecord: run.storeRecord, agent: { id: a.id, name: `${a.label} (live Claude)` } });
+    }
     Object.assign(live, {
       status: run.purchase ? 'PAID' : 'NOT_PAID',
       steps: run.steps,

@@ -158,3 +158,26 @@ test('agent calls have their own daily run cap and do not use up the investigato
   assert.equal(budget.agentBlockedBy({ dailyRunCap: 2 }), 'DAILY_AGENT_RUN_CAP');
   assert.equal(budget.runUsd('R1') > 0, true);
 });
+
+test('a live run through the shopper names the agent on the order (the case book groups by it)', async () => {
+  const { createLiveShopper } = await import('../src/shop/run.js');
+  const config = { policy: defaultPolicy(), demoWallet: { vaultId: 'VAULT-DEMO' }, storePayoutEmail: 'store@example.test', publicBaseUrl: 'http://localhost' };
+  const db = createDb({ policy: config.policy });
+  const desk = createDesk({ db, paypal: createFakePayPal(), factExtractor: createFactExtractor({ provider: 'fixture' }), clock: createClock(db), ledger: createLedger(db), config, pollMs: 1, refundWaitMs: 20 });
+  const buyer = desk.createBuyer({ name: 'Live', useDemoWallet: true });
+  const runOnce = async (kind) => {
+    const p = prompt('P1');
+    const m = desk.draftMandate({ buyerId: buyer.id, instruction: p.instruction, conditions: p.conditions });
+    m.live = { promptId: 'P1' };
+    desk.approveMandate(m.id);
+    const { turn } = scripted([[['search_products', { query: 'aeropress go' }]], [['add_to_cart', { sku: '31074', quantity: 1 }]], [['checkout_and_pay', {}]], 'Done.']);
+    const shopper = createLiveShopper({ desk, db, catalog, provider: async () => ({ agentTurn: turn }), budget: { agentBlockedBy: () => null, runUsd: () => 0 }, caps: { dailyRunCap: 9, runsPerWorkspace: 9, maxCalls: 16 } });
+    await shopper.shop({ mandateId: m.id, kind });
+    return db.data.orders[m.live.orderId];
+  };
+  const careful = await runOnce('careful');
+  const hasty = await runOnce('hasty');
+  assert.deepEqual(careful.agent, { id: 'live-careful', name: 'Careful agent (live Claude)' });
+  assert.deepEqual(hasty.agent, { id: 'live-hasty', name: 'Hasty agent (live Claude)' });
+  assert.equal(careful.agentLog.length > 0, true);
+});

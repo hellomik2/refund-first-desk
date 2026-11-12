@@ -215,11 +215,12 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
    * A live agent pays in the middle of its run, so its full log (the pay step, the store's shipping line and
    * its closing note) is attached right after the run. Never once a report exists: what the investigator reads is fixed.
    */
-  function attachAgentRecord(orderId, { agentLog, storeRecord }) {
+  function attachAgentRecord(orderId, { agentLog, storeRecord, agent = null }) {
     const order = must(S.orders, orderId, 'order');
     if (Object.values(S.cases).some((c) => c.orderId === orderId)) throw new DeskError('ALREADY_REPORTED', 'The agent log cannot change after a report');
     order.agentLog = agentLog;
     order.storeRecord = storeRecord;
+    if (agent) order.agent = { id: agent.id, name: agent.name }; // which agent bought it (the case book groups by this)
     db.save();
     return order;
   }
