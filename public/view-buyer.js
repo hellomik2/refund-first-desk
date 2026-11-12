@@ -113,7 +113,7 @@ function outcome(k) {
       label: 'The charge is stopped',
       giant: big(usd(k.refund.amountCents), 'kept'),
       tone: 'green',
-      line: `Because ${esc(label(REASONS, r.blockedBy))}. You keep the refund; ${store}.`,
+      line: `Because ${esc(label(REASONS, r.blockedBy))}. You keep the refund; ${store}.${r.refund?.status === 'COMPLETED' ? ` PayPal had taken the charge, and it was given back (refund ${esc(r.refund.id)}).` : ''}`,
       extra: noticeStep ? `<ol class="seq">${noticeStep}</ol>${asSent}` : '',
     };
   }
@@ -123,9 +123,10 @@ function outcome(k) {
       giant: big(usd(r.amountCents)),
       tone: 'yellow',
       line: r.captureStatus === 'PENDING' ? 'PayPal is still processing it.' : 'PayPal has not confirmed it. It may have gone through.',
-      extra: `${noticeStep ? `<ol class="seq">${noticeStep}</ol>` : ''}<p class="fine">The desk asks PayPal again when the ledger is checked, under the same request id, so it never charges twice. The store is paid once PayPal answers.</p>`,
+      extra: `${noticeStep ? `<ol class="seq">${noticeStep}</ol>` : ''}${k.dispute ? '<p class="m-line"><strong>Your dispute is on file.</strong> If PayPal took the charge, it is given back.</p>' : ''}<p class="fine">The desk asks PayPal again when the ledger is checked, under the same request id, so it never charges twice. The store is paid once PayPal answers.</p>`,
     };
   }
+  if (r.status === 'RETURNING') return { label: 'Giving the charge back', giant: big(usd(r.amountCents)), tone: 'yellow', line: 'PayPal took the charge after your dispute or after consent was withdrawn. It is being refunded to you.' };
   if (r.status === 'PENDING') return { label: 'Charging again now', giant: big(usd(r.amountCents)), tone: 'yellow', extra: noticeStep ? `<ol class="seq">${noticeStep}</ol>` : '' };
   return { label: 'Refunded', giant: big(usd(k.refund.amountCents)), tone: 'green' };
 }

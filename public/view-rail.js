@@ -56,6 +56,7 @@ export function stations({ order, kase: k }, working) {
     if (r?.status === 'COMPLETED') st.recharge = { state: 'charged', sub: `${usd(r.amountCents)} from the saved wallet` };
     else if (r?.status === 'HALTED') st.recharge = { state: 'halt', sub: `stopped: ${label(REASONS, r.blockedBy)}` };
     else if (r?.status === 'UNCONFIRMED') st.recharge = { state: 'hold', sub: 'sent; PayPal has not confirmed it' };
+    else if (r?.status === 'RETURNING') st.recharge = { state: 'hold', sub: 'being given back' };
     else st.recharge = { state: 'todo', sub: `not before ${day(k.notice.chargeNotBefore)}` };
   } else {
     st.notice = { state: 'todo', sub: 'only if both keys name the buyer' };

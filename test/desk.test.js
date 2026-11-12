@@ -758,6 +758,51 @@ test('re-charge: a 5xx is not a refusal (left unconfirmed); a clear 422 refusal 
   assert.equal(b.order.storePayable.source, 'desk:reserve');
 });
 
+// Independent check 3, part 10: a dispute or a withdrawn consent while a re-charge has no answer. In the end the buyer
+// pays nothing for the re-charge (a charge PayPal took is given back at once), the case is stopped, the store is paid
+// from the desk's funds, and the ledger matches PayPal.
+function notReached(ctx, n) {
+  const real = ctx.paypal.chargeSavedWallet;
+  let left = n;
+  ctx.paypal.chargeSavedWallet = async (req) => {
+    if (left-- > 0) throw new Error('fetch failed: connect ETIMEDOUT'); // the request never reached PayPal
+    return real(req);
+  };
+  return () => (ctx.paypal.chargeSavedWallet = real);
+}
+async function stoppedWithNothingTaken(ctx, order, kase, reason) {
+  await ctx.desk.processDue();
+  assert.equal(kase.recharge.status, 'HALTED');
+  assert.equal(kase.recharge.blockedBy, reason);
+  assert.equal(order.storePayable.source, 'desk:reserve');
+  const recon = await ctx.desk.reconcile(order.id);
+  assert.ok(recon.ok, JSON.stringify(recon.rows));
+  assert.equal(recon.rows.find((r) => r.party === 'buyer').paypalCents, 0, 'the buyer paid nothing in the end: purchase, refund, and no re-charge kept');
+}
+for (const [stopName, stop, reason] of [
+  ['a dispute', (ctx, kase) => ctx.desk.fileDispute(kase.id, 'Not my mistake.'), 'BUYER_DISPUTED'],
+  ['a withdrawn consent', (ctx, kase) => ctx.desk.revokeConsent(kase.buyerId), 'NO_ACTIVE_CONSENT'],
+]) {
+  test(`re-charge with no answer, then ${stopName}; the first request never reached PayPal: nothing is kept from the buyer`, async () => {
+    const { ctx, order, kase } = await dueForRecharge();
+    const restore = notReached(ctx, 2);
+    await ctx.desk.recharge(kase.id);
+    assert.equal(kase.recharge.status, 'UNCONFIRMED');
+    restore();
+    await stop(ctx, kase);
+    await stoppedWithNothingTaken(ctx, order, kase, reason);
+  });
+  test(`re-charge with no answer, then ${stopName}; PayPal had taken the charge: it is given back`, async () => {
+    const { ctx, order, kase } = await dueForRecharge();
+    const restore = loseAnswers(ctx, 2);
+    await ctx.desk.recharge(kase.id);
+    assert.equal(kase.recharge.status, 'UNCONFIRMED');
+    restore();
+    await stop(ctx, kase);
+    await stoppedWithNothingTaken(ctx, order, kase, reason);
+  });
+}
+
 // ---- fund table -----------------------------------------------------------------------------------------
 
 test('desk funds: refund-first is refused when own funds cannot cover the store', async () => {

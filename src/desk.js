@@ -100,6 +100,8 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     for (const kase of Object.values(S.cases)) {
       if (kase.buyerId === buyerId && kase.recharge?.status === 'SCHEDULED') {
         await haltRecharge(kase, 'NO_ACTIVE_CONSENT');
+      } else if (kase.buyerId === buyerId && ['UNCONFIRMED', 'RETURNING'].includes(kase.recharge?.status)) {
+        await recharge(kase.id); // asked about now; a charge PayPal took is given back, never kept
       }
     }
     db.save();
@@ -964,6 +966,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     kase.dispute = { at: new Date().toISOString(), text: String(text) };
     event(kase, 'DISPUTE_FILED');
     if (kase.recharge?.status === 'SCHEDULED') await haltRecharge(kase, 'BUYER_DISPUTED');
+    else if (['UNCONFIRMED', 'RETURNING'].includes(kase.recharge?.status)) await recharge(kase.id); // asked about now; a charge PayPal took is given back
     db.save();
     return kase;
   }
@@ -1005,6 +1008,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const buyer = must(S.buyers, kase.buyerId, 'buyer');
     const mandate = must(S.mandates, order.mandateId, 'mandate');
     if (kase.recharge?.status === 'PENDING') return { charged: false, blockedBy: 'CHARGE_IN_PROGRESS', kase };
+    if (kase.recharge?.status === 'RETURNING') return returnRecharge(kase, order, kase.recharge.stopReason);
     const resend = kase.recharge?.status === 'UNCONFIRMED'; // decided and sent before: only PayPal's answer is missing
     const amount = resend ? kase.recharge.amountCents : amountCents ?? kase.recharge?.amountCents ?? kase.refund?.amountCents ?? 0;
     const blockedBy = resend ? null : rechargeGuard({ order, kase, buyer, amountCents: amount, now: clock.now() });
@@ -1055,6 +1059,16 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     }
     delete kase.recharge.pendingPayPalOrderId;
     delete kase.recharge.captureStatus;
+    // The buyer disputed or withdrew consent after the charge was sent: PayPal took it, so it is given back at once.
+    const stop = kase.dispute ? 'BUYER_DISPUTED' : buyer.wallet?.consent !== 'ACTIVE' ? 'NO_ACTIVE_CONSENT' : null;
+    if (stop) {
+      kase.recharge = { ...kase.recharge, status: 'RETURNING', stopReason: stop, paypalOrderId: parsed.orderId, captureId: parsed.capture.id, feeCents: parsed.capture.feeCents ?? 0, at: new Date().toISOString() };
+      ledger.post({ orderId: order.id, caseId: kase.id, kind: 'RECHARGE_CAPTURED', from: 'buyer', to: 'desk:purchase', cents: parsed.capture.grossCents, paypal: { type: 'capture', id: parsed.capture.id } });
+      if (kase.recharge.feeCents) ledger.post({ orderId: order.id, caseId: kase.id, kind: 'PAYPAL_FEE', from: 'desk:reserve', to: 'paypal:fees', cents: kase.recharge.feeCents, paypal: { type: 'capture', id: parsed.capture.id }, note: 'PayPal fee on the re-charge capture' });
+      event(kase, 'RECHARGE_TAKEN_AFTER_STOP', { reason: stop, captureId: parsed.capture.id, amountCents: parsed.capture.grossCents });
+      db.save();
+      return returnRecharge(kase, order, stop);
+    }
     kase.recharge = { ...kase.recharge, status: 'COMPLETED', paypalOrderId: parsed.orderId, captureId: parsed.capture.id, feeCents: parsed.capture.feeCents ?? 0, at: new Date().toISOString() };
     ledger.post({ orderId: order.id, caseId: kase.id, kind: 'RECHARGE_CAPTURED', from: 'buyer', to: 'desk:purchase', cents: parsed.capture.grossCents, paypal: { type: 'capture', id: parsed.capture.id } });
     if (kase.recharge.feeCents) {
@@ -1069,13 +1083,43 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     return { charged: true, blockedBy: null, kase };
   }
 
+  /**
+   * Give a re-charge back that PayPal took after the buyer disputed or withdrew consent. Same request id on every try,
+   * so PayPal refunds it once. The case is stopped only when PayPal says the refund is completed.
+   */
+  async function returnRecharge(kase, order, stop) {
+    const rc = kase.recharge;
+    try {
+      if (!rc.refund?.id) {
+        const sent = readRefund((await paypal.refundCapture(rc.captureId, { requestId: `recharge-refund-${kase.id}`, note: 'Re-charge given back: the buyer disputed or withdrew consent.' })).body);
+        rc.refund = { id: sent.id, status: sent.status, amountCents: sent.amountCents ?? rc.amountCents };
+      }
+      const now = readRefund((await paypal.getRefund(rc.refund.id)).body);
+      rc.refund.status = now.status;
+      rc.refund.amountCents = now.amountCents ?? rc.refund.amountCents;
+    } catch (err) {
+      rc.returnError = err.message; // asked again on the next fast-forward or ledger check
+      db.save();
+      return { charged: false, blockedBy: 'RECHARGE_RETURNING', kase };
+    }
+    if (rc.refund.status !== 'COMPLETED') {
+      db.save();
+      return { charged: false, blockedBy: 'RECHARGE_RETURNING', kase };
+    }
+    ledger.post({ orderId: order.id, caseId: kase.id, kind: 'RECHARGE_RETURNED', from: 'desk:purchase', to: 'buyer', cents: rc.refund.amountCents, paypal: { type: 'refund', id: rc.refund.id } });
+    event(kase, 'RECHARGE_RETURNED', { refundId: rc.refund.id, amountCents: rc.refund.amountCents });
+    await haltRecharge(kase, stop);
+    db.save();
+    return { charged: false, blockedBy: stop, kase };
+  }
+
   /** Run everything whose waiting period is over on the policy clock. */
   async function processDue() {
     const now = clock.now().getTime();
     const done = { recharged: [], storesPaid: [] };
     for (const kase of Object.values(S.cases)) {
       const due = kase.recharge?.status === 'SCHEDULED' && now >= new Date(kase.notice.chargeNotBefore).getTime();
-      if (due || kase.recharge?.status === 'UNCONFIRMED') { // a re-charge without PayPal's answer is asked about again
+      if (due || ['UNCONFIRMED', 'RETURNING'].includes(kase.recharge?.status)) { // a re-charge without PayPal's answer, or one being given back, is asked about again
         const r = await recharge(kase.id);
         if (r.charged) done.recharged.push(kase.id);
       }
@@ -1100,7 +1144,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     const order = must(S.orders, orderId, 'order');
     const kase = Object.values(S.cases).find((c) => c.orderId === orderId) || null;
     if (['PAYOUT_PENDING', 'PAYOUT_UNCONFIRMED'].includes(order.storePayable.status)) await followStorePayout(order, kase); // a payout still on its way is looked up first, so the ledger is current
-    if (kase?.recharge?.status === 'UNCONFIRMED') await recharge(kase.id); // so is a re-charge PayPal has not answered about
+    if (['UNCONFIRMED', 'RETURNING'].includes(kase?.recharge?.status)) await recharge(kase.id); // so is a re-charge PayPal has not answered about, or one being given back
     const fromPayPal = { buyer: 0, store: 0, 'paypal:fees': 0 };
     const lookups = [];
     const cap = readCapture((await paypal.getCapture(order.paypal.captureId)).body);
@@ -1118,6 +1162,11 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
       fromPayPal['paypal:fees'] += rc.feeCents ?? 0;
       lookups.push({ type: 'recharge_capture', id: rc.id, status: rc.status, grossCents: rc.grossCents, feeCents: rc.feeCents });
     }
+    if (kase?.recharge?.refund?.id) {
+      const back = readRefund((await paypal.getRefund(kase.recharge.refund.id)).body);
+      if (back.status === 'COMPLETED') fromPayPal.buyer += back.amountCents;
+      lookups.push({ type: 'recharge_refund', id: back.id, status: back.status, amountCents: back.amountCents });
+    }
     if (order.storePayable.payout?.batchId) {
       const payout = readPayout((await paypal.getPayout(order.storePayable.payout.batchId)).body);
       // The ledger books the payout fee only with a SUCCESS payout (refreshStorePayout); compared on the same terms.
@@ -1134,7 +1183,7 @@ export function createDesk({ db, paypal, factExtractor, clock, ledger, config, p
     });
     // A payout whose answer never came cannot be compared: the store side is unknown, so this never reads as a match.
     const storeUnknown = order.storePayable.status === 'PAYOUT_UNCONFIRMED';
-    const rechargeUnknown = ['UNCONFIRMED', 'PENDING'].includes(kase?.recharge?.status); // the same for a re-charge without an answer
+    const rechargeUnknown = ['UNCONFIRMED', 'PENDING', 'RETURNING'].includes(kase?.recharge?.status); // the same for a re-charge without an answer
     return { orderId, ok: !storeUnknown && !rechargeUnknown && rows.every((r) => r.match), storeUnknown, rechargeUnknown, rows, simulatedStoreCents: totals.store.simulatedCents, lookups };
   }
 

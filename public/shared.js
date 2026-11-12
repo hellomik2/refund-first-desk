@@ -123,6 +123,7 @@ export const KINDS = {
   REFUND: 'Refund to buyer',
   STORE_PAID: 'Store paid',
   RECHARGE_CAPTURED: 'Buyer charged again',
+  RECHARGE_RETURNED: 'Re-charge given back to the buyer',
   RESERVE_ALLOCATED: 'Own funds set aside',
   RESERVE_RELEASED: 'Set-aside released',
   RESERVE_CONSUMED: 'Set-aside used',
