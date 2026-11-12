@@ -5573,5 +5573,840 @@
     "observed": "charge calls accepted by PayPal: 1; answers: charged, CHARGE_IN_PROGRESS, then ALREADY_CHARGED"
    }
   ]
+ },
+ "promptChange4": {
+  "about": "Fourth change to the investigator prompt (commit ab310ba, 2026-11-13 00:04 KST): a free extra that nobody was charged for is not a departure from the order; one rule for the step that goes over the spending limit (the add_to_cart step if the cart's item total is already over it, the pay step if only shipping, tax or fees take it over); a step-by-step comparison, with the first deviation answered in the order STEP, then INSUFFICIENT, then NONE. All runs here use scripts/ai-eval.mjs with PayPal in memory (no sandbox money), claude-haiku-5-5. 'before' runs use the prompt of commit e528e38 (the same prompt as 14216bb); 'after' runs use ab310ba/a221b07.",
+  "holdout4": {
+   "file": "scenarios/holdout4.json",
+   "sha256": "6222b50dd357384f058589d9f4d41f8cf576a5bcefc62c79c9ca5c6568ead73e",
+   "fixedAt": "2026-11-13T00:08:22+09:00 (commit a221b07), after the prompt change (00:04) and before the first AI run on these cases (log start 00:08:32)",
+   "written": "by two writers, 12 cases each, who did not open src/ai, scenarios, the measured results or earlier case files (their own report); answer key 6 STORE, 6 AGENT, 6 BUYER, 6 UNDETERMINED",
+   "caveats": [
+    "targeted: the writing brief named the shapes to include and how to judge them (free extras, the step that goes over the limit, cases changed before paying), so this set checks those shapes; it does not show generalization",
+    "Z-B05: the answer key says BUYER, all four runs closed it UNDETERMINED with both keys; the product page gives only \"85% merino wool\" against a \"no cotton blend\" exclusion, so the key is open to dispute; the key was not changed and the case counts as wrong",
+    "quickClose is false for all 24 cases, but code alone closes 6 of them in the quick check (Z-A04, Z-A07, Z-A09, Z-B02, Z-B04, Z-B08); quick-check numbers are not used"
+   ]
+  },
+  "firstStepDefinitionConflict": {
+   "cases": [
+    "Y-B09",
+    "Y-C10",
+    "Y-D08",
+    "Y10",
+    "Y11",
+    "Y12"
+   ],
+   "note": "the changed prompt answers INSUFFICIENT when no step departs and a fact is unknown; the fixed answer keys of hold-out 3 and the Codex cases say NONE for these six, so they are not scored on the same rule; scores below use the fixed keys as written"
+  },
+  "sets": {
+   "preparedCases": {
+    "before": [
+     {
+      "file": "11-12-제작20/원자료/base-1.json",
+      "sha256": "3ce9154a546ddde29755f06657984c697bae057689e221363efadc4e7b3d9791",
+      "ranAt": "2026-11-12T14:13:35.904Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 29,
+      "firstStepWrong": [
+       {
+        "id": "S28",
+        "ai": "NONE",
+        "answerKey": "3"
+       }
+      ]
+     },
+     {
+      "file": "11-12-제작20/원자료/base-2.json",
+      "sha256": "17fb515593ee392feb3720b0efa90353a9e3f60101da92319a01811d2da85db6",
+      "ranAt": "2026-11-12T14:13:35.577Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 28,
+      "firstStepWrong": [
+       {
+        "id": "S20",
+        "ai": "NONE",
+        "answerKey": "INSUFFICIENT"
+       },
+       {
+        "id": "S28",
+        "ai": "NONE",
+        "answerKey": "3"
+       }
+      ]
+     },
+     {
+      "file": "11-12-제작20/원자료/base-3.json",
+      "sha256": "fc0e39eb726c12e022b69e3e1199fc14ca3d926a5958bf60c1b305e0631e2179",
+      "ranAt": "2026-11-12T14:13:43.657Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 30,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-12-제작20/원자료/base-4.json",
+      "sha256": "4ff6499affbd2f7621a042da566f06ffec8410561aa59683eb906ded5c047629",
+      "ranAt": "2026-11-12T14:13:35.642Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 30,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-12-제작20/원자료/base-5.json",
+      "sha256": "bc4da245b7622b90d9463feac7e93661a51cb350313ac8b7e2893e43f4bd70c5",
+      "ranAt": "2026-11-12T14:13:33.732Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 30,
+      "firstStepWrong": []
+     }
+    ],
+    "after": [
+     {
+      "file": "11-13-제작21/원자료/fix-30-1.json",
+      "sha256": "7046bdae5d15d03f10ebba7a5cce339f177b4633a2b67ed76c687aa235cab244",
+      "ranAt": "2026-11-12T15:10:07.173Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 30,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-13-제작21/원자료/fix-30-2.json",
+      "sha256": "64b55f337447019959b81e56d177c6f9b3f68c51788ae3a5bb32c7e81f292b0d",
+      "ranAt": "2026-11-12T15:10:13.607Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 29,
+      "firstStepWrong": [
+       {
+        "id": "S18",
+        "ai": "NONE",
+        "answerKey": "7"
+       }
+      ]
+     },
+     {
+      "file": "11-13-제작21/원자료/fix-30-3.json",
+      "sha256": "c14f329cd7b242884c1ea2e031b56fb95dad86db6a8ba71f3e68de20265baed9",
+      "ranAt": "2026-11-12T15:10:17.528Z",
+      "cases": 30,
+      "errors": 0,
+      "verdictsRight": 30,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 30,
+      "firstStepWrong": []
+     }
+    ],
+    "verdictNewlyWrong": [],
+    "verdictNewlyRight": []
+   },
+   "holdout1": {
+    "before": [
+     {
+      "file": "11-12-제작18/holdout-1회차-14216bb.json",
+      "sha256": "389394477112e330d0faf9ffb669309aea2e49c8acbe19d603e1a703e93bf4c9",
+      "ranAt": "2026-11-12T12:05:55.426Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-12-제작20/원자료/baseh1-1.json",
+      "sha256": "54d5755a394ab83c7bee58fba75c88a0dfd9dab45f8409ab9d4d86f12117a459",
+      "ranAt": "2026-11-12T14:18:29.085Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-12-제작20/원자료/baseh1-2.json",
+      "sha256": "6074e276b22b9e2f0c6d4a648d04f075318b04ae3824e5b289123d6367c0b91e",
+      "ranAt": "2026-11-12T14:18:18.286Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     }
+    ],
+    "after": [
+     {
+      "file": "11-13-제작21/원자료/fix-h1-1.json",
+      "sha256": "bfb9e98fd077ecb18318fb6e04af17d78dfc000de6c181062f45638c3a5ba229",
+      "ranAt": "2026-11-12T15:07:17.113Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-13-제작21/원자료/fix-h1-2.json",
+      "sha256": "9a8f4f1cd623627004eab24d350f9bceeac3115481141b39f1361512e59550a6",
+      "ranAt": "2026-11-12T15:07:16.847Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     }
+    ],
+    "verdictNewlyWrong": [],
+    "verdictNewlyRight": []
+   },
+   "holdout2": {
+    "before": [
+     {
+      "file": "11-12-제작18/holdout2-1회차-14216bb.json",
+      "sha256": "cc1c5ffb6b1b515145e6a23a2da2d031eb3cd75faaf11ac7e2acca8bfbc531d1",
+      "ranAt": "2026-11-12T12:04:27.161Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-12-제작20/원자료/baseh2-1.json",
+      "sha256": "3bc04a332f0ec84c5758845719e7ef0f10d9b6c22e04912741fdd4d926cbbbb3",
+      "ranAt": "2026-11-12T14:18:18.679Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-12-제작20/원자료/baseh2-2.json",
+      "sha256": "c906933dec3f4cf078105544adfa92c8a7e2c2be6b66a490cbc5699628f4f2ef",
+      "ranAt": "2026-11-12T14:18:17.534Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     }
+    ],
+    "after": [
+     {
+      "file": "11-13-제작21/원자료/fix-h2-1.json",
+      "sha256": "b4b8eb2095ccd4f2fd42b5f835773908b9fa600816bff608a04f2dabe085e3f4",
+      "ranAt": "2026-11-12T15:07:24.510Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-13-제작21/원자료/fix-h2-2.json",
+      "sha256": "49d4140ca44ebff77da44a1f81c9d57107b713744bdb07a1d5dc28e36e5b7c77",
+      "ranAt": "2026-11-12T15:07:18.776Z",
+      "cases": 10,
+      "errors": 0,
+      "verdictsRight": 10,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 10,
+      "firstStepWrong": []
+     }
+    ],
+    "verdictNewlyWrong": [],
+    "verdictNewlyRight": []
+   },
+   "holdout3": {
+    "before": [
+     {
+      "file": "11-12-제작18/holdout3-고친판-1회차-5328131.json",
+      "sha256": "787928069be711d8a51bb1fa2dc4aafa41cd9d1437ab318ef7ecda26a8aec1e2",
+      "ranAt": "2026-11-12T14:15:05.651Z",
+      "cases": 40,
+      "errors": 0,
+      "verdictsRight": 39,
+      "toAPerson": [],
+      "bothKeysWrong": [
+       {
+        "id": "Y-D06",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       }
+      ],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 33,
+      "firstStepWrong": [
+       {
+        "id": "Y-A02",
+        "ai": "6",
+        "answerKey": "4"
+       },
+       {
+        "id": "Y-B05",
+        "ai": "6",
+        "answerKey": "4"
+       },
+       {
+        "id": "Y-B09",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-C10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-D04",
+        "ai": "8",
+        "answerKey": "5"
+       },
+       {
+        "id": "Y-D08",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-D10",
+        "ai": "NONE",
+        "answerKey": "INSUFFICIENT"
+       }
+      ]
+     },
+     {
+      "file": "11-12-제작18/holdout3-고친판-2회차-5328131.json",
+      "sha256": "e931fcc519bf26d2f6ae09b5ad21ccbf1e12c34d62f818419bd32b7abd8f1c1a",
+      "ranAt": "2026-11-12T14:21:52.146Z",
+      "cases": 40,
+      "errors": 0,
+      "verdictsRight": 39,
+      "toAPerson": [],
+      "bothKeysWrong": [
+       {
+        "id": "Y-D06",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       }
+      ],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 33,
+      "firstStepWrong": [
+       {
+        "id": "Y-A02",
+        "ai": "6",
+        "answerKey": "4"
+       },
+       {
+        "id": "Y-B05",
+        "ai": "6",
+        "answerKey": "4"
+       },
+       {
+        "id": "Y-B09",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-B10",
+        "ai": "NONE",
+        "answerKey": "INSUFFICIENT"
+       },
+       {
+        "id": "Y-C10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-D04",
+        "ai": "8",
+        "answerKey": "5"
+       },
+       {
+        "id": "Y-D08",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     },
+     {
+      "file": "11-12-제작20/원자료/baseh3-1.json",
+      "sha256": "68ad8280d81c6b130102851e2cf942784c22d34991890a07cf4d747293a03b93",
+      "ranAt": "2026-11-12T14:35:38.381Z",
+      "cases": 40,
+      "errors": 0,
+      "verdictsRight": 39,
+      "toAPerson": [],
+      "bothKeysWrong": [
+       {
+        "id": "Y-D06",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       }
+      ],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 35,
+      "firstStepWrong": [
+       {
+        "id": "Y-B05",
+        "ai": "6",
+        "answerKey": "4"
+       },
+       {
+        "id": "Y-C10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-D04",
+        "ai": "8",
+        "answerKey": "5"
+       },
+       {
+        "id": "Y-D08",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-D10",
+        "ai": "NONE",
+        "answerKey": "INSUFFICIENT"
+       }
+      ]
+     }
+    ],
+    "after": [
+     {
+      "file": "11-13-제작21/원자료/fix-h3-1.json",
+      "sha256": "ddb0cab003c7c06c185926b70389b36a5372ffd21359894de5a5ef935850d986",
+      "ranAt": "2026-11-12T15:12:10.827Z",
+      "cases": 40,
+      "errors": 0,
+      "verdictsRight": 40,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 36,
+      "firstStepWrong": [
+       {
+        "id": "Y-B01",
+        "ai": "NONE",
+        "answerKey": "5"
+       },
+       {
+        "id": "Y-B09",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-C10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-D08",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     },
+     {
+      "file": "11-13-제작21/원자료/fix-h3-2.json",
+      "sha256": "6917a2c5dc7f38732f730ad7eac045221e44db6031b4f79d11202b89bc899199",
+      "ranAt": "2026-11-12T15:11:56.821Z",
+      "cases": 40,
+      "errors": 0,
+      "verdictsRight": 40,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 37,
+      "firstStepWrong": [
+       {
+        "id": "Y-B09",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-C10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y-D08",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     }
+    ],
+    "verdictNewlyWrong": [],
+    "verdictNewlyRight": [
+     "Y-D06"
+    ]
+   },
+   "holdout3Codex": {
+    "before": [
+     {
+      "file": "11-12-제작18/holdout3codex-고친판-1회차-4b13c7a.json",
+      "sha256": "bddc53622fce876ceacf6ff86cc2458f89d3241f3cb0c430cd4215517e8970cd",
+      "ranAt": "2026-11-12T14:23:47.301Z",
+      "cases": 12,
+      "errors": 0,
+      "verdictsRight": 12,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 9,
+      "firstStepWrong": [
+       {
+        "id": "Y10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y11",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y12",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     },
+     {
+      "file": "11-12-제작18/holdout3codex-고친판-2회차-4b13c7a.json",
+      "sha256": "2e355c66017d42ef814765272cfc5b303acab1e84115bd286356ba4f5a338369",
+      "ranAt": "2026-11-12T14:25:29.927Z",
+      "cases": 12,
+      "errors": 0,
+      "verdictsRight": 12,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 9,
+      "firstStepWrong": [
+       {
+        "id": "Y10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y11",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y12",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     }
+    ],
+    "after": [
+     {
+      "file": "11-13-제작21/원자료/fix-cx-1.json",
+      "sha256": "23b398a73be566bee1559f462769c5e2865fecae988804d4aefc58266ef9a441",
+      "ranAt": "2026-11-12T15:07:33.441Z",
+      "cases": 12,
+      "errors": 0,
+      "verdictsRight": 12,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 9,
+      "firstStepWrong": [
+       {
+        "id": "Y10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y11",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y12",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     },
+     {
+      "file": "11-13-제작21/원자료/fix-cx-2.json",
+      "sha256": "f7ebf3ac73a89fde3bb94b834a7bc9e273c116c7e71c76b3e88f8d917a6eb97c",
+      "ranAt": "2026-11-12T15:07:28.738Z",
+      "cases": 12,
+      "errors": 0,
+      "verdictsRight": 12,
+      "toAPerson": [],
+      "bothKeysWrong": [],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 9,
+      "firstStepWrong": [
+       {
+        "id": "Y10",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y11",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Y12",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     }
+    ],
+    "verdictNewlyWrong": [],
+    "verdictNewlyRight": []
+   },
+   "holdout4": {
+    "before": [
+     {
+      "file": "11-13-제작21/원자료/base-h4-1.json",
+      "sha256": "c9d113f837e61a274f4f44c1d2359946b6dc7502ee577d43b32b1cfbb8a88822",
+      "ranAt": "2026-11-12T15:12:37.498Z",
+      "cases": 24,
+      "errors": 0,
+      "verdictsRight": 19,
+      "toAPerson": [],
+      "bothKeysWrong": [
+       {
+        "id": "Z-A01",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       },
+       {
+        "id": "Z-A02",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       },
+       {
+        "id": "Z-B05",
+        "keys": "UNDETERMINED",
+        "answerKey": "BUYER"
+       },
+       {
+        "id": "Z-B07",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       },
+       {
+        "id": "Z-B12",
+        "keys": "BUYER",
+        "answerKey": "UNDETERMINED"
+       }
+      ],
+      "wrongBuyerVerdicts": [
+       "Z-B12"
+      ],
+      "firstStepRight": 20,
+      "firstStepWrong": [
+       {
+        "id": "Z-A07",
+        "ai": "6",
+        "answerKey": "4"
+       },
+       {
+        "id": "Z-B02",
+        "ai": "7",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Z-B04",
+        "ai": "8",
+        "answerKey": "5"
+       },
+       {
+        "id": "Z-B12",
+        "ai": "NONE",
+        "answerKey": "INSUFFICIENT"
+       }
+      ]
+     },
+     {
+      "file": "11-13-제작21/원자료/base-h4-2.json",
+      "sha256": "a75da0ab4f1a61c9d8a8726b9a5e3c3f580a24ad612435873c3a3ffc03329d48",
+      "ranAt": "2026-11-12T15:12:41.384Z",
+      "cases": 24,
+      "errors": 0,
+      "verdictsRight": 20,
+      "toAPerson": [],
+      "bothKeysWrong": [
+       {
+        "id": "Z-A01",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       },
+       {
+        "id": "Z-A02",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       },
+       {
+        "id": "Z-B05",
+        "keys": "UNDETERMINED",
+        "answerKey": "BUYER"
+       },
+       {
+        "id": "Z-B07",
+        "keys": "STORE",
+        "answerKey": "BUYER"
+       }
+      ],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 21,
+      "firstStepWrong": [
+       {
+        "id": "Z-A07",
+        "ai": "6",
+        "answerKey": "4"
+       },
+       {
+        "id": "Z-B02",
+        "ai": "7",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Z-B04",
+        "ai": "8",
+        "answerKey": "5"
+       }
+      ]
+     }
+    ],
+    "after": [
+     {
+      "file": "11-13-제작21/원자료/fix-h4-1.json",
+      "sha256": "368ff34f6f25eda1e7f8fe2de827df48e0bc88723d20b38b9b407eaeefb645aa",
+      "ranAt": "2026-11-12T15:12:38.516Z",
+      "cases": 24,
+      "errors": 0,
+      "verdictsRight": 23,
+      "toAPerson": [],
+      "bothKeysWrong": [
+       {
+        "id": "Z-B05",
+        "keys": "UNDETERMINED",
+        "answerKey": "BUYER"
+       }
+      ],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 24,
+      "firstStepWrong": []
+     },
+     {
+      "file": "11-13-제작21/원자료/fix-h4-2.json",
+      "sha256": "0f1ca999c15e7c23b6497dbf2e953447837781b638d4d3de15e6926b982c2a36",
+      "ranAt": "2026-11-12T15:12:40.132Z",
+      "cases": 24,
+      "errors": 0,
+      "verdictsRight": 23,
+      "toAPerson": [],
+      "bothKeysWrong": [
+       {
+        "id": "Z-B05",
+        "keys": "UNDETERMINED",
+        "answerKey": "BUYER"
+       }
+      ],
+      "wrongBuyerVerdicts": [],
+      "firstStepRight": 22,
+      "firstStepWrong": [
+       {
+        "id": "Z-B02",
+        "ai": "7",
+        "answerKey": "NONE"
+       },
+       {
+        "id": "Z-B06",
+        "ai": "INSUFFICIENT",
+        "answerKey": "NONE"
+       }
+      ]
+     }
+    ],
+    "verdictNewlyWrong": [],
+    "verdictNewlyRight": [
+     "Z-A01",
+     "Z-A02",
+     "Z-B07",
+     "Z-B12"
+    ]
+   }
+  },
+  "run9": null
  }
 }
