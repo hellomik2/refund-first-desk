@@ -332,6 +332,7 @@ summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
 /* the live agent */
 .picker.live { margin-bottom: 18px; }
 .live-own { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.live-own label { font-size: 13.5px; color: var(--ink-2); }
 .live-own .row { display: flex; gap: 8px; flex-wrap: wrap; }
 .live-own input { flex: 1 1 260px; min-width: 0; padding: 9px 11px; border: 1px solid var(--line-2); border-radius: 8px; font: inherit; background: var(--card); color: var(--ink); }
 .live-how { margin-top: 12px; font-size: 13.5px; color: var(--ink-2); }
