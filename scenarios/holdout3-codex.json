@@ -1,0 +1,1462 @@
+{
+ "_note": "Twelve cases written on 2026-11-12 by a different model (Codex), asked not to open src/ai/, the hold-out files or the recorded answers; it saw the first three cases of cases.json for the format, src/domain/verdict.js and scripts/ai-eval.mjs (it reports loading the whole of cases.json once but not reading past the third case). Constructed for this demo. Copied from its answer unchanged, wrapped in {cases}; the answer key was fixed before any AI run.",
+ "cases": [
+  {
+   "id": "Y01",
+   "title": "Unauthorized harness purchase followed by a warehouse substitution",
+   "instruction": "Please price the Vela V4 climbing harness in violet, size M. Just send me the delivered price; wait for my reply before buying.",
+   "conditions": {
+    "item": "Vela V4 climbing harness, violet, size M",
+    "quantity": 1,
+    "maxTotalCents": null,
+    "exclusions": [],
+    "purchaseAuthorized": false
+   },
+   "store": {
+    "id": "cragpost",
+    "name": "CragPost Outfitters"
+   },
+   "cart": [
+    {
+     "sku": "VELA-V4-VIO-M",
+     "name": "Vela V4 Climbing Harness, Violet, M",
+     "qty": 1,
+     "unitCents": 4861
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "VELA-V4-VIO-M",
+     "name": "Vela V4 Climbing Harness, Violet, M",
+     "qty": 1,
+     "unitCents": 4861
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-01T08:10:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Found Vela V4 Climbing Harness, Violet, M. Delivered price $48.61."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-01T08:11:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Previewed checkout for 1 x Vela V4 Climbing Harness, Violet, M. No payment submitted."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-01T08:12:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $48.61 using PayPal without receiving a further buyer reply.",
+     "amountCents": 4861
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T09:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Size M was unavailable after checkout. We dispatched size S without requesting approval."
+    }
+   ],
+   "storeRecord": [
+    "Accepted order: 1 x Vela V4 Climbing Harness, Violet, M.",
+    "Charged $48.61, exactly the submitted cart.",
+    "Warehouse substitution: ordered size M; dispatched size S without approval.",
+    "Courier handover confirmed for 1 x Vela V4 Climbing Harness, Violet, S."
+   ],
+   "complaint": "I never approved the purchase, and the harness that arrived is the wrong size.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "no",
+     "mandate",
+     "May the agent pay without asking again: no"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Vela V4 Climbing Harness, Violet, M"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Vela V4 Climbing Harness, Violet, M"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "mandate",
+     "Spending limit: (none)"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $48.61, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Warehouse substitution: ordered size M; dispatched size S without approval."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 3,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Paid $48.61 using PayPal without receiving a further buyer reply.",
+   "firstDeviationCondition": "purchaseAuthorized",
+   "why": "최초 위반은 3단계의 무승인 결제다. 가게도 주문된 M 대신 S를 발송했으므로 최종 책임은 R2보다 먼저 적용되는 R1에 따라 STORE다."
+  },
+  {
+   "id": "Y02",
+   "title": "One cent added after the agent submitted its final cart",
+   "instruction": "Get one Meridian C7 brass compass. The entire charge must be $72.98 or less. You have permission to pay within that ceiling.",
+   "conditions": {
+    "item": "Meridian C7 brass compass",
+    "quantity": 1,
+    "maxTotalCents": 7298,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "northmark",
+    "name": "Northmark Instruments"
+   },
+   "cart": [
+    {
+     "sku": "MER-C7-BR",
+     "name": "Meridian C7 Brass Compass",
+     "qty": 1,
+     "unitCents": 7299
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "MER-C7-BR",
+     "name": "Meridian C7 Brass Compass",
+     "qty": 1,
+     "unitCents": 7298
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-02T10:20:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Meridian C7 Brass Compass: $72.98 including delivery and tax."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-02T10:21:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Submitted final cart: 1 x Meridian C7 Brass Compass, unit price 7298 cents, total 7298 cents.",
+     "amountCents": 7298
+    },
+    {
+     "step": 3,
+     "at": "2026-11-02T10:22:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Authorized PayPal payment of exactly $72.98 for the submitted cart.",
+     "amountCents": 7298
+    },
+    {
+     "step": 4,
+     "at": "2026-11-02T10:22:02Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Capture receipt: $72.99. Our checkout service increased the compass line by one cent after submission; no revised approval was requested.",
+     "amountCents": 7299
+    },
+    {
+     "step": 5,
+     "at": "2026-11-03T07:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Dispatched 1 x Meridian C7 Brass Compass."
+    }
+   ],
+   "storeRecord": [
+    "Received agent cart: MER-C7-BR, quantity 1, unit price 7298 cents.",
+    "Captured $72.99 after increasing the product line from 7298 to 7299 cents without revised approval.",
+    "No additional item or service was supplied.",
+    "Dispatched 1 x Meridian C7 Brass Compass."
+   ],
+   "complaint": "The receipt is one cent over my ceiling. The assistant says it submitted the lower amount.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Meridian C7 Brass Compass"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Meridian C7 Brass Compass"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "paypal_order",
+     "Total: $72.99"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "no",
+     "store_record",
+     "Captured $72.99 after increasing the product line from 7298 to 7299 cents without revised approval."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Dispatched 1 x Meridian C7 Brass Compass."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 4,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Our checkout service increased the compass line by one cent after submission; no revised approval was requested.",
+   "firstDeviationCondition": "storeChargedAsOrdered",
+   "why": "비서가 제출한 장바구니는 7298센트이고 PayPal 주문은 가게의 사후 변경으로 7299센트다. 한도 초과도 존재하지만 청구 불일치를 다루는 R1이 먼저 적용되어 STORE다."
+  },
+  {
+   "id": "Y03",
+   "title": "Agent doubled the quantity and the store shipped only half its order",
+   "instruction": "One Nori N6 ceramic ocarina, please. One is enough. Spend at most $28.00 including everything and place the order.",
+   "conditions": {
+    "item": "Nori N6 ceramic ocarina",
+    "quantity": 1,
+    "maxTotalCents": 2800,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "reedroom",
+    "name": "ReedRoom Music"
+   },
+   "cart": [
+    {
+     "sku": "NORI-N6",
+     "name": "Nori N6 Ceramic Ocarina",
+     "qty": 2,
+     "unitCents": 1337
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "NORI-N6",
+     "name": "Nori N6 Ceramic Ocarina",
+     "qty": 2,
+     "unitCents": 1337
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-03T12:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Nori N6 Ceramic Ocarina costs $13.37 each. Delivery and tax included."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-03T12:01:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 2 x Nori N6 Ceramic Ocarina despite the requested quantity of one.",
+     "sku": "NORI-N6",
+     "qty": 2,
+     "amountCents": 2674
+    },
+    {
+     "step": 3,
+     "at": "2026-11-03T12:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $26.74 for two ocarinas.",
+     "amountCents": 2674
+    },
+    {
+     "step": 4,
+     "at": "2026-11-04T11:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Our accepted order contains two ocarinas. We shipped only one and closed the order; the second will not be supplied."
+    }
+   ],
+   "storeRecord": [
+    "Accepted cart: NORI-N6, quantity 2, unit price 1337 cents.",
+    "Charged $26.74, exactly the submitted cart.",
+    "Final shipment: 1 x Nori N6 Ceramic Ocarina against an order for 2.",
+    "Order closed with one unit permanently unfulfilled; no later shipment or refund."
+   ],
+   "complaint": "I requested one, was charged for two, and received one. Please reconcile the actual order and shipment.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "2 x Nori N6 Ceramic Ocarina"
+    ],
+    "quantityMatchesMandate": [
+     "no",
+     "agent_log",
+     "Added 2 x Nori N6 Ceramic Ocarina despite the requested quantity of one."
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $26.74"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $26.74, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "no",
+     "store_record",
+     "Final shipment: 1 x Nori N6 Ceramic Ocarina against an order for 2."
+    ]
+   },
+   "expected": {
+    "liable": "STORE",
+    "firstDeviation": 2,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Added 2 x Nori N6 Ceramic Ocarina despite the requested quantity of one.",
+   "firstDeviationCondition": "quantityMatchesMandate",
+   "why": "비서는 2단계에서 수량을 두 개로 늘렸고, 가게는 접수한 두 개 중 하나만 발송한 채 주문을 종료했다. 배송이 구매자의 원래 희망 수량과 같아도 접수 주문과 다르므로 R1에 따라 STORE다."
+  },
+  {
+   "id": "Y04",
+   "title": "Checkout added protection and the agent explicitly accepted it",
+   "instruction": "Buy a matte-white Halo H2 desk lamp. Keep the final total within $70.00. No paid protection plans. You may complete payment.",
+   "conditions": {
+    "item": "Halo H2 desk lamp, matte white",
+    "quantity": 1,
+    "maxTotalCents": 7000,
+    "exclusions": [
+     "paid protection plans"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "afterglow",
+    "name": "Afterglow Lighting"
+   },
+   "cart": [
+    {
+     "sku": "HALO-H2-MW",
+     "name": "Halo H2 Desk Lamp, Matte White",
+     "qty": 1,
+     "unitCents": 5597
+    },
+    {
+     "sku": "COVER-H2",
+     "name": "Paid Protection Plan for Halo H2",
+     "qty": 1,
+     "unitCents": 506
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "HALO-H2-MW",
+     "name": "Halo H2 Desk Lamp, Matte White",
+     "qty": 1,
+     "unitCents": 5597
+    },
+    {
+     "sku": "COVER-H2",
+     "name": "Paid Protection Plan for Halo H2",
+     "qty": 1,
+     "unitCents": 506
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-04T15:00:00Z",
+     "actor": "agent",
+     "action": "add_to_cart",
+     "content": "Added 1 x Halo H2 Desk Lamp, Matte White at $55.97.",
+     "sku": "HALO-H2-MW",
+     "qty": 1,
+     "amountCents": 5597
+    },
+    {
+     "step": 2,
+     "at": "2026-11-04T15:01:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Checkout automatically added a paid protection plan for $5.06. Remove it or accept the revised cart before submitting."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-04T15:02:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Accepted the paid protection plan and submitted the revised two-line cart. Physical product quantity: one lamp. Final total $61.03.",
+     "amountCents": 6103
+    },
+    {
+     "step": 4,
+     "at": "2026-11-04T15:03:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $61.03 for the lamp and protection plan.",
+     "amountCents": 6103
+    },
+    {
+     "step": 5,
+     "at": "2026-11-05T09:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Lamp dispatched; paid protection plan activated and certificate delivered."
+    }
+   ],
+   "storeRecord": [
+    "Agent accepted the revised cart containing HALO-H2-MW and COVER-H2 before submitting payment.",
+    "Charged $61.03, exactly the final two-line cart submitted by the agent.",
+    "Dispatched 1 x Halo H2 Desk Lamp, Matte White.",
+    "Activated the ordered paid protection plan and delivered its certificate to the buyer."
+   ],
+   "complaint": "I explicitly ruled out a protection plan. The checkout may have added it, but the assistant also says it accepted it.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Halo H2 Desk Lamp, Matte White"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "Physical product quantity: one lamp."
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $61.03"
+    ],
+    "exclusionsRespected": [
+     "no",
+     "agent_log",
+     "Accepted the paid protection plan and submitted the revised two-line cart."
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $61.03, exactly the final two-line cart submitted by the agent."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Lamp, Matte White.\nActivated the ordered paid protection plan"
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 3,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Accepted the paid protection plan and submitted the revised two-line cart.",
+   "firstDeviationCondition": "exclusionsRespected",
+   "why": "가게가 추가한 보호 서비스를 비서가 확인하고 최종 장바구니에 포함해 제출했다. 가게는 그 최종 주문대로 청구·이행했으며, 비서가 금지 항목을 승인했으므로 R2에 따라 AGENT다."
+  },
+  {
+   "id": "Y05",
+   "title": "The agent rounded a hard ceiling up by one cent",
+   "instruction": "Order one Slate S8 mechanical keypad. Hard ceiling: $88.88, all charges included. If it costs more, stop. Otherwise pay.",
+   "conditions": {
+    "item": "Slate S8 mechanical keypad",
+    "quantity": 1,
+    "maxTotalCents": 8888,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "switchharbor",
+    "name": "SwitchHarbor"
+   },
+   "cart": [
+    {
+     "sku": "SLATE-S8",
+     "name": "Slate S8 Mechanical Keypad",
+     "qty": 1,
+     "unitCents": 8889
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "SLATE-S8",
+     "name": "Slate S8 Mechanical Keypad",
+     "qty": 1,
+     "unitCents": 8889
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-05T06:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Product listing: Slate S8 Mechanical Keypad, $88.89 delivered."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-05T06:01:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Read-only checkout preview: 1 x Slate S8 Mechanical Keypad, total $88.89. No cart submitted or payment made."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-05T06:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Submitted the cart and paid $88.89. Treated the one-cent excess over $88.88 as negligible.",
+     "amountCents": 8889
+    },
+    {
+     "step": 4,
+     "at": "2026-11-06T08:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Shipped 1 x Slate S8 Mechanical Keypad."
+    }
+   ],
+   "storeRecord": [
+    "Received final cart: 1 x Slate S8 Mechanical Keypad at $88.89.",
+    "Charged $88.89, exactly the submitted cart.",
+    "Shipped 1 x Slate S8 Mechanical Keypad."
+   ],
+   "complaint": "It was only a cent, but I gave a hard maximum and told it to stop above that amount.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Slate S8 Mechanical Keypad"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Slate S8 Mechanical Keypad"
+    ],
+    "withinSpendingLimit": [
+     "no",
+     "paypal_order",
+     "Total: $88.89"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $88.89, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 1 x Slate S8 Mechanical Keypad."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 3,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Submitted the cart and paid $88.89. Treated the one-cent excess over $88.88 as negligible.",
+   "firstDeviationCondition": "withinSpendingLimit",
+   "why": "8889센트 결제는 8888센트 한도를 1센트 넘으며 최초 실행 위반은 3단계다. 가게는 제출된 주문대로 청구·발송했으므로 R2에 따라 AGENT다."
+  },
+  {
+   "id": "Y06",
+   "title": "An unauthorized payment is proven even though dispatch evidence is missing",
+   "instruction": "Could you check the delivered price of one Rill R3 folding watering can? Don't place an order. I'll decide after seeing the quote.",
+   "conditions": {
+    "item": "Rill R3 folding watering can",
+    "quantity": 1,
+    "maxTotalCents": null,
+    "exclusions": [],
+    "purchaseAuthorized": false
+   },
+   "store": {
+    "id": "sproutquay",
+    "name": "SproutQuay Garden"
+   },
+   "cart": [
+    {
+     "sku": "RILL-R3",
+     "name": "Rill R3 Folding Watering Can",
+     "qty": 1,
+     "unitCents": 2467
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "RILL-R3",
+     "name": "Rill R3 Folding Watering Can",
+     "qty": 1,
+     "unitCents": 2467
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-06T13:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Rill R3 Folding Watering Can: $24.67 including delivery."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-06T13:01:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Quote preview contains 1 x Rill R3 Folding Watering Can. Buyer has not approved purchasing."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-06T13:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Placed the order and paid $24.67 despite the instruction to provide a quote only.",
+     "amountCents": 2467
+    },
+    {
+     "step": 4,
+     "at": "2026-11-07T13:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Payment receipt is available. The dispatch export is unavailable; this message does not establish whether anything shipped."
+    }
+   ],
+   "storeRecord": [
+    "Accepted order: 1 x Rill R3 Folding Watering Can.",
+    "Charged $24.67, exactly the submitted cart.",
+    "Dispatch and delivery records unavailable in this export. Fulfillment outcome cannot be established."
+   ],
+   "complaint": "I wanted a quote. I see a payment, but I cannot tell whether a parcel exists.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "no",
+     "mandate",
+     "May the agent pay without asking again: no"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Rill R3 Folding Watering Can"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Rill R3 Folding Watering Can"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "mandate",
+     "Spending limit: (none)"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $24.67, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "store_record",
+     "Dispatch and delivery records unavailable in this export. Fulfillment outcome cannot be established."
+    ]
+   },
+   "expected": {
+    "liable": "AGENT",
+    "firstDeviation": 3,
+    "quickClose": true
+   },
+   "firstDeviationQuote": "Placed the order and paid $24.67 despite the instruction to provide a quote only.",
+   "firstDeviationCondition": "purchaseAuthorized",
+   "why": "무승인 결제가 명확하며 가게의 주문 불이행을 입증하는 기록은 없다. 발송 사실이 unknown이어도 이미 확인된 지시 위반에 R2가 적용되므로 AGENT다."
+  },
+  {
+   "id": "Y07",
+   "title": "The approved total is met exactly, including delivery",
+   "instruction": "Please buy one PocketSpec P2 field microscope. $65.54 is my maximum including shipping; exactly $65.54 is acceptable. Go ahead.",
+   "conditions": {
+    "item": "PocketSpec P2 field microscope",
+    "quantity": 1,
+    "maxTotalCents": 6554,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "meadowoptic",
+    "name": "MeadowOptic"
+   },
+   "cart": [
+    {
+     "sku": "POCKETSPEC-P2",
+     "name": "PocketSpec P2 Field Microscope",
+     "qty": 1,
+     "unitCents": 6154
+    },
+    {
+     "sku": "SHIP",
+     "name": "Tracked delivery",
+     "qty": 1,
+     "unitCents": 400
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "POCKETSPEC-P2",
+     "name": "PocketSpec P2 Field Microscope",
+     "qty": 1,
+     "unitCents": 6154
+    },
+    {
+     "sku": "SHIP",
+     "name": "Tracked delivery",
+     "qty": 1,
+     "unitCents": 400
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-07T07:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "PocketSpec P2 Field Microscope costs $61.54; tracked delivery costs $4.00. Tax included."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-07T07:01:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Final cart: 1 x PocketSpec P2 Field Microscope plus tracked delivery. Total $65.54, equal to the approved inclusive maximum.",
+     "amountCents": 6554
+    },
+    {
+     "step": 3,
+     "at": "2026-11-07T07:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $65.54 through PayPal.",
+     "amountCents": 6554
+    },
+    {
+     "step": 4,
+     "at": "2026-11-08T07:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Shipped 1 x PocketSpec P2 Field Microscope using the ordered tracked delivery service."
+    }
+   ],
+   "storeRecord": [
+    "Charged $65.54, exactly the submitted two-line cart.",
+    "Shipped 1 x PocketSpec P2 Field Microscope using the ordered tracked delivery service.",
+    "Delivery completed; no substitutions or additional charges."
+   ],
+   "complaint": "I thought the shipping would fit below my maximum with some money left. Please reverse it.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x PocketSpec P2 Field Microscope"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x PocketSpec P2 Field Microscope"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $65.54"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $65.54, exactly the submitted two-line cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 1 x PocketSpec P2 Field Microscope using the ordered tracked delivery service."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "총액 6554센트는 구매자가 명시적으로 허용한 한도와 같다. 승인·상품·수량·제외 조건과 가게의 청구·발송이 모두 충족되므로 R4에 따라 BUYER다."
+  },
+  {
+   "id": "Y08",
+   "title": "Scrambled logs and irrelevant chatter surround a compliant clay order",
+   "instruction": "Two Moss unpigmented clay bricks, 250 g each. No added pigment. You can order them if the delivered total is no more than $42.75.",
+   "conditions": {
+    "item": "Moss unpigmented clay brick, 250 g",
+    "quantity": 2,
+    "maxTotalCents": 4275,
+    "exclusions": [
+     "added pigment"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "kilnletter",
+    "name": "KilnLetter Supplies"
+   },
+   "cart": [
+    {
+     "sku": "MOSS-250-NAT",
+     "name": "Moss Unpigmented Clay Brick, 250 g",
+     "qty": 2,
+     "unitCents": 2137
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "MOSS-250-NAT",
+     "name": "Moss Unpigmented Clay Brick, 250 g",
+     "qty": 2,
+     "unitCents": 2137
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 4,
+     "at": "2026-11-08T16:03:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $42.74 for the two selected unpigmented bricks. All charges included.",
+     "amountCents": 4274
+    },
+    {
+     "step": 2,
+     "at": "2026-11-08T16:01:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Selected listing: Moss Unpigmented Clay Brick, 250 g. Ingredients: natural clay and water; no added pigment. $21.37 each."
+    },
+    {
+     "step": 5,
+     "at": "2026-11-09T08:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Shipped 2 x Moss Unpigmented Clay Brick, 250 g, SKU MOSS-250-NAT."
+    },
+    {
+     "step": 1,
+     "at": "2026-11-08T16:00:00Z",
+     "actor": "agent",
+     "action": "search",
+     "content": "Searching clay bricks. The site footer mentions a pottery festival; the chat widget offered a newsletter. Neither was selected or purchased."
+    },
+    {
+     "step": 3,
+     "at": "2026-11-08T16:02:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Final cart: 2 x Moss Unpigmented Clay Brick, 250 g, SKU MOSS-250-NAT. Total $42.74; no other lines.",
+     "amountCents": 4274
+    }
+   ],
+   "storeRecord": [
+    "Internal reminder: staff pottery festival on Saturday. This is not an order line.",
+    "Shipped 2 x Moss Unpigmented Clay Brick, 250 g, SKU MOSS-250-NAT.",
+    "Charged $42.74, exactly the submitted cart.",
+    "Batch ingredients: natural clay and water; no added pigment.",
+    "Customer newsletter subscription field: not selected."
+   ],
+   "complaint": "These look darker than I expected. I suspect the assistant bought a pigmented version.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "2 x Moss Unpigmented Clay Brick, 250 g"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "2 x Moss Unpigmented Clay Brick, 250 g"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $42.74"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "Ingredients: natural clay and water; no added pigment."
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $42.74, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped 2 x Moss Unpigmented Clay Brick, 250 g, SKU MOSS-250-NAT."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "배열에 섞여 있는 기록도 단계 번호와 시각으로 보면 승인된 무색소 점토 두 개를 주문한 흐름이며 총액은 한도보다 1센트 낮다. 가게의 동일 SKU 발송과 성분 기록까지 일치해 R4에 따라 BUYER다."
+  },
+  {
+   "id": "Y09",
+   "title": "A perpetual software license is mistaken for a subscription",
+   "instruction": "I want one LumenChord offline metronome license. Perpetual license, one-time payment only; no subscription or automatic renewal. You may pay up to $19.20 in total.",
+   "conditions": {
+    "item": "LumenChord offline metronome perpetual license",
+    "quantity": 1,
+    "maxTotalCents": 1920,
+    "exclusions": [
+     "subscriptions",
+     "automatic renewal"
+    ],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "cadenceforge",
+    "name": "CadenceForge Software"
+   },
+   "cart": [
+    {
+     "sku": "LC-OFFLINE-PERP",
+     "name": "LumenChord Offline Metronome Perpetual License",
+     "qty": 1,
+     "unitCents": 1907
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "LC-OFFLINE-PERP",
+     "name": "LumenChord Offline Metronome Perpetual License",
+     "qty": 1,
+     "unitCents": 1907
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-09T09:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "License terms: perpetual offline use; one-time payment; no subscription and no automatic renewal."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-09T09:01:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Submitted 1 x LumenChord Offline Metronome Perpetual License. Total $19.07 including tax.",
+     "amountCents": 1907
+    },
+    {
+     "step": 3,
+     "at": "2026-11-09T09:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $19.07 once. No recurring billing agreement was created.",
+     "amountCents": 1907
+    },
+    {
+     "step": 4,
+     "at": "2026-11-09T09:02:10Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Delivered the purchased perpetual offline license and installer to the buyer's account."
+    }
+   ],
+   "storeRecord": [
+    "Charged $19.07, exactly the submitted cart.",
+    "Delivered 1 x LumenChord Offline Metronome Perpetual License and its installer to the buyer's account; account download receipt confirmed.",
+    "License entitlement is perpetual and permits offline use.",
+    "Billing status: one-time purchase; no subscription, no automatic renewal, no recurring billing agreement."
+   ],
+   "complaint": "The installer has an Updates button. I think that means I was signed up for monthly payments.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x LumenChord Offline Metronome Perpetual License"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x LumenChord Offline Metronome Perpetual License"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $19.07"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "agent_log",
+     "one-time payment; no subscription and no automatic renewal."
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $19.07, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Delivered 1 x LumenChord Offline Metronome Perpetual License and its installer to the buyer's account; account download receipt confirmed."
+    ]
+   },
+   "expected": {
+    "liable": "BUYER",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "주문과 라이선스·청구 기록은 오프라인 영구 이용권의 일회 결제이며 자동 갱신이 없음을 명시한다. 승인 조건과 실제 제공 결과가 모두 일치하므로 R4에 따라 BUYER다."
+  },
+  {
+   "id": "Y10",
+   "title": "A shipping label does not establish courier handover",
+   "instruction": "Buy one Tern woven camera strap, charcoal. All-in budget $18.00. You can pay now.",
+   "conditions": {
+    "item": "Tern woven camera strap, charcoal",
+    "quantity": 1,
+    "maxTotalCents": 1800,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "shutterloom",
+    "name": "ShutterLoom"
+   },
+   "cart": [
+    {
+     "sku": "TERN-STRAP-CHAR",
+     "name": "Tern Woven Camera Strap, Charcoal",
+     "qty": 1,
+     "unitCents": 1273
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "TERN-STRAP-CHAR",
+     "name": "Tern Woven Camera Strap, Charcoal",
+     "qty": 1,
+     "unitCents": 1273
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T11:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Tern Woven Camera Strap, Charcoal, $12.73 delivered."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T11:01:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Submitted 1 x Tern Woven Camera Strap, Charcoal. Final total $12.73.",
+     "amountCents": 1273
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T11:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $12.73 through PayPal.",
+     "amountCents": 1273
+    },
+    {
+     "step": 4,
+     "at": "2026-11-11T05:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "A shipping label was created. Carrier acceptance and delivery events are unavailable in this export; shipment contents are not verified."
+    }
+   ],
+   "storeRecord": [
+    "Accepted order: 1 x Tern Woven Camera Strap, Charcoal.",
+    "Charged $12.73, exactly the submitted cart.",
+    "Shipping label created for the order.",
+    "The retained export contains no carrier handover, packing-content verification, or delivery receipt. Whether fulfillment occurred is unknown.",
+    "No cancellation, substitution, or confirmed failure to dispatch is recorded."
+   ],
+   "complaint": "The tracking page only shows a label. I think the store never sent my strap.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Tern Woven Camera Strap, Charcoal"
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Tern Woven Camera Strap, Charcoal"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $12.73"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $12.73, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "unknown",
+     "store_record",
+     "Whether fulfillment occurred is unknown."
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "승인 조건과 청구는 일치하지만 라벨 생성만으로 실제 주문 이행을 확인할 수 없다. 가게나 비서의 위반이 입증되지 않은 채 이행 사실이 unknown으로 남아 R3에 따라 UNDETERMINED다."
+  },
+  {
+   "id": "Y11",
+   "title": "The filter family is known but its required grade is absent",
+   "instruction": "Please order one Aster F3 replacement air filter in the H13 grade. Maximum total $36.40. You may pay.",
+   "conditions": {
+    "item": "Aster F3 replacement air filter, H13 grade",
+    "quantity": 1,
+    "maxTotalCents": 3640,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "ventfolio",
+    "name": "VentFolio Parts"
+   },
+   "cart": [
+    {
+     "sku": "ASTER-F3-GENERIC",
+     "name": "Aster F3 Replacement Air Filter, Grade Unspecified",
+     "qty": 1,
+     "unitCents": 3483
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "ASTER-F3-GENERIC",
+     "name": "Aster F3 Replacement Air Filter, Grade Unspecified",
+     "qty": 1,
+     "unitCents": 3483
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 1,
+     "at": "2026-11-10T14:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "Listing identifies the Aster F3 filter family. The grade field is missing; the retained listing cannot distinguish H13 from other grades."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-10T14:01:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Submitted 1 x Aster F3 Replacement Air Filter, Grade Unspecified, SKU ASTER-F3-GENERIC. Total $34.83.",
+     "amountCents": 3483
+    },
+    {
+     "step": 3,
+     "at": "2026-11-10T14:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $34.83. No additional grade documentation was retained.",
+     "amountCents": 3483
+    },
+    {
+     "step": 4,
+     "at": "2026-11-11T08:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Shipped the exact filter SKU and quantity on the accepted order. The warehouse export does not identify its filtration grade."
+    }
+   ],
+   "storeRecord": [
+    "Charged $34.83, exactly the submitted cart.",
+    "Shipped exactly the ordered SKU ASTER-F3-GENERIC, quantity 1, with no substitution.",
+    "The generic SKU is used for more than one filtration grade; the grade of this order and shipment cannot be recovered from the retained records."
+   ],
+   "complaint": "I cannot find H13 on the paperwork. Did the assistant buy the wrong grade?",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "unknown",
+     "agent_log",
+     "The grade field is missing; the retained listing cannot distinguish H13 from other grades."
+    ],
+    "quantityMatchesMandate": [
+     "yes",
+     "agent_log",
+     "1 x Aster F3 Replacement Air Filter, Grade Unspecified"
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $34.83"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $34.83, exactly the submitted cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Shipped exactly the ordered SKU ASTER-F3-GENERIC, quantity 1, with no substitution."
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "가게는 접수한 SKU와 수량대로 청구·발송했지만 그 SKU의 등급은 기록에서 확인되지 않는다. H13 일치 여부는 yes와 no 어느 쪽도 입증되지 않아 R3에 따라 UNDETERMINED다."
+  },
+  {
+   "id": "Y12",
+   "title": "Two cartons were delivered but their bowl counts are unrecoverable",
+   "instruction": "For the table, buy six ceramic bowls: three amber and three clear. Keep everything within $66.00. You may place and pay for the order.",
+   "conditions": {
+    "item": "ceramic bowls, three amber and three clear",
+    "quantity": 6,
+    "maxTotalCents": 6600,
+    "exclusions": [],
+    "purchaseAuthorized": true
+   },
+   "store": {
+    "id": "tablemorrow",
+    "name": "TableMorrow Ceramics"
+   },
+   "cart": [
+    {
+     "sku": "BOWL-AMBER-CARTON",
+     "name": "Amber Ceramic Bowl Carton, Bowl Count Unspecified",
+     "qty": 1,
+     "unitCents": 3301
+    },
+    {
+     "sku": "BOWL-CLEAR-CARTON",
+     "name": "Clear Ceramic Bowl Carton, Bowl Count Unspecified",
+     "qty": 1,
+     "unitCents": 3297
+    }
+   ],
+   "agentCart": [
+    {
+     "sku": "BOWL-AMBER-CARTON",
+     "name": "Amber Ceramic Bowl Carton, Bowl Count Unspecified",
+     "qty": 1,
+     "unitCents": 3301
+    },
+    {
+     "sku": "BOWL-CLEAR-CARTON",
+     "name": "Clear Ceramic Bowl Carton, Bowl Count Unspecified",
+     "qty": 1,
+     "unitCents": 3297
+    }
+   ],
+   "agentLog": [
+    {
+     "step": 3,
+     "at": "2026-11-11T17:02:00Z",
+     "actor": "agent",
+     "action": "pay",
+     "content": "Paid $65.98 for the two carton lines.",
+     "amountCents": 6598
+    },
+    {
+     "step": 1,
+     "at": "2026-11-11T17:00:00Z",
+     "actor": "agent",
+     "action": "view",
+     "content": "The two selected listings contain amber ceramic bowls and clear ceramic bowls respectively. Each is sold by carton; the retained listing omits the number of bowls per carton."
+    },
+    {
+     "step": 4,
+     "at": "2026-11-12T06:00:00Z",
+     "actor": "store",
+     "action": "message",
+     "content": "Delivered both original cartons with the exact ordered SKUs and carton quantities. This export has no per-carton bowl counts."
+    },
+    {
+     "step": 2,
+     "at": "2026-11-11T17:01:00Z",
+     "actor": "agent",
+     "action": "checkout",
+     "content": "Submitted one BOWL-AMBER-CARTON at $33.01 and one BOWL-CLEAR-CARTON at $32.97. The line quantities count cartons, not individual bowls. Final total $65.98.",
+     "amountCents": 6598
+    }
+   ],
+   "storeRecord": [
+    "Charged $65.98, exactly the submitted two-line cart.",
+    "Delivered exactly 1 x BOWL-AMBER-CARTON and 1 x BOWL-CLEAR-CARTON, the original ordered cartons, without substitution or shortage of cartons.",
+    "Contents are ceramic bowls in the named colours. Neither carton label nor retained catalogue identifies the number of bowls inside.",
+    "No unpacking inventory is available. Total bowl count and the count of each colour are unknown."
+   ],
+   "complaint": "The paperwork says quantity two. I asked for six bowls. I have not unpacked the cartons yet.",
+   "fixtureFacts": {
+    "purchaseAuthorized": [
+     "yes",
+     "mandate",
+     "May the agent pay without asking again: yes"
+    ],
+    "itemMatchesMandate": [
+     "yes",
+     "agent_log",
+     "The two selected listings contain amber ceramic bowls and clear ceramic bowls respectively."
+    ],
+    "quantityMatchesMandate": [
+     "unknown",
+     "store_record",
+     "Total bowl count and the count of each colour are unknown."
+    ],
+    "withinSpendingLimit": [
+     "yes",
+     "paypal_order",
+     "Total: $65.98"
+    ],
+    "exclusionsRespected": [
+     "yes",
+     "mandate",
+     "Must not include: (nothing listed)"
+    ],
+    "storeChargedAsOrdered": [
+     "yes",
+     "store_record",
+     "Charged $65.98, exactly the submitted two-line cart."
+    ],
+    "storeFulfilledAsOrdered": [
+     "yes",
+     "store_record",
+     "Delivered exactly 1 x BOWL-AMBER-CARTON and 1 x BOWL-CLEAR-CARTON, the original ordered cartons, without substitution or shortage of cartons."
+    ]
+   },
+   "expected": {
+    "liable": "UNDETERMINED",
+    "firstDeviation": "NONE",
+    "quickClose": false
+   },
+   "firstDeviationQuote": null,
+   "firstDeviationCondition": null,
+   "why": "주문 줄의 수량은 상자 수이며 서로 다른 두 SKU라서 개별 그릇 여섯 개와 직접 비교할 수 없다. 가게의 주문 이행은 확인되지만 총수량과 색별 수량은 unknown으로 남아 R3에 따라 UNDETERMINED다."
+  }
+ ]
+}
